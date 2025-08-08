@@ -42,9 +42,34 @@ const CRYPTO_ASSETS: Asset[] = [
   { id: 'curve-dao-token', symbol: 'CRV', name: 'Curve DAO', type: 'crypto' },
   { id: '1inch', symbol: '1INCH', name: '1inch', type: 'crypto' },
   { id: 'pancakeswap-token', symbol: 'CAKE', name: 'PancakeSwap', type: 'crypto' },
+  { id: 'the-graph', symbol: 'GRT', name: 'The Graph', type: 'crypto' },
+  { id: 'enjincoin', symbol: 'ENJ', name: 'Enjin Coin', type: 'crypto' },
+  { id: 'basic-attention-token', symbol: 'BAT', name: 'Basic Attention Token', type: 'crypto' },
+  { id: 'decentraland', symbol: 'MANA', name: 'Decentraland', type: 'crypto' },
+  { id: 'the-sandbox', symbol: 'SAND', name: 'The Sandbox', type: 'crypto' },
+  { id: 'axie-infinity', symbol: 'AXS', name: 'Axie Infinity', type: 'crypto' },
+  { id: 'gala', symbol: 'GALA', name: 'Gala', type: 'crypto' },
+  { id: 'internet-computer', symbol: 'ICP', name: 'Internet Computer', type: 'crypto' },
+  { id: 'near', symbol: 'NEAR', name: 'NEAR Protocol', type: 'crypto' },
+  { id: 'flow', symbol: 'FLOW', name: 'Flow', type: 'crypto' },
+  { id: 'elrond-erd-2', symbol: 'EGLD', name: 'MultiversX', type: 'crypto' },
+  { id: 'hedera-hashgraph', symbol: 'HBAR', name: 'Hedera', type: 'crypto' },
+  { id: 'fantom', symbol: 'FTM', name: 'Fantom', type: 'crypto' },
+  { id: 'harmony', symbol: 'ONE', name: 'Harmony', type: 'crypto' },
+  { id: 'klay-token', symbol: 'KLAY', name: 'Klaytn', type: 'crypto' },
+  { id: 'terra-luna', symbol: 'LUNA', name: 'Terra Classic', type: 'crypto' },
+  { id: 'bitcoin-cash', symbol: 'BCH', name: 'Bitcoin Cash', type: 'crypto' },
+  { id: 'ethereum-classic', symbol: 'ETC', name: 'Ethereum Classic', type: 'crypto' },
+  { id: 'monero', symbol: 'XMR', name: 'Monero', type: 'crypto' },
+  { id: 'zcash', symbol: 'ZEC', name: 'Zcash', type: 'crypto' },
+  { id: 'dash', symbol: 'DASH', name: 'Dash', type: 'crypto' },
+  { id: 'tezos', symbol: 'XTZ', name: 'Tezos', type: 'crypto' },
+  { id: 'iota', symbol: 'MIOTA', name: 'IOTA', type: 'crypto' },
+  { id: 'neo', symbol: 'NEO', name: 'Neo', type: 'crypto' },
+  { id: 'qtum', symbol: 'QTUM', name: 'Qtum', type: 'crypto' },
 ];
 
-// Major forex pairs
+// Major forex pairs and commodities
 const FOREX_ASSETS: Asset[] = [
   { id: 'EUR/USD', symbol: 'EUR/USD', name: 'Euro / US Dollar', type: 'forex' },
   { id: 'GBP/USD', symbol: 'GBP/USD', name: 'British Pound / US Dollar', type: 'forex' },
@@ -56,6 +81,16 @@ const FOREX_ASSETS: Asset[] = [
   { id: 'EUR/GBP', symbol: 'EUR/GBP', name: 'Euro / British Pound', type: 'forex' },
   { id: 'EUR/JPY', symbol: 'EUR/JPY', name: 'Euro / Japanese Yen', type: 'forex' },
   { id: 'GBP/JPY', symbol: 'GBP/JPY', name: 'British Pound / Japanese Yen', type: 'forex' },
+  { id: 'EUR/CHF', symbol: 'EUR/CHF', name: 'Euro / Swiss Franc', type: 'forex' },
+  { id: 'GBP/CHF', symbol: 'GBP/CHF', name: 'British Pound / Swiss Franc', type: 'forex' },
+  { id: 'AUD/JPY', symbol: 'AUD/JPY', name: 'Australian Dollar / Japanese Yen', type: 'forex' },
+  { id: 'CAD/JPY', symbol: 'CAD/JPY', name: 'Canadian Dollar / Japanese Yen', type: 'forex' },
+  { id: 'CHF/JPY', symbol: 'CHF/JPY', name: 'Swiss Franc / Japanese Yen', type: 'forex' },
+  { id: 'EUR/AUD', symbol: 'EUR/AUD', name: 'Euro / Australian Dollar', type: 'forex' },
+  { id: 'GBP/AUD', symbol: 'GBP/AUD', name: 'British Pound / Australian Dollar', type: 'forex' },
+  { id: 'USD/CNY', symbol: 'USD/CNY', name: 'US Dollar / Chinese Yuan', type: 'forex' },
+  { id: 'USD/SGD', symbol: 'USD/SGD', name: 'US Dollar / Singapore Dollar', type: 'forex' },
+  { id: 'USD/ZAR', symbol: 'USD/ZAR', name: 'US Dollar / South African Rand', type: 'forex' },
 ];
 
 const ALL_ASSETS = [...CRYPTO_ASSETS, ...FOREX_ASSETS];

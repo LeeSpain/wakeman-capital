@@ -133,7 +133,17 @@ const PaperTrading: React.FC = () => {
                              (asset.id as string) === 'NZD/USD' ? 0.62 :
                              (asset.id as string) === 'EUR/GBP' ? 0.86 :
                              (asset.id as string) === 'EUR/JPY' ? 162.0 :
-                             (asset.id as string) === 'GBP/JPY' ? 188.0 : 1.0;
+                             (asset.id as string) === 'GBP/JPY' ? 188.0 :
+                             (asset.id as string) === 'EUR/CHF' ? 0.97 :
+                             (asset.id as string) === 'GBP/CHF' ? 1.13 :
+                             (asset.id as string) === 'AUD/JPY' ? 97.5 :
+                             (asset.id as string) === 'CAD/JPY' ? 111.0 :
+                             (asset.id as string) === 'CHF/JPY' ? 163.0 :
+                             (asset.id as string) === 'EUR/AUD' ? 1.66 :
+                             (asset.id as string) === 'GBP/AUD' ? 1.92 :
+                             (asset.id as string) === 'USD/CNY' ? 7.25 :
+                             (asset.id as string) === 'USD/SGD' ? 1.34 :
+                             (asset.id as string) === 'USD/ZAR' ? 18.5 : 1.0;
             
             // Add small random variation
             const variation = (Math.random() - 0.5) * 0.02;
@@ -316,70 +326,83 @@ const PaperTrading: React.FC = () => {
               {loading ? (
                 <p className="text-sm text-muted-foreground">Loading prices…</p>
               ) : (
-                <ul className="divide-y divide-border">
+                <div className="space-y-3">
                   {allAssets.map((a: AssetMeta) => {
                     const price = getAnyPrice(a.id);
                     const isCustom = !ASSETS.find(asset => asset.id === a.id);
                     return (
-                      <li key={a.id} className="py-4 flex items-center justify-between gap-4">
-                        <div className="flex items-center gap-3">
-                          {isCustom && (
-                            <div className={`px-2 py-1 rounded text-xs font-medium ${
-                              a.type === 'forex' 
-                                ? 'bg-secondary/10 text-secondary-foreground' 
-                                : 'bg-primary/10 text-primary'
-                            }`}>
-                              {a.type?.toUpperCase() || 'CUSTOM'}
-                            </div>
-                          )}
-                          <div>
-                            <div className="font-medium">{a.symbol} · {a.name}</div>
-                            <div className="text-sm text-muted-foreground">
-                              {price ? `$${price.toLocaleString(undefined, { 
-                                minimumFractionDigits: a.type === 'forex' ? 4 : 2,
-                                maximumFractionDigits: a.type === 'forex' ? 4 : 2
-                              })}` : '—'}
+                      <div key={a.id} className="p-4 rounded-lg border border-border bg-card/30">
+                        <div className="flex items-center justify-between gap-4">
+                          <div className="flex items-center gap-3 flex-1">
+                            {isCustom && (
+                              <div className={`px-2 py-1 rounded text-xs font-medium ${
+                                a.type === 'forex' 
+                                  ? 'bg-secondary/10 text-secondary-foreground' 
+                                  : 'bg-primary/10 text-primary'
+                              }`}>
+                                {a.type?.toUpperCase() || 'CUSTOM'}
+                              </div>
+                            )}
+                            <div className="flex-1">
+                              <div className="font-medium">{a.symbol} · {a.name}</div>
+                              <div className="text-sm text-muted-foreground">
+                                {price ? `$${price.toLocaleString(undefined, { 
+                                  minimumFractionDigits: a.type === 'forex' ? 4 : 2,
+                                  maximumFractionDigits: a.type === 'forex' ? 4 : 2
+                                })}` : 'Loading...'}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="number"
-                            min={0}
-                            step="10"
-                            value={buyAmounts[a.id]}
-                            onChange={(e) => setBuyAmounts((s) => ({ ...s, [a.id]: e.target.value }))}
-                            placeholder="USD"
-                            className="w-28 rounded-md border border-border bg-background px-3 py-2 outline-none focus:ring-2 focus:ring-primary/40"
-                          />
-                          <Button onClick={() => handleBuy(a.id)} disabled={!Number.isFinite(Number(buyAmounts[a.id])) || Number(buyAmounts[a.id]) <= 0}>Buy</Button>
-                          <Button 
-                            variant="outline" 
-                            onClick={() => handleSellUsd(a.id)} 
-                            disabled={!Number.isFinite(Number(buyAmounts[a.id])) || Number(buyAmounts[a.id]) <= 0 || !state.positions.some((p) => p.assetId === a.id)}
-                          >
-                            Sell
-                          </Button>
-                          {isCustom && (
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="number"
+                              min={0}
+                              step="10"
+                              value={buyAmounts[a.id] || ''}
+                              onChange={(e) => setBuyAmounts((s) => ({ ...s, [a.id]: e.target.value }))}
+                              placeholder="USD"
+                              className="w-24 rounded-md border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/40"
+                            />
                             <Button 
-                              variant="secondary" 
+                              onClick={() => handleBuy(a.id)} 
+                              disabled={!Number.isFinite(Number(buyAmounts[a.id])) || Number(buyAmounts[a.id]) <= 0 || !price}
                               size="sm"
-                              onClick={() => {
-                                setCustomAssets(prev => prev.filter(asset => asset.id !== a.id));
-                                setBuyAmounts(prev => {
-                                  const { [a.id]: removed, ...rest } = prev;
-                                  return rest;
-                                });
-                              }}
                             >
-                              Remove
+                              Buy
                             </Button>
-                          )}
+                            <Button 
+                              variant="outline" 
+                              onClick={() => handleSellUsd(a.id)} 
+                              disabled={!Number.isFinite(Number(buyAmounts[a.id])) || Number(buyAmounts[a.id]) <= 0 || !state.positions.some((p) => p.assetId === a.id)}
+                              size="sm"
+                            >
+                              Sell
+                            </Button>
+                            {isCustom && (
+                              <Button 
+                                variant="secondary" 
+                                size="sm"
+                                onClick={() => {
+                                  setCustomAssets(prev => prev.filter(asset => asset.id !== a.id));
+                                  setBuyAmounts(prev => {
+                                    const { [a.id]: removed, ...rest } = prev;
+                                    return rest;
+                                  });
+                                  setCustomPrices(prev => {
+                                    const { [a.id]: removed, ...rest } = prev;
+                                    return rest;
+                                  });
+                                }}
+                              >
+                                Remove
+                              </Button>
+                            )}
+                          </div>
                         </div>
-                      </li>
+                      </div>
                     );
                   })}
-                </ul>
+                </div>
               )}
               {error ? <p className="text-xs text-muted-foreground mt-2">Price feed fallback active: {error}</p> : null}
             </Section>
