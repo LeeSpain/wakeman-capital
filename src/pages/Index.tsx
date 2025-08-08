@@ -113,6 +113,7 @@ const Index = () => {
         </section>
 
         {/* Trend Pulse cards */}
+        <section className="max-w-7xl mx-auto px-4 pb-20">
           <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-6">Trend Pulse</h2>
           <div className="grid md:grid-cols-3 gap-6">
             {cards.map((c) => (
