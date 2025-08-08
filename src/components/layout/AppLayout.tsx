@@ -20,6 +20,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     { path: '/journal', label: 'Trade Journal' },
     { path: '/coach', label: 'AI Coach' },
     { path: '/trends', label: 'Trends' },
+    { path: '/paper', label: 'Paper Trading' },
     { path: '/settings', label: 'Settings' },
     { path: '/billing', label: 'Billing' },
   ];
@@ -80,7 +81,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         <aside className={`${collapsed ? 'w-14' : 'w-64'} transition-all border-r border-border bg-card min-h-[calc(100vh-3.5rem)]`}>
           <div className="px-3 pt-3 text-xs uppercase tracking-wide text-muted-foreground">Main</div>
           <nav className="p-2 space-y-1">
-            {menu.slice(0,5).map((item) => (
+            {menu.slice(0,6).map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
@@ -96,7 +97,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
           </nav>
           <div className="px-3 pt-3 text-xs uppercase tracking-wide text-muted-foreground">Account</div>
           <nav className="p-2 space-y-1">
-            {menu.slice(5).map((item) => (
+            {menu.slice(6).map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
