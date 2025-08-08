@@ -22,8 +22,10 @@ function App() {
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/analytics" element={<Analytics />} />
             <Route path="/trends" element={<Trends />} />
+            <Route path="/signals" element={<SignalCenter />} />
             <Route path="/signal-center" element={<SignalCenter />} />
             <Route path="/journal" element={<TradeJournal />} />
+            <Route path="/coach" element={<AICoach />} />
             <Route path="/ai-coach" element={<AICoach />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/billing" element={<Billing />} />
