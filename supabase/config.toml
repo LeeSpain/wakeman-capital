@@ -1,0 +1,4 @@
+project_id = "bqcmhkajtuzovmvwblbe"
+
+[functions.ai-coach-chat]
+verify_jwt = false
