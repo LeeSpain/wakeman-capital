@@ -11,10 +11,10 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   const menu = [
     { path: '/dashboard', label: 'Dashboard' },
-    { path: '/trends', label: 'Trends' },
-    { path: '/signal-center', label: 'Signal Center' },
+    { path: '/signals', label: 'Signal Center' },
     { path: '/journal', label: 'Trade Journal' },
-    { path: '/ai-coach', label: 'AI Coach' },
+    { path: '/coach', label: 'AI Coach' },
+    { path: '/trends', label: 'Trends' },
     { path: '/settings', label: 'Settings' },
     { path: '/billing', label: 'Billing' },
   ];
@@ -33,14 +33,13 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
             {collapsed ? '☰' : '×'}
           </button>
           <Link to="/" className="font-bold text-lg">
-            Trend Pulse
+            CMWTrading
           </Link>
         </div>
         <nav className="hidden md:flex items-center gap-6 text-sm text-muted-foreground">
           <Link to="/analytics" className={location.pathname === '/analytics' ? 'text-primary' : 'hover:text-foreground'}>
             Analytics
           </Link>
-          <a href="#" className="hover:text-foreground">Docs</a>
         </nav>
         <div>
           <button className="px-3 py-1.5 rounded-md border border-border bg-secondary text-secondary-foreground hover:bg-muted transition-colors">
@@ -51,8 +50,25 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
       <div className="flex">
         <aside className={`${collapsed ? 'w-14' : 'w-64'} transition-all border-r border-border bg-card min-h-[calc(100vh-3.5rem)]`}>
+          <div className="px-3 pt-3 text-xs uppercase tracking-wide text-muted-foreground">Main</div>
           <nav className="p-2 space-y-1">
-            {menu.map((item) => (
+            {menu.slice(0,5).map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`block rounded-md px-3 py-2 text-sm transition-colors ${
+                  isActive(item.path)
+                    ? 'bg-muted text-primary font-medium'
+                    : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                }`}
+              >
+                <span className="truncate inline-block align-middle">{item.label}</span>
+              </Link>
+            ))}
+          </nav>
+          <div className="px-3 pt-3 text-xs uppercase tracking-wide text-muted-foreground">Account</div>
+          <nav className="p-2 space-y-1">
+            {menu.slice(5).map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
