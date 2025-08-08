@@ -1,10 +1,10 @@
 import React from 'react';
-import { useAuth } from '@/hooks/useAuth';
-import StatsCards from '@/components/dashboard/StatsCards';
-import RecentTrades from '@/components/dashboard/RecentTrades';
-import TopOpportunities from '@/components/dashboard/TopOpportunities';
-import { TrendsSummary } from '@/components/trends/TrendsSummary';
-import { useTrends } from '@/hooks/useTrends';
+import { useAuth } from '../hooks/useAuth';
+import StatsCards from './dashboard/StatsCards';
+import RecentTrades from './dashboard/RecentTrades';
+import TopOpportunities from './dashboard/TopOpportunities';
+import { TrendsSummary } from './trends/TrendsSummary';
+import { useTrends } from '../hooks/useTrends';
 
 const Dashboard = () => {
   const { user } = useAuth();

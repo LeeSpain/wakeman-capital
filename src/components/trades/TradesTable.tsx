@@ -1,6 +1,6 @@
 import React from 'react'
-import { Button } from '@/components/ui/button'
-import type { TradeRow } from '@/hooks/useTrades'
+import { Button } from '../ui/button'
+import type { TradeRow } from '../../hooks/useTrades'
 
 interface Props {
   trades: TradeRow[]

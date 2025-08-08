@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '../integrations/supabase/client';
 import { useNavigate, Link } from 'react-router-dom';
 const heroImageUrl = new URL('../assets/hero-trend-grid.jpg', import.meta.url).href;
 

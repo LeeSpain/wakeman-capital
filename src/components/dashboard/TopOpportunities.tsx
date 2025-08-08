@@ -1,5 +1,5 @@
 import React from 'react';
-import { useTopOpportunities } from '@/hooks/useSignals';
+import { useTopOpportunities } from '../../hooks/useSignals';
 
 export const TopOpportunities: React.FC = () => {
   const { data, loading } = useTopOpportunities();

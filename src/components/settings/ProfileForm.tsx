@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { useProfile } from '@/hooks/useProfile';
-import { Button } from '@/components/ui/button';
+import { useProfile } from '../../hooks/useProfile';
+import { Button } from '../ui/button';
 
 interface Props {
   userId: string;

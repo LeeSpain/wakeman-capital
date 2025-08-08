@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, useCallback } from 'react'
-import { supabase } from '@/integrations/supabase/client'
+import { supabase } from '../integrations/supabase/client'
 
 export type TradeStatus = 'open' | 'closed'
 export type TradeDirection = 'LONG' | 'SHORT'

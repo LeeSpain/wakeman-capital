@@ -1,8 +1,8 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useAuth } from '@/hooks/useAuth';
-import PlanCard from '@/components/billing/PlanCard';
-import SignInCard from '@/components/settings/SignInCard';
+import { useAuth } from '../hooks/useAuth';
+import PlanCard from '../components/billing/PlanCard';
+import SignInCard from '../components/settings/SignInCard';
 
 const Billing = () => {
   const { user } = useAuth();

@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { useAuth } from '@/hooks/useAuth'
-import { supabase } from '@/integrations/supabase/client'
-import type { SignalRecord } from '@/hooks/useSignals'
+import { Button } from '../ui/button'
+import { useAuth } from '../../hooks/useAuth'
+import { supabase } from '../../integrations/supabase/client'
+import type { SignalRecord } from '../../hooks/useSignals'
 
 function computeRR(signal: SignalRecord): number | null {
   if (signal.risk_reward_ratio) return signal.risk_reward_ratio

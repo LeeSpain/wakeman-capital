@@ -1,9 +1,9 @@
 import React, { useCallback, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useAuth } from '@/hooks/useAuth';
-import { useUserTrades } from '@/hooks/useTrades';
-import { TradeForm } from '@/components/trades/TradeForm';
-import { TradesTable } from '@/components/trades/TradesTable';
+import { useAuth } from '../hooks/useAuth';
+import { useUserTrades } from '../hooks/useTrades';
+import { TradeForm } from '../components/trades/TradeForm';
+import { TradesTable } from '../components/trades/TradesTable';
 
 const TradeJournal = () => {
   const { user } = useAuth();

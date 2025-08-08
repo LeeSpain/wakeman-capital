@@ -1,11 +1,11 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useAuth } from '@/hooks/useAuth';
-import ProfileForm from '@/components/settings/ProfileForm';
-import ThemeSection from '@/components/settings/ThemeSection';
-import SignInCard from '@/components/settings/SignInCard';
-import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
+import { useAuth } from '../hooks/useAuth';
+import ProfileForm from '../components/settings/ProfileForm';
+import ThemeSection from '../components/settings/ThemeSection';
+import SignInCard from '../components/settings/SignInCard';
+import { supabase } from '../integrations/supabase/client';
+import { Button } from '../components/ui/button';
 
 const Settings = () => {
   const { user, loading } = useAuth();

@@ -1,5 +1,5 @@
 import React from 'react'
-import type { TrendRow } from '@/hooks/useTrends'
+import type { TrendRow } from '../../hooks/useTrends'
 
 export const TrendCard: React.FC<{ row: TrendRow }> = ({ row }) => {
   const positive = (row.trend_direction || '').toLowerCase().includes('up') || (row.trend_direction || '').toLowerCase().includes('bull')

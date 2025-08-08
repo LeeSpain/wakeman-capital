@@ -1,6 +1,6 @@
 import React from 'react';
-import { useAuth } from '@/hooks/useAuth';
-import { useUserTrades } from '@/hooks/useTrades';
+import { useAuth } from '../../hooks/useAuth';
+import { useUserTrades } from '../../hooks/useTrades';
 
 export const RecentTrades: React.FC = () => {
   const { user } = useAuth();

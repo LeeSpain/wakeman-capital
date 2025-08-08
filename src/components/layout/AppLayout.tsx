@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import MarketingHeader from './MarketingHeader';
 import MarketingFooter from './MarketingFooter';
-import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '../../hooks/useAuth';
+import { supabase } from '../../integrations/supabase/client';
 
 interface AppLayoutProps {
   children: React.ReactNode;

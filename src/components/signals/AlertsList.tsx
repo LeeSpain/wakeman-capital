@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { useAuth } from '@/hooks/useAuth'
-import { supabase } from '@/integrations/supabase/client'
+import { useAuth } from '../../hooks/useAuth'
+import { supabase } from '../../integrations/supabase/client'
 
 type AlertRow = {
   id: string

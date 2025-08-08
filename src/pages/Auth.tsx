@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '../integrations/supabase/client';
+import { useAuth } from '../hooks/useAuth';
 
 const Auth: React.FC = () => {
   const { user } = useAuth();

@@ -1,9 +1,9 @@
 import React, { useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useTopOpportunities, useAllSignals } from '@/hooks/useSignals';
-import { OpportunityCard } from '@/components/signals/OpportunityCard';
-import { SignalsTable } from '@/components/signals/SignalsTable';
-import { AlertsList } from '@/components/signals/AlertsList';
+import { useTopOpportunities, useAllSignals } from '../hooks/useSignals';
+import { OpportunityCard } from '../components/signals/OpportunityCard';
+import { SignalsTable } from '../components/signals/SignalsTable';
+import { AlertsList } from '../components/signals/AlertsList';
 
 const tabs = ['Top 5 Opportunities', 'Trade Alerts', 'All Signals'] as const;
 

@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useTrends } from '@/hooks/useTrends';
-import { TrendCard } from '@/components/trends/TrendCard';
-import { TrendsSummary } from '@/components/trends/TrendsSummary';
+import { useTrends } from '../hooks/useTrends';
+import { TrendCard } from '../components/trends/TrendCard';
+import { TrendsSummary } from '../components/trends/TrendsSummary';
 
 const Trends = () => {
   const { data, loading, error, timeframes } = useTrends();

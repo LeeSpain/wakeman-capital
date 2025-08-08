@@ -1,5 +1,5 @@
 import React from 'react'
-import type { SignalRecord } from '@/hooks/useSignals'
+import type { SignalRecord } from '../../hooks/useSignals'
 
 export const SignalsTable: React.FC<{ signals: SignalRecord[]; loading?: boolean }>
 = ({ signals, loading }) => {

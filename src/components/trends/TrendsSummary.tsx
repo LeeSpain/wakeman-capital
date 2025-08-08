@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react'
-import type { TrendRow } from '@/hooks/useTrends'
+import type { TrendRow } from '../../hooks/useTrends'
 
 export const TrendsSummary: React.FC<{ data: TrendRow[] }>= ({ data }) => {
   const summary = useMemo(() => {

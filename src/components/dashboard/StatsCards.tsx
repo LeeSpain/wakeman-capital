@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
-import { useAuth } from '@/hooks/useAuth';
-import { useUserTrades } from '@/hooks/useTrades';
-import { useTopOpportunities } from '@/hooks/useSignals';
-import { useTrends } from '@/hooks/useTrends';
+import { useAuth } from '../../hooks/useAuth';
+import { useUserTrades } from '../../hooks/useTrades';
+import { useTopOpportunities } from '../../hooks/useSignals';
+import { useTrends } from '../../hooks/useTrends';
 
 const Stat: React.FC<{ label: string; value: React.ReactNode; helper?: string; emphasize?: boolean }>= ({ label, value, helper, emphasize }) => (
   <div className="rounded-lg border border-border p-4 bg-card">

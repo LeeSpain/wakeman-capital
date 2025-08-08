@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import type { NewTradeInput, TradeDirection } from '@/hooks/useTrades'
+import { Button } from '../ui/button'
+import type { NewTradeInput, TradeDirection } from '../../hooks/useTrades'
 
 interface Props {
   onSubmit: (input: NewTradeInput) => Promise<void> | void

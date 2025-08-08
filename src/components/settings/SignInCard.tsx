@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
+import { supabase } from '../../integrations/supabase/client';
+import { Button } from '../ui/button';
 
 export const SignInCard: React.FC = () => {
   const [email, setEmail] = useState('');
