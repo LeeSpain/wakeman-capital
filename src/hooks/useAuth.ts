@@ -17,7 +17,7 @@ export const useAuth = () => {
       const { data } = await supabase.auth.getSession();
       const sessionUser = data.session?.user;
       if (mounted) {
-        setUser(sessionUser ? { id: sessionUser.id, email: sessionUser.email } : null);
+        setUser(sessionUser ? { id: sessionUser.id, email: sessionUser.email ?? null } : null);
         setLoading(false);
       }
     };
@@ -25,7 +25,7 @@ export const useAuth = () => {
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!mounted) return;
       const u = session?.user;
-      setUser(u ? { id: u.id, email: u.email } : null);
+      setUser(u ? { id: u.id, email: u.email ?? null } : null);
       setLoading(false);
     });
 

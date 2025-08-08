@@ -40,7 +40,7 @@ export const ProfileForm: React.FC<Props> = ({ userId }) => {
       mobile: mobile.trim() || null,
     });
     setSaving(false);
-    if (error) alert('Failed to save: ' + error.message);
+    if (error) alert('Failed to save: ' + (typeof error === 'string' ? error : error.message));
     else alert('Profile updated');
   };
 
