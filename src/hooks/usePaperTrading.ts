@@ -58,6 +58,13 @@ export function usePaperTrading(getPrice: (id: AssetId) => number | null) {
     return true;
   }, []);
 
+  const withdraw = useCallback((amount: number) => {
+    if (!Number.isFinite(amount) || amount <= 0) return false;
+    if (amount > state.balance) return false;
+    setState((s) => ({ ...s, balance: Number((s.balance - amount).toFixed(2)) }));
+    return true;
+  }, [state.balance]);
+
   const canAfford = (usdAmount: number) => Number.isFinite(usdAmount) && usdAmount > 0 && usdAmount <= state.balance;
 
   const buy = useCallback(
@@ -139,6 +146,7 @@ export function usePaperTrading(getPrice: (id: AssetId) => number | null) {
   return {
     state,
     deposit,
+    withdraw,
     buy,
     sell,
     equity: Number(equity.toFixed(2)),

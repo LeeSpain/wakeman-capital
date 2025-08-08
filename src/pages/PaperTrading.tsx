@@ -18,7 +18,7 @@ const Section: React.FC<React.PropsWithChildren<{ title: string; sub?: string }>
 
 const PaperTrading: React.FC = () => {
   const { prices, getPrice, loading, error, lastUpdated } = useMarketPrices(10000);
-  const { state, deposit, buy, sell, equity, unrealizedPnl, reset } = usePaperTrading(getPrice);
+  const { state, deposit, withdraw, buy, sell, equity, unrealizedPnl, reset } = usePaperTrading(getPrice);
 
   const [depositAmount, setDepositAmount] = useState('1000');
   const [buyAmounts, setBuyAmounts] = useState<Record<AssetId, string>>({
@@ -34,6 +34,12 @@ const PaperTrading: React.FC = () => {
     setDepositAmount('');
   };
 
+  const handleWithdraw = () => {
+    const amt = Number(depositAmount);
+    if (!Number.isFinite(amt) || amt <= 0) return;
+    const ok = withdraw(amt);
+    if (ok) setDepositAmount('');
+  };
   const handleBuy = (assetId: AssetId) => {
     const amt = Number(buyAmounts[assetId]);
     if (!Number.isFinite(amt) || amt <= 0) return;
@@ -48,6 +54,17 @@ const PaperTrading: React.FC = () => {
     const d = new Date(lastUpdated);
     return d.toLocaleTimeString();
   }, [lastUpdated]);
+
+  const pnlChips = useMemo(() => {
+    return state.positions.map((p) => {
+      const price = getPrice(p.assetId) ?? p.entryPrice;
+      const pnl = p.qty * (price - p.entryPrice);
+      const val = Number(pnl.toFixed(2));
+      const sign = val >= 0 ? '+' : '−';
+      const formatted = `${sign}$${Math.abs(val).toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+      return { id: p.id, symbol: p.symbol, value: val, label: `${p.symbol} ${formatted}` };
+    });
+  }, [state.positions, getPrice]);
 
   return (
     <>
@@ -65,6 +82,27 @@ const PaperTrading: React.FC = () => {
               Learn by doing—risk-free. Deposit virtual USD, buy crypto assets, and track your PnL in real time.
             </p>
           </header>
+
+          {/* Live PnL Overview */}
+          {state.positions.length > 0 && (
+            <div className="rounded-lg border border-border bg-card/60 p-3 flex items-center gap-3 overflow-x-auto">
+              <span className="inline-flex items-center gap-2 text-xs text-muted-foreground whitespace-nowrap">
+                <span className="relative flex h-2 w-2"><span className="animate-pulse absolute inline-flex h-full w-full rounded-full bg-primary/40" /><span className="relative inline-flex rounded-full h-2 w-2 bg-primary" /></span>
+                Live PnL
+              </span>
+              <div className="flex items-center gap-2">
+                {pnlChips.map((c) => (
+                  <span
+                    key={c.id}
+                    className={`px-2 py-1 rounded-full text-xs border border-border bg-background whitespace-nowrap ${c.value >= 0 ? 'text-[hsl(var(--primary))]' : 'text-[hsl(var(--destructive))]'}`}
+                    title={c.label}
+                  >
+                    {c.label}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <Section title="Wallet" sub="Demo-only funds. No real money involved.">
@@ -94,7 +132,8 @@ const PaperTrading: React.FC = () => {
                   placeholder="Amount (USD)"
                   className="w-full sm:w-64 rounded-md border border-border bg-background px-3 py-2 outline-none focus:ring-2 focus:ring-primary/40"
                 />
-                <Button onClick={handleDeposit}>Deposit</Button>
+                <Button onClick={handleDeposit} disabled={!Number.isFinite(Number(depositAmount)) || Number(depositAmount) <= 0}>Deposit</Button>
+                <Button variant="outline" onClick={handleWithdraw} disabled={!Number.isFinite(Number(depositAmount)) || Number(depositAmount) <= 0 || Number(depositAmount) > state.balance}>Withdraw</Button>
                 <Button variant="secondary" onClick={reset}>Reset</Button>
               </div>
             </Section>
