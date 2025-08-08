@@ -1,7 +1,8 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Button } from '../components/ui/button';
 import { supabase } from '../integrations/supabase/client';
+import { AlertsList } from '../components/signals/AlertsList';
 
 const tabs = ['Chat', 'Settings', 'Sources', 'Alerts'] as const;
 
@@ -18,6 +19,29 @@ const AICoach = () => {
   const [loading, setLoading] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
 
+  type Settings = { provider: 'OpenAI' | 'Anthropic'; model: string; systemPrompt: string; temperature: number };
+  const defaultPrompt = "You are Wakeman Capital's AI Trading Coach. Be concise, structured, and risk-aware. Prefer London session setups, SMC concepts (CHoCH, BOS, FVG, OB, liquidity), and enforce RRR ≥ 2:1 with disciplined risk management.";
+
+  const [settings, setSettings] = useState<Settings>({ provider: 'OpenAI', model: 'gpt-4o-mini', systemPrompt: defaultPrompt, temperature: 0.3 });
+  const [sources, setSources] = useState<string[]>([]);
+  const [newSource, setNewSource] = useState('');
+
+  useEffect(() => {
+    try {
+      const s = localStorage.getItem('aiCoach.settings');
+      const src = localStorage.getItem('aiCoach.sources');
+      if (s) setSettings(prev => ({ ...prev, ...JSON.parse(s) }));
+      if (src) setSources(JSON.parse(src));
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('aiCoach.settings', JSON.stringify(settings));
+      localStorage.setItem('aiCoach.sources', JSON.stringify(sources));
+    } catch {}
+  }, [settings, sources]);
+
   const canSend = useMemo(() => input.trim().length > 0 && !loading, [input, loading]);
 
   const send = async () => {
@@ -29,7 +53,7 @@ const AICoach = () => {
 
     try {
       const { data, error } = await supabase.functions.invoke('ai-coach-chat', {
-        body: { messages: [...messages, userMsg] }
+        body: { messages: [...messages, userMsg], settings, sources }
       });
       if (error) throw error;
       const reply = (data as any)?.reply || 'Sorry, I could not generate a response.';
@@ -98,9 +122,97 @@ const AICoach = () => {
                 </section>
               )}
 
-              {active === 'Settings' && <p className="text-muted-foreground">Model: OpenAI • gpt-4o-mini. Voice/Realtime coming next.</p>}
-              {active === 'Sources' && <p className="text-muted-foreground">Manage sources (X, News, custom URLs) — not yet connected.</p>}
-              {active === 'Alerts' && <p className="text-muted-foreground">Configure trading alerts — uses your existing Alerts in Signals.</p>}
+              {active === 'Settings' && (
+                <section className="space-y-5">
+                  <div className="grid gap-4 md:grid-cols-3">
+                    <div className="space-y-2">
+                      <label className="text-sm text-muted-foreground">Provider</label>
+                      <select
+                        value={settings.provider}
+                        onChange={(e) => setSettings(s => ({ ...s, provider: e.target.value as Settings['provider'] }))}
+                        className="w-full rounded-md border border-input bg-background p-2 text-sm"
+                      >
+                        <option>OpenAI</option>
+                        <option>Anthropic</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm text-muted-foreground">Model</label>
+                      <input
+                        value={settings.model}
+                        onChange={(e) => setSettings(s => ({ ...s, model: e.target.value }))}
+                        className="w-full rounded-md border border-input bg-background p-2 text-sm"
+                        placeholder="e.g. gpt-4o-mini"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm text-muted-foreground">Temperature: {settings.temperature.toFixed(2)}</label>
+                      <input
+                        type="range"
+                        min={0}
+                        max={1}
+                        step={0.05}
+                        value={settings.temperature}
+                        onChange={(e) => setSettings(s => ({ ...s, temperature: Number(e.target.value) }))}
+                        className="w-full"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm text-muted-foreground">System Prompt</label>
+                    <textarea
+                      value={settings.systemPrompt}
+                      onChange={(e) => setSettings(s => ({ ...s, systemPrompt: e.target.value }))}
+                      className="w-full rounded-md border border-input bg-background p-3 text-sm"
+                      rows={5}
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground">Settings are saved locally and used for all AI Coach replies.</p>
+                </section>
+              )}
+              {active === 'Sources' && (
+                <section className="space-y-4">
+                  <div className="flex gap-2">
+                    <input
+                      value={newSource}
+                      onChange={(e) => setNewSource(e.target.value)}
+                      placeholder="Add source URL or keyword (e.g. https://news.site/forex)"
+                      className="flex-1 rounded-md border border-input bg-background p-2 text-sm"
+                    />
+                    <Button
+                      onClick={() => {
+                        const v = newSource.trim();
+                        if (!v) return;
+                        if (sources.includes(v)) return setNewSource('');
+                        setSources(prev => [...prev, v]);
+                        setNewSource('');
+                      }}
+                      disabled={!newSource.trim()}
+                    >Add</Button>
+                  </div>
+                  {sources.length === 0 ? (
+                    <p className="text-muted-foreground text-sm">No sources yet. Add your preferred news, X accounts, or custom URLs.</p>
+                  ) : (
+                    <ul className="space-y-2">
+                      {sources.map((s, i) => (
+                        <li key={i} className="flex items-center justify-between rounded-md border border-border bg-card/50 p-2">
+                          <span className="truncate text-sm text-card-foreground" title={s}>{s}</span>
+                          <button
+                            onClick={() => setSources(prev => prev.filter((_, idx) => idx !== i))}
+                            className="text-xs text-muted-foreground hover:text-foreground"
+                          >Remove</button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </section>
+              )}
+              {active === 'Alerts' && (
+                <section className="space-y-3">
+                  <p className="text-sm text-muted-foreground">Your latest alerts</p>
+                  <AlertsList />
+                </section>
+              )}
             </div>
           </div>
         </div>
