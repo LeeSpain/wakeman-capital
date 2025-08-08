@@ -50,6 +50,37 @@ const PaperTrading: React.FC = () => {
     }
   };
 
+  const handleSellUsd = (assetId: AssetId) => {
+    const amt = Number(buyAmounts[assetId]);
+    if (!Number.isFinite(amt) || amt <= 0) return;
+    const price = getPrice(assetId);
+    if (!price) return;
+
+    let remainingUsd = amt;
+    // FIFO: sell from oldest positions first
+    const positions = state.positions
+      .filter((p) => p.assetId === assetId)
+      .sort((a, b) => new Date(a.openedAt).getTime() - new Date(b.openedAt).getTime());
+
+    for (const pos of positions) {
+      if (remainingUsd <= 0) break;
+      const maxUsdFromPos = pos.qty * price;
+      const usdToSell = Math.min(remainingUsd, maxUsdFromPos);
+      const qtyToSell = usdToSell / price;
+
+      if (qtyToSell >= pos.qty - 1e-9) {
+        // sell entire position
+        sell(pos.id);
+      } else if (qtyToSell > 0) {
+        sellPartial(pos.id, qtyToSell);
+      }
+
+      remainingUsd -= usdToSell;
+    }
+
+    setBuyAmounts((s) => ({ ...s, [assetId]: '' }));
+  };
+
   const lastUpdatedText = useMemo(() => {
     if (!lastUpdated) return '—';
     const d = new Date(lastUpdated);
@@ -218,7 +249,8 @@ const PaperTrading: React.FC = () => {
                             placeholder="USD"
                             className="w-28 rounded-md border border-border bg-background px-3 py-2 outline-none focus:ring-2 focus:ring-primary/40"
                           />
-                          <Button onClick={() => handleBuy(a.id)}>Buy</Button>
+                          <Button onClick={() => handleBuy(a.id)} disabled={!Number.isFinite(Number(buyAmounts[a.id])) || Number(buyAmounts[a.id]) <= 0}>Buy</Button>
+                          <Button variant="outline" onClick={() => handleSellUsd(a.id)} disabled={!Number.isFinite(Number(buyAmounts[a.id])) || Number(buyAmounts[a.id]) <= 0 || !state.positions.some((p) => p.assetId === a.id)}>Sell</Button>
                         </div>
                       </li>
                     );
