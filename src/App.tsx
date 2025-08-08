@@ -1,13 +1,19 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
+import Navigation from "./components/Navigation";
 import Index from "./pages/Index";
+import DashboardPage from "./pages/Dashboard";
+import Analytics from "./pages/Analytics";
 
 function App() {
   return (
     <HelmetProvider>
       <Router>
+        <Navigation />
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/analytics" element={<Analytics />} />
         </Routes>
       </Router>
     </HelmetProvider>
