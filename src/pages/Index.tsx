@@ -2,7 +2,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import Dashboard from '../components/Dashboard';
 import TrendPulse from '../components/TrendPulse';
-import heroImage from '../assets/hero-trend-grid.jpg';
+const heroImageUrl = new URL('../assets/hero-trend-grid.jpg', import.meta.url).href;
 
 const Index = () => {
   return (
@@ -19,9 +19,11 @@ const Index = () => {
         <section className="relative py-20 px-4">
           <div className="absolute inset-0 opacity-10">
             <img 
-              src={heroImage} 
+              src={heroImageUrl} 
               alt="Market trend analysis grid visualization" 
               className="w-full h-full object-cover"
+              loading="lazy"
+              decoding="async"
             />
           </div>
           <div className="relative max-w-7xl mx-auto text-center">
