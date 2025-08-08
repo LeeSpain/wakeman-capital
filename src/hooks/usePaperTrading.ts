@@ -123,8 +123,46 @@ export function usePaperTrading(getPrice: (id: AssetId) => number | null) {
     },
     [getPrice, state.positions]
   );
-
-  const equity = useMemo(() => {
+ 
+   const sellPartial = useCallback(
+     (positionId: string, qty: number) => {
+       const pos = state.positions.find((p) => p.id === positionId);
+       if (!pos) return { ok: false, error: 'Position not found' } as const;
+       if (!Number.isFinite(qty) || qty <= 0) return { ok: false, error: 'Invalid quantity' } as const;
+       if (qty > pos.qty) return { ok: false, error: 'Quantity exceeds position' } as const;
+       const price = getPrice(pos.assetId);
+       if (!price) return { ok: false, error: 'Price unavailable' } as const;
+ 
+       const proceeds = qty * price;
+       const cost = qty * pos.entryPrice;
+       const realizedPnl = Number((proceeds - cost).toFixed(2));
+ 
+       const closed: ClosedTrade = {
+         ...pos,
+         qty: Number(qty.toFixed(6)),
+         closedAt: new Date().toISOString(),
+         exitPrice: price,
+         realizedPnl,
+       };
+ 
+       setState((s) => {
+         const remainingQty = Number((pos.qty - qty).toFixed(6));
+         const positions = remainingQty > 0
+           ? s.positions.map((p) => (p.id === positionId ? { ...p, qty: remainingQty } : p))
+           : s.positions.filter((p) => p.id !== positionId);
+         return {
+           balance: Number((s.balance + proceeds).toFixed(2)),
+           positions,
+           history: [closed, ...s.history],
+         };
+       });
+ 
+       return { ok: true, trade: closed } as const;
+     },
+     [getPrice, state.positions]
+   );
+ 
+   const equity = useMemo(() => {
     const positionsValue = state.positions.reduce((sum, p) => {
       const price = getPrice(p.assetId) ?? p.entryPrice;
       return sum + p.qty * price;
@@ -144,13 +182,14 @@ export function usePaperTrading(getPrice: (id: AssetId) => number | null) {
   }, []);
 
   return {
-    state,
-    deposit,
-    withdraw,
-    buy,
-    sell,
-    equity: Number(equity.toFixed(2)),
-    unrealizedPnl: Number(unrealizedPnl.toFixed(2)),
-    reset,
-  };
-}
+     state,
+     deposit,
+     withdraw,
+     buy,
+     sell,
+     sellPartial,
+     equity: Number(equity.toFixed(2)),
+     unrealizedPnl: Number(unrealizedPnl.toFixed(2)),
+     reset,
+   };
+ }
