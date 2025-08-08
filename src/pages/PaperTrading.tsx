@@ -28,6 +28,9 @@ const PaperTrading: React.FC = () => {
   });
   const [sellQtyInputs, setSellQtyInputs] = useState<Record<string, string>>({});
 
+  // Helper to wrap getPrice for string IDs
+  const getAnyPrice = (id: string) => getPrice(id as any) ?? null;
+
   const handleDeposit = () => {
     const amt = Number(depositAmount);
     if (!Number.isFinite(amt) || amt <= 0) return;
@@ -35,19 +38,20 @@ const PaperTrading: React.FC = () => {
     setDepositAmount('');
   };
 
-  const handleBuy = (assetId: AssetId) => {
+  const handleBuy = (assetId: string) => {
     const amt = Number(buyAmounts[assetId]);
     if (!Number.isFinite(amt) || amt <= 0) return;
-    const res = buy(assetId, amt);
+    const meta = ASSETS.find(a => a.id === assetId);
+    const res = buy(assetId, amt, meta?.symbol ?? assetId.toUpperCase());
     if (res.ok) {
       setBuyAmounts((s) => ({ ...s, [assetId]: '' }));
     }
   };
 
-  const handleSellUsd = (assetId: AssetId) => {
+  const handleSellUsd = (assetId: string) => {
     const amt = Number(buyAmounts[assetId]);
     if (!Number.isFinite(amt) || amt <= 0) return;
-    const price = getPrice(assetId);
+    const price = getAnyPrice(assetId);
     if (!price) return;
 
     let remainingUsd = amt;
@@ -83,7 +87,7 @@ const PaperTrading: React.FC = () => {
 
   const pnlChips = useMemo(() => {
     return state.positions.map((p) => {
-      const price = getPrice(p.assetId) ?? p.entryPrice;
+      const price = getAnyPrice(p.assetId) ?? p.entryPrice;
       const pnl = p.qty * (price - p.entryPrice);
       const val = Number(pnl.toFixed(2));
       const sign = val >= 0 ? '+' : '−';
@@ -94,7 +98,7 @@ const PaperTrading: React.FC = () => {
 
   const overview = useMemo(() => {
     return state.positions.map((p) => {
-      const price = getPrice(p.assetId) ?? p.entryPrice;
+      const price = getAnyPrice(p.assetId) ?? p.entryPrice;
       const value = p.qty * price;
       const pnl = p.qty * (price - p.entryPrice);
       const pnlPct = ((price - p.entryPrice) / p.entryPrice) * 100;
@@ -268,7 +272,7 @@ const PaperTrading: React.FC = () => {
                     </thead>
                     <tbody>
                       {state.positions.map((p: Position) => {
-                        const price = getPrice(p.assetId) ?? p.entryPrice;
+                        const price = getAnyPrice(p.assetId) ?? p.entryPrice;
                         const pnl = p.qty * (price - p.entryPrice);
                         const pnlPct = ((price - p.entryPrice) / p.entryPrice) * 100;
                         return (
