@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Button } from '@/components/ui/button';
-import { useMarketPrices, ASSETS, AssetId } from '@/hooks/useMarketPrices';
-import { usePaperTrading } from '@/hooks/usePaperTrading';
+import { Button } from '../components/ui/button';
+import { useMarketPrices, ASSETS, AssetId, AssetMeta } from '../hooks/useMarketPrices';
+import { usePaperTrading, Position, ClosedTrade } from '../hooks/usePaperTrading';
 
 const Currency: React.FC<{ value: number; className?: string }> = ({ value, className }) => (
   <span className={className}>${value.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
@@ -79,7 +79,7 @@ const PaperTrading: React.FC = () => {
                 </div>
                 <div>
                   <div className="text-sm text-muted-foreground">Unrealized PnL</div>
-                  <div className={`text-2xl font-semibold ${unrealizedPnl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  <div className={`text-2xl font-semibold ${unrealizedPnl >= 0 ? 'text-[hsl(var(--primary))]' : 'text-[hsl(var(--destructive))]'}`}>
                     <Currency value={unrealizedPnl} />
                   </div>
                 </div>
@@ -104,7 +104,7 @@ const PaperTrading: React.FC = () => {
                 <p className="text-sm text-muted-foreground">Loading prices…</p>
               ) : (
                 <ul className="divide-y divide-border">
-                  {ASSETS.map((a) => {
+                  {ASSETS.map((a: AssetMeta) => {
                     const price = prices[a.id]?.usd ?? null;
                     return (
                       <li key={a.id} className="py-4 flex items-center justify-between gap-4">
@@ -149,7 +149,7 @@ const PaperTrading: React.FC = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {state.positions.map((p) => {
+                      {state.positions.map((p: Position) => {
                         const price = getPrice(p.assetId) ?? p.entryPrice;
                         const pnl = p.qty * (price - p.entryPrice);
                         const pnlPct = ((price - p.entryPrice) / p.entryPrice) * 100;
@@ -159,7 +159,7 @@ const PaperTrading: React.FC = () => {
                             <td className="py-3 px-4">{p.qty}</td>
                             <td className="py-3 px-4">${p.entryPrice.toLocaleString()}</td>
                             <td className="py-3 px-4">${price.toLocaleString()}</td>
-                            <td className={`py-3 px-4 ${pnl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                            <td className={`py-3 px-4 ${pnl >= 0 ? 'text-[hsl(var(--primary))]' : 'text-[hsl(var(--destructive))]'}`}>
                               <Currency value={Number(pnl.toFixed(2))} />
                               <span className="text-xs text-muted-foreground ml-2">{pnlPct.toFixed(2)}%</span>
                             </td>
@@ -194,13 +194,13 @@ const PaperTrading: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {state.history.map((t) => (
+                    {state.history.map((t: ClosedTrade) => (
                       <tr key={t.id} className="border-t border-border">
                         <td className="py-3 px-4 font-medium">{t.symbol}</td>
                         <td className="py-3 px-4">{t.qty}</td>
                         <td className="py-3 px-4">${t.entryPrice.toLocaleString()}</td>
                         <td className="py-3 px-4">${t.exitPrice.toLocaleString()}</td>
-                        <td className={`py-3 px-4 ${t.realizedPnl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        <td className={`py-3 px-4 ${t.realizedPnl >= 0 ? 'text-[hsl(var(--primary))]' : 'text-[hsl(var(--destructive))]'}`}>
                           <Currency value={t.realizedPnl} />
                         </td>
                         <td className="py-3 px-4">{new Date(t.openedAt).toLocaleString()}</td>

@@ -8,6 +8,7 @@ const Navigation = () => {
     { path: '/', label: 'Home' },
     { path: '/dashboard', label: 'Dashboard' },
     { path: '/analytics', label: 'Analytics' },
+    { path: '/paper', label: 'Paper' },
     { path: '/coach', label: 'AI Coach' },
   ];
 
