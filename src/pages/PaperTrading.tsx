@@ -173,12 +173,8 @@ const PaperTrading: React.FC = () => {
 
           {/* Live PnL Overview */}
           {state.positions.length > 0 && (
-            <div className="rounded-lg border border-border bg-card/60 p-3 flex items-center gap-3 overflow-x-auto">
-              <span className="inline-flex items-center gap-2 text-xs text-muted-foreground whitespace-nowrap">
-                <span className="relative flex h-2 w-2"><span className="animate-pulse absolute inline-flex h-full w-full rounded-full bg-primary/40" /><span className="relative inline-flex rounded-full h-2 w-2 bg-primary" /></span>
-                Live PnL
-              </span>
-              <div className="flex items-center gap-2">
+            <Section title="Live PnL" sub="Per-position PnL updated with live prices.">
+              <div className="flex items-center gap-2 overflow-x-auto">
                 {pnlChips.map((c) => (
                   <span
                     key={c.id}
@@ -189,7 +185,7 @@ const PaperTrading: React.FC = () => {
                   </span>
                 ))}
               </div>
-            </div>
+            </Section>
           )}
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -221,7 +217,7 @@ const PaperTrading: React.FC = () => {
                   className="w-full sm:w-64 rounded-md border border-border bg-background px-3 py-2 outline-none focus:ring-2 focus:ring-primary/40"
                 />
                 <Button onClick={handleDeposit} disabled={!Number.isFinite(Number(depositAmount)) || Number(depositAmount) <= 0}>Deposit</Button>
-                <Button variant="outline" onClick={handleWithdraw} disabled={!Number.isFinite(Number(depositAmount)) || Number(depositAmount) <= 0 || Number(depositAmount) > state.balance}>Withdraw</Button>
+                
                 <Button variant="secondary" onClick={reset}>Reset</Button>
               </div>
             </Section>
