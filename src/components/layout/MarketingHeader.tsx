@@ -27,11 +27,6 @@ const MarketingHeader: React.FC = () => {
           <Link to="/" className="font-bold text-lg tracking-tight">
             <span className="font-display">Wakeman Capital</span>
           </Link>
-          <nav className="hidden md:flex items-center gap-6">
-            <NavLink to="/trends">Features</NavLink>
-            <NavLink to="/billing">Pricing</NavLink>
-            <NavLink to="/dashboard">Dashboard</NavLink>
-          </nav>
         </div>
         <div className="flex items-center gap-3">
           {!user ? (
