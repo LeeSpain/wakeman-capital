@@ -12,7 +12,7 @@ const Index = () => {
   return (
     <>
       <Helmet>
-        <title>Trend Pulse — AI Market Sentiment | CMWTrading</title>
+        <title>Trend Pulse — AI Market Sentiment | Wakeman Capital</title>
         <meta name="description" content="Advanced AI-powered market sentiment analysis and trading dashboard. Get real-time insights, trend analysis, and data-driven trading decisions with Trend Pulse." />
         <meta name="keywords" content="AI trading, market sentiment, trend analysis, financial data, trading dashboard" />
         <link rel="canonical" href="/" />

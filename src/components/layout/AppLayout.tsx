@@ -33,7 +33,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
             {collapsed ? '☰' : '×'}
           </button>
           <Link to="/" className="font-bold text-lg">
-            CMWTrading
+            Wakeman Capital
           </Link>
         </div>
         <nav className="hidden md:flex items-center gap-6 text-sm text-muted-foreground">
