@@ -1,0 +1,8 @@
+/// <reference types="vite/client" />
+
+// Optional: Asset module declarations for TypeScript awareness
+declare module '*.jpg' { const src: string; export default src }
+declare module '*.jpeg' { const src: string; export default src }
+declare module '*.png' { const src: string; export default src }
+declare module '*.svg' { const src: string; export default src }
+declare module '*.gif' { const src: string; export default src }
