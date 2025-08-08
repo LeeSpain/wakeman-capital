@@ -1,4 +1,14 @@
 {
+  "name": "trend-pulse-app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "build:dev": "vite build --mode development",
+    "preview": "vite preview"
+  },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.3",
     "@types/react": "^18.3.23",
