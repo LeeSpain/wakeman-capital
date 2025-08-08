@@ -5,7 +5,7 @@ const STORAGE_KEY = 'theme';
 export const ThemeSection: React.FC = () => {
   const [theme, setTheme] = React.useState<'light' | 'dark'>(() => {
     const saved = localStorage.getItem(STORAGE_KEY) as 'light' | 'dark' | null;
-    return saved || 'light';
+    return saved || 'dark';
   });
 
   React.useEffect(() => {
