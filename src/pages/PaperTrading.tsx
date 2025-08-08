@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Button } from '../components/ui/button';
-import { useMarketPrices, ASSETS, AssetId, AssetMeta } from '../hooks/useMarketPrices';
+import { useMarketPrices, ASSETS, AssetMeta } from '../hooks/useMarketPrices';
 import { usePaperTrading, Position, ClosedTrade } from '../hooks/usePaperTrading';
 
 const Currency: React.FC<{ value: number; className?: string }> = ({ value, className }) => (
@@ -18,10 +18,10 @@ const Section: React.FC<React.PropsWithChildren<{ title: string; sub?: string }>
 
 const PaperTrading: React.FC = () => {
   const { prices, getPrice, loading, error, lastUpdated } = useMarketPrices(10000);
-  const { state, deposit, withdraw, buy, sell, sellPartial, equity, unrealizedPnl, reset } = usePaperTrading(getPrice);
+  const { state, deposit, buy, sell, sellPartial, equity, unrealizedPnl, reset } = usePaperTrading(getPrice);
 
   const [depositAmount, setDepositAmount] = useState('1000');
-  const [buyAmounts, setBuyAmounts] = useState<Record<AssetId, string>>({
+  const [buyAmounts, setBuyAmounts] = useState<Record<string, string>>({
     bitcoin: '100',
     ethereum: '100',
     solana: '100',
@@ -35,12 +35,6 @@ const PaperTrading: React.FC = () => {
     setDepositAmount('');
   };
 
-  const handleWithdraw = () => {
-    const amt = Number(depositAmount);
-    if (!Number.isFinite(amt) || amt <= 0) return;
-    const ok = withdraw(amt);
-    if (ok) setDepositAmount('');
-  };
   const handleBuy = (assetId: AssetId) => {
     const amt = Number(buyAmounts[assetId]);
     if (!Number.isFinite(amt) || amt <= 0) return;

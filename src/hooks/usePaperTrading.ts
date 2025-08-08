@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ASSETS, AssetId } from './useMarketPrices';
+// Removed dependency on ASSETS; allow dynamic asset IDs
+export type AssetId = string;
 
 const STORAGE_KEY = 'paper-trading-state-v1';
 
@@ -45,7 +46,7 @@ function saveState(state: PaperState) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 
-export function usePaperTrading(getPrice: (id: AssetId) => number | null) {
+export function usePaperTrading(getPrice: (id: any) => number | null) {
   const [state, setState] = useState<PaperState>(() => loadState());
 
   useEffect(() => {
@@ -58,27 +59,20 @@ export function usePaperTrading(getPrice: (id: AssetId) => number | null) {
     return true;
   }, []);
 
-  const withdraw = useCallback((amount: number) => {
-    if (!Number.isFinite(amount) || amount <= 0) return false;
-    if (amount > state.balance) return false;
-    setState((s) => ({ ...s, balance: Number((s.balance - amount).toFixed(2)) }));
-    return true;
-  }, [state.balance]);
 
   const canAfford = (usdAmount: number) => Number.isFinite(usdAmount) && usdAmount > 0 && usdAmount <= state.balance;
 
   const buy = useCallback(
-    (assetId: AssetId, usdAmount: number) => {
+    (assetId: AssetId, usdAmount: number, symbol: string) => {
       if (!canAfford(usdAmount)) return { ok: false, error: 'Insufficient balance' } as const;
       const price = getPrice(assetId);
       if (!price) return { ok: false, error: 'Price unavailable' } as const;
       const qty = usdAmount / price;
-      const meta = ASSETS.find((a) => a.id === assetId)!;
 
       const pos: Position = {
         id: crypto.randomUUID(),
         assetId,
-        symbol: meta.symbol,
+        symbol,
         qty: Number(qty.toFixed(6)),
         entryPrice: price,
         openedAt: new Date().toISOString(),
@@ -184,7 +178,6 @@ export function usePaperTrading(getPrice: (id: AssetId) => number | null) {
   return {
      state,
      deposit,
-     withdraw,
      buy,
      sell,
      sellPartial,
