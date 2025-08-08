@@ -11,6 +11,7 @@ import AICoach from "./pages/AICoach";
 import Settings from "./pages/Settings";
 import Billing from "./pages/Billing";
 import NotFound from "./pages/NotFound";
+import Auth from "./pages/Auth";
 
 function App() {
   return (

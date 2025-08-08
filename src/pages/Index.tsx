@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { supabase } from '@/integrations/supabase/client';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 const heroImageUrl = new URL('../assets/hero-trend-grid.jpg', import.meta.url).href;
 
 const Index = () => {
@@ -39,8 +39,8 @@ const Index = () => {
                 Monitor X and news in real time with AI. Turn market narratives into clear, actionable signals that complement your Smart Money Concepts.
               </p>
               <div className="flex gap-3">
-                <a href="/trends" className="px-4 py-2 rounded-md bg-primary text-primary-foreground">Explore Trends</a>
-                <a href="/dashboard" className="px-4 py-2 rounded-md border border-border bg-secondary text-secondary-foreground">Learn more</a>
+                <Link to="/trends" className="px-4 py-2 rounded-md bg-primary text-primary-foreground">Explore Trends</Link>
+                <Link to="/dashboard" className="px-4 py-2 rounded-md border border-border bg-secondary text-secondary-foreground">Learn more</Link>
               </div>
             </div>
           </div>
@@ -97,7 +97,7 @@ const Index = () => {
                   >
                     {loading ? 'Signing in...' : 'Sign In'}
                   </button>
-                  <a href="/auth" className="text-sm text-primary hover:underline">Create account</a>
+                  <Link to="/auth" className="text-sm text-primary hover:underline">Create account</Link>
                 </div>
               </form>
             </div>
