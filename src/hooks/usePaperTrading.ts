@@ -26,7 +26,7 @@ export interface PaperState {
 }
 
 const defaultState: PaperState = {
-  balance: 0,
+  balance: 5000, // Start with demo funds
   positions: [],
   history: [],
 };
