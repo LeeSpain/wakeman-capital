@@ -8,6 +8,9 @@ const Auth: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [mode, setMode] = useState<'login' | 'signup'>('login');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [mobile, setMobile] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -25,19 +28,51 @@ const Auth: React.FC = () => {
     setLoading(true);
 
     if (mode === 'login') {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        setLoading(false);
+        return setError(error.message);
+      }
+      // Ensure profile exists on login using user metadata if available
+      const u = data.user;
+      if (u) {
+        const meta: any = u.user_metadata || {};
+        const display = `${meta.first_name ?? ''} ${meta.last_name ?? ''}`.trim() || (u.email ? u.email.split('@')[0] : '');
+        await supabase.from('profiles').upsert({
+          id: u.id,
+          first_name: meta.first_name ?? null,
+          last_name: meta.last_name ?? null,
+          mobile: meta.mobile ?? null,
+          display_name: display || null,
+          preferred_currency: 'AUD',
+        });
+      }
       setLoading(false);
-      if (error) return setError(error.message);
       navigate('/dashboard');
     } else {
       const redirectUrl = `${window.location.origin}/`;
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: { emailRedirectTo: redirectUrl },
+        options: { emailRedirectTo: redirectUrl, data: { first_name: firstName, last_name: lastName, mobile } },
       });
+      if (error) {
+        setLoading(false);
+        return setError(error.message);
+      }
+      // If session exists immediately (email confirmations disabled), create profile now
+      const sessionUser = data.session?.user;
+      if (sessionUser) {
+        await supabase.from('profiles').upsert({
+          id: sessionUser.id,
+          first_name: firstName || null,
+          last_name: lastName || null,
+          mobile: mobile || null,
+          display_name: `${firstName} ${lastName}`.trim() || null,
+          preferred_currency: 'AUD',
+        });
+      }
       setLoading(false);
-      if (error) return setError(error.message);
       setMessage('Check your email to confirm your account and sign in.');
     }
   };
@@ -71,6 +106,45 @@ const Auth: React.FC = () => {
               </button>
             </div>
             <form className="space-y-3" onSubmit={handleSubmit}>
+              {mode === 'signup' && (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="grid gap-2">
+                      <label className="text-sm text-muted-foreground" htmlFor="firstName">First name</label>
+                      <input
+                        id="firstName"
+                        type="text"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+                        placeholder="John"
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <label className="text-sm text-muted-foreground" htmlFor="lastName">Surname</label>
+                      <input
+                        id="lastName"
+                        type="text"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+                        placeholder="Doe"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid gap-2">
+                    <label className="text-sm text-muted-foreground" htmlFor="mobile">Mobile</label>
+                    <input
+                      id="mobile"
+                      type="tel"
+                      value={mobile}
+                      onChange={(e) => setMobile(e.target.value)}
+                      className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+                      placeholder="+1 555 123 4567"
+                    />
+                  </div>
+                </>
+              )}
               <div className="grid gap-2">
                 <label className="text-sm text-muted-foreground" htmlFor="email">Email</label>
                 <input

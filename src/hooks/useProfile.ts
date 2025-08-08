@@ -5,6 +5,9 @@ export type Profile = {
   id: string;
   display_name: string | null;
   preferred_currency: string | null;
+  first_name: string | null;
+  last_name: string | null;
+  mobile: string | null;
 };
 
 export const useProfile = (userId?: string) => {
@@ -21,9 +24,9 @@ export const useProfile = (userId?: string) => {
       setLoading(true);
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, display_name, preferred_currency')
+        .select('id, display_name, preferred_currency, first_name, last_name, mobile')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
 
       if (!mounted) return;
       if (error) {
@@ -42,14 +45,22 @@ export const useProfile = (userId?: string) => {
 
   const updateProfile = async (updates: Partial<Profile>) => {
     if (!userId) return { error: 'Not authenticated' } as const;
-    const { error } = await supabase
+    const payload = {
+      id: userId,
+      ...(updates.display_name !== undefined ? { display_name: updates.display_name } : {}),
+      ...(updates.preferred_currency !== undefined ? { preferred_currency: updates.preferred_currency } : {}),
+      ...(updates.first_name !== undefined ? { first_name: updates.first_name } : {}),
+      ...(updates.last_name !== undefined ? { last_name: updates.last_name } : {}),
+      ...(updates.mobile !== undefined ? { mobile: updates.mobile } : {}),
+    };
+
+    const { error, data } = await supabase
       .from('profiles')
-      .update({
-        ...(updates.display_name !== undefined ? { display_name: updates.display_name } : {}),
-        ...(updates.preferred_currency !== undefined ? { preferred_currency: updates.preferred_currency } : {}),
-      })
-      .eq('id', userId);
-    if (!error) setProfile((p) => (p ? { ...p, ...updates } as Profile : p));
+      .upsert(payload)
+      .select()
+      .single();
+
+    if (!error && data) setProfile(data as Profile);
     return { error } as const;
   };
 
