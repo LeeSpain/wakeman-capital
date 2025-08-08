@@ -1,0 +1,12 @@
+# TradingView Charting Library
+
+This directory should contain the TradingView Charting Library files.
+Please download the library from your TradingView account and extract it here.
+
+Required files:
+- charting_library.min.js
+- datafeed-api.d.ts
+- bundles/
+- static/
+
+For setup instructions, visit: https://www.tradingview.com/charting-library-docs/
