@@ -3,15 +3,16 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 export type AssetId = 'bitcoin' | 'ethereum' | 'solana';
 
 export interface AssetMeta {
-  id: AssetId;
-  symbol: 'BTC' | 'ETH' | 'SOL';
+  id: string; // Changed from AssetId to support custom assets
+  symbol: string;
   name: string;
+  type?: 'crypto' | 'forex'; // Optional type for custom assets
 }
 
 export const ASSETS: AssetMeta[] = [
-  { id: 'bitcoin', symbol: 'BTC', name: 'Bitcoin' },
-  { id: 'ethereum', symbol: 'ETH', name: 'Ethereum' },
-  { id: 'solana', symbol: 'SOL', name: 'Solana' },
+  { id: 'bitcoin', symbol: 'BTC', name: 'Bitcoin', type: 'crypto' },
+  { id: 'ethereum', symbol: 'ETH', name: 'Ethereum', type: 'crypto' },
+  { id: 'solana', symbol: 'SOL', name: 'Solana', type: 'crypto' },
 ];
 
 export interface PricesState {
@@ -77,7 +78,7 @@ export function useMarketPrices(pollMs: number = 10000) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pollMs]);
 
-  const getPrice = (assetId: AssetId) => prices[assetId]?.usd ?? null;
+  const getPrice = (assetId: string) => prices[assetId as AssetId]?.usd ?? null;
 
   const lastUpdated = useMemo(() => {
     const times = Object.values(prices).map((p) => p.lastUpdated);

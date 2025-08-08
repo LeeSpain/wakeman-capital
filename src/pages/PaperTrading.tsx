@@ -1,8 +1,9 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Button } from '../components/ui/button';
 import { useMarketPrices, ASSETS, AssetMeta } from '../hooks/useMarketPrices';
 import { usePaperTrading, Position, ClosedTrade } from '../hooks/usePaperTrading';
+import { AddInvestmentModal } from '../components/trading/AddInvestmentModal';
 
 const Currency: React.FC<{ value: number; className?: string }> = ({ value, className }) => (
   <span className={className}>${value.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
@@ -27,9 +28,12 @@ const PaperTrading: React.FC = () => {
     solana: '100',
   });
   const [sellQtyInputs, setSellQtyInputs] = useState<Record<string, string>>({});
+  const [customAssets, setCustomAssets] = useState<AssetMeta[]>([]);
+  const [customPrices, setCustomPrices] = useState<Record<string, number>>({});
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   // Helper to wrap getPrice for string IDs
-  const getAnyPrice = (id: string) => getPrice(id as any) ?? null;
+  const getAnyPrice = (id: string) => getPrice(id as any) ?? customPrices[id] ?? null;
 
   const handleDeposit = () => {
     const amt = Number(depositAmount);
@@ -41,7 +45,7 @@ const PaperTrading: React.FC = () => {
   const handleBuy = (assetId: string) => {
     const amt = Number(buyAmounts[assetId]);
     if (!Number.isFinite(amt) || amt <= 0) return;
-    const meta = ASSETS.find(a => a.id === assetId);
+    const meta = allAssets.find(a => a.id === assetId);
     const res = buy(assetId, amt, meta?.symbol ?? assetId.toUpperCase());
     if (res.ok) {
       setBuyAmounts((s) => ({ ...s, [assetId]: '' }));
@@ -84,6 +88,82 @@ const PaperTrading: React.FC = () => {
     const d = new Date(lastUpdated);
     return d.toLocaleTimeString();
   }, [lastUpdated]);
+
+  // Combine default and custom assets
+  const allAssets = useMemo(() => [...ASSETS, ...customAssets], [customAssets]);
+
+  // Fetch custom asset prices
+  useEffect(() => {
+    if (customAssets.length === 0) return;
+    
+    const fetchCustomPrices = async () => {
+      const cryptoAssets = customAssets.filter(a => a.type !== 'forex');
+      const forexAssets = customAssets.filter(a => a.type === 'forex');
+      
+      const newPrices: Record<string, number> = {};
+      
+      // Fetch crypto prices from CoinGecko
+      if (cryptoAssets.length > 0) {
+        try {
+          const cryptoIds = cryptoAssets.map(a => a.id).join(',');
+          const response = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${cryptoIds}&vs_currencies=usd`);
+          const data = await response.json();
+          
+          cryptoAssets.forEach(asset => {
+            if (data[asset.id]?.usd) {
+              newPrices[asset.id] = data[asset.id].usd;
+            }
+          });
+        } catch (error) {
+          console.error('Failed to fetch crypto prices:', error);
+        }
+      }
+      
+      // Fetch forex prices from exchangerate API
+      if (forexAssets.length > 0) {
+        try {
+          forexAssets.forEach(asset => {
+            // For demo purposes, generate realistic forex prices
+            const basePrice = (asset.id as string) === 'EUR/USD' ? 1.08 :
+                             (asset.id as string) === 'GBP/USD' ? 1.25 :
+                             (asset.id as string) === 'USD/JPY' ? 150.0 :
+                             (asset.id as string) === 'USD/CHF' ? 0.92 :
+                             (asset.id as string) === 'AUD/USD' ? 0.65 :
+                             (asset.id as string) === 'USD/CAD' ? 1.35 :
+                             (asset.id as string) === 'NZD/USD' ? 0.62 :
+                             (asset.id as string) === 'EUR/GBP' ? 0.86 :
+                             (asset.id as string) === 'EUR/JPY' ? 162.0 :
+                             (asset.id as string) === 'GBP/JPY' ? 188.0 : 1.0;
+            
+            // Add small random variation
+            const variation = (Math.random() - 0.5) * 0.02;
+            newPrices[asset.id] = basePrice * (1 + variation);
+          });
+        } catch (error) {
+          console.error('Failed to fetch forex prices:', error);
+        }
+      }
+      
+      setCustomPrices(prev => ({ ...prev, ...newPrices }));
+    };
+    
+    fetchCustomPrices();
+    const interval = setInterval(fetchCustomPrices, 30000); // Update every 30 seconds
+    
+    return () => clearInterval(interval);
+  }, [customAssets]);
+
+  const handleAddAsset = (asset: { id: string; symbol: string; name: string; type: 'crypto' | 'forex' }) => {
+    const newAsset: AssetMeta = {
+      id: asset.id,
+      symbol: asset.symbol,
+      name: asset.name,
+      type: asset.type
+    };
+    
+    setCustomAssets(prev => [...prev, newAsset]);
+    setBuyAmounts(prev => ({ ...prev, [asset.id]: '100' }));
+  };
 
   const pnlChips = useMemo(() => {
     return state.positions.map((p) => {
@@ -221,17 +301,46 @@ const PaperTrading: React.FC = () => {
             </Section>
 
             <Section title="Market" sub={`Live prices • Updated: ${lastUpdatedText}`}>
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-sm text-muted-foreground">
+                  {allAssets.length} assets available
+                </span>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setIsAddModalOpen(true)}
+                  className="text-sm"
+                >
+                  + Add Investment
+                </Button>
+              </div>
               {loading ? (
                 <p className="text-sm text-muted-foreground">Loading prices…</p>
               ) : (
                 <ul className="divide-y divide-border">
-                  {ASSETS.map((a: AssetMeta) => {
-                    const price = prices[a.id]?.usd ?? null;
+                  {allAssets.map((a: AssetMeta) => {
+                    const price = getAnyPrice(a.id);
+                    const isCustom = !ASSETS.find(asset => asset.id === a.id);
                     return (
                       <li key={a.id} className="py-4 flex items-center justify-between gap-4">
-                        <div>
-                          <div className="font-medium">{a.symbol} · {a.name}</div>
-                          <div className="text-sm text-muted-foreground">{price ? `$${price.toLocaleString()}` : '—'}</div>
+                        <div className="flex items-center gap-3">
+                          {isCustom && (
+                            <div className={`px-2 py-1 rounded text-xs font-medium ${
+                              a.type === 'forex' 
+                                ? 'bg-secondary/10 text-secondary-foreground' 
+                                : 'bg-primary/10 text-primary'
+                            }`}>
+                              {a.type?.toUpperCase() || 'CUSTOM'}
+                            </div>
+                          )}
+                          <div>
+                            <div className="font-medium">{a.symbol} · {a.name}</div>
+                            <div className="text-sm text-muted-foreground">
+                              {price ? `$${price.toLocaleString(undefined, { 
+                                minimumFractionDigits: a.type === 'forex' ? 4 : 2,
+                                maximumFractionDigits: a.type === 'forex' ? 4 : 2
+                              })}` : '—'}
+                            </div>
+                          </div>
                         </div>
                         <div className="flex items-center gap-2">
                           <input
@@ -244,7 +353,28 @@ const PaperTrading: React.FC = () => {
                             className="w-28 rounded-md border border-border bg-background px-3 py-2 outline-none focus:ring-2 focus:ring-primary/40"
                           />
                           <Button onClick={() => handleBuy(a.id)} disabled={!Number.isFinite(Number(buyAmounts[a.id])) || Number(buyAmounts[a.id]) <= 0}>Buy</Button>
-                          <Button variant="outline" onClick={() => handleSellUsd(a.id)} disabled={!Number.isFinite(Number(buyAmounts[a.id])) || Number(buyAmounts[a.id]) <= 0 || !state.positions.some((p) => p.assetId === a.id)}>Sell</Button>
+                          <Button 
+                            variant="outline" 
+                            onClick={() => handleSellUsd(a.id)} 
+                            disabled={!Number.isFinite(Number(buyAmounts[a.id])) || Number(buyAmounts[a.id]) <= 0 || !state.positions.some((p) => p.assetId === a.id)}
+                          >
+                            Sell
+                          </Button>
+                          {isCustom && (
+                            <Button 
+                              variant="secondary" 
+                              size="sm"
+                              onClick={() => {
+                                setCustomAssets(prev => prev.filter(asset => asset.id !== a.id));
+                                setBuyAmounts(prev => {
+                                  const { [a.id]: removed, ...rest } = prev;
+                                  return rest;
+                                });
+                              }}
+                            >
+                              Remove
+                            </Button>
+                          )}
                         </div>
                       </li>
                     );
@@ -359,6 +489,14 @@ const PaperTrading: React.FC = () => {
           </Section>
         </div>
       </main>
+
+      {/* Add Investment Modal */}
+      <AddInvestmentModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onAdd={handleAddAsset}
+        existingAssets={allAssets.map(a => a.id)}
+      />
 
       {/* Structured data for SEO: FAQ-like context about paper trading */}
       <script type="application/ld+json">
