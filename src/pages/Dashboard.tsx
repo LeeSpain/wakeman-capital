@@ -6,8 +6,9 @@ const DashboardPage = () => {
   return (
     <>
       <Helmet>
-        <title>Trading Dashboard | Trend Pulse</title>
-        <meta name="description" content="Access your personalized trading dashboard with real-time market data, portfolio analytics, and AI-powered insights." />
+        <title>Dashboard | Wakeman Capital</title>
+        <meta name="description" content="Live trading dashboard with trades, signals, and market trends." />
+        <link rel="canonical" href="/dashboard" />
       </Helmet>
       
       <main className="min-h-screen bg-background">
