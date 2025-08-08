@@ -1,5 +1,6 @@
 import React from 'react';
 import { useAuth } from '../hooks/useAuth';
+import { useProfile } from '../hooks/useProfile';
 import StatsCards from './dashboard/StatsCards';
 import RecentTrades from './dashboard/RecentTrades';
 import TopOpportunities from './dashboard/TopOpportunities';
@@ -8,18 +9,19 @@ import { useTrends } from '../hooks/useTrends';
 
 const Dashboard = () => {
   const { user } = useAuth();
+  const { profile } = useProfile(user?.id);
   const { data: trends } = useTrends();
-
+  const displayName = profile?.first_name || profile?.display_name || user?.email || 'Guest';
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
-      <section className="rounded-xl border border-border bg-card p-6">
+      <section className="rounded-xl bg-card p-6 shadow-elegant">
         <div className="flex items-start justify-between">
           <div>
-            <div className="text-sm text-muted-foreground mb-1">Welcome back{user?.email ? ',' : ''}</div>
-            <h2 className="text-2xl font-bold text-card-foreground">{user?.email ?? 'Guest'}</h2>
+            <div className="text-sm text-muted-foreground mb-1">Welcome back{displayName ? ',' : ''}</div>
+            <h2 className="text-2xl font-bold text-card-foreground">{displayName}</h2>
           </div>
-          <button className="px-3 py-2 rounded-md border border-border">Quick top-up</button>
+          <button className="px-3 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">Quick top-up</button>
         </div>
         <div className="mt-6">
           <StatsCards />
