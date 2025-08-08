@@ -33,13 +33,33 @@ const Index = () => {
               <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-4">
                 <span className="text-primary">Wakeman Capital</span> — AI Market Intelligence
               </h1>
-              <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mb-6">
-                Monitor X and news in real time with AI. Turn market narratives into clear, actionable signals that complement your Smart Money Concepts.
+              <p className="text-lg md:text-xl text-muted-foreground max-w-3xl">
+                Transform market noise into clear, SMC-aligned insights. Real-time narrative tracking across social and news, distilled into actionable context.
               </p>
-              <div className="flex gap-3">
-                <Link to="/trends" className="px-4 py-2 rounded-md bg-primary text-primary-foreground">Explore Trends</Link>
-                <Link to="/dashboard" className="px-4 py-2 rounded-md border border-border bg-secondary text-secondary-foreground">Learn more</Link>
+
+              {/* Stats */}
+              <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="rounded-lg bg-muted/40 p-4">
+                  <div className="text-sm text-muted-foreground">Real-time Signals</div>
+                  <div className="text-2xl font-semibold text-card-foreground">10,000+/day</div>
+                </div>
+                <div className="rounded-lg bg-muted/40 p-4">
+                  <div className="text-sm text-muted-foreground">Asset Coverage</div>
+                  <div className="text-2xl font-semibold text-card-foreground">FX · Crypto · Indices</div>
+                </div>
+                <div className="rounded-lg bg-muted/40 p-4">
+                  <div className="text-sm text-muted-foreground">Avg. Latency</div>
+                  <div className="text-2xl font-semibold text-card-foreground">~1.2s</div>
+                </div>
               </div>
+
+              {/* Benefits */}
+              <ul className="mt-6 grid sm:grid-cols-2 gap-3 text-sm text-muted-foreground">
+                <li className="flex items-start gap-2"><span className="text-primary mt-1">•</span><span>SMC-aligned entries with clear invalidation and targets</span></li>
+                <li className="flex items-start gap-2"><span className="text-primary mt-1">•</span><span>London-session focus with macro- and event-aware context</span></li>
+                <li className="flex items-start gap-2"><span className="text-primary mt-1">•</span><span>Noise-filtered narratives from social and news feeds</span></li>
+                <li className="flex items-start gap-2"><span className="text-primary mt-1">•</span><span>Exportable, journal-ready summaries for discipline</span></li>
+              </ul>
             </div>
           </div>
         </section>
