@@ -16,13 +16,14 @@ const MarketingFooter: React.FC = () => {
               <li><Link to="/trends" className="hover:text-foreground">Features</Link></li>
               <li><Link to="/billing" className="hover:text-foreground">Pricing</Link></li>
               <li><Link to="/signal-center" className="hover:text-foreground">Signal Center</Link></li>
+              <li><Link to="/coach" className="hover:text-foreground">AI Coach</Link></li>
             </ul>
           </div>
           <div>
             <div className="font-medium text-card-foreground mb-2">Company</div>
             <ul className="space-y-1 text-muted-foreground">
-              <li><a href="/" className="hover:text-foreground">Home</a></li>
-              <li><a href="/dashboard" className="hover:text-foreground">Dashboard</a></li>
+              <li><Link to="/" className="hover:text-foreground">Home</Link></li>
+              <li><Link to="/dashboard" className="hover:text-foreground">Dashboard</Link></li>
             </ul>
           </div>
         </div>
