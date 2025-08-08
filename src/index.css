@@ -74,3 +74,21 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Utilities */
+@layer utilities {
+  .bg-grid-subtle {
+    background-image:
+      linear-gradient(to right, hsl(var(--border) / 0.2) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--border) / 0.2) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  .bg-hero-gradient {
+    background-image:
+      radial-gradient(1200px 600px at 10% -10%, hsl(var(--accent) / 0.25) 0%, transparent 60%),
+      radial-gradient(800px 400px at 90% 10%, hsl(var(--primary) / 0.15) 0%, transparent 60%);
+  }
+  .shadow-elegant {
+    box-shadow: 0 22px 50px -20px hsl(var(--accent) / 0.35);
+  }
+}

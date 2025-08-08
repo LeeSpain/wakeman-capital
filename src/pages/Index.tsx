@@ -19,21 +19,19 @@ const Index = () => {
   return (
     <>
       <Helmet>
-        <title>Trend Pulse — AI Market Sentiment | Wakeman Capital</title>
-        <meta name="description" content="Advanced AI-powered market sentiment analysis and trading dashboard. Get real-time insights, trend analysis, and data-driven trading decisions with Trend Pulse." />
+        <title>Wakeman Capital — AI Market Intelligence</title>
+        <meta name="description" content="Wakeman Capital delivers AI-powered market intelligence, trend analysis, and actionable insights for SMC traders and investors." />
         <meta name="keywords" content="AI trading, market sentiment, trend analysis, financial data, trading dashboard" />
         <link rel="canonical" href="/" />
       </Helmet>
       <main className="min-h-screen bg-background">
         {/* Hero Section */}
         <section className="relative py-16 md:py-20 px-4">
-          <div className="absolute inset-0 opacity-10">
-            <img src={heroImageUrl} alt="Market trend analysis grid visualization" className="w-full h-full object-cover" loading="lazy" decoding="async" />
-          </div>
+          <div className="absolute inset-0 bg-hero-gradient bg-grid-subtle opacity-30 pointer-events-none" aria-hidden="true"></div>
           <div className="relative max-w-7xl mx-auto">
-            <div className="rounded-xl border border-border bg-card/80 backdrop-blur p-8 md:p-12">
+            <div className="rounded-xl bg-card/80 backdrop-blur shadow-elegant p-8 md:p-12">
               <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-4">
-                <span className="text-primary">Trend Pulse</span> for SMC Traders
+                <span className="text-primary">Wakeman Capital</span> — AI Market Intelligence
               </h1>
               <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mb-6">
                 Monitor X and news in real time with AI. Turn market narratives into clear, actionable signals that complement your Smart Money Concepts.
@@ -49,9 +47,9 @@ const Index = () => {
         {/* Account Access */}
         <section className="max-w-7xl mx-auto px-4 pb-12">
           <div className="grid md:grid-cols-2 gap-6">
-            <div className="rounded-lg border border-border bg-card p-6">
+            <div className="rounded-xl bg-card p-6 shadow-elegant">
               <h2 className="text-2xl font-bold text-card-foreground mb-2">Account Access</h2>
-              <p className="text-sm text-muted-foreground mb-4">Sign in to your Trend Pulse account.</p>
+              <p className="text-sm text-muted-foreground mb-4">Sign in to your Wakeman Capital account.</p>
               <form
                 className="space-y-3"
                 onSubmit={async (e) => {
@@ -101,7 +99,7 @@ const Index = () => {
                 </div>
               </form>
             </div>
-            <div className="rounded-lg border border-border bg-card p-6">
+            <div className="rounded-xl bg-card p-6 shadow-elegant">
               <h3 className="text-lg font-semibold text-card-foreground mb-2">Quick start</h3>
               <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
                 <li>Use the Dashboard for an overview of your signals and trades</li>
@@ -114,13 +112,13 @@ const Index = () => {
 
         {/* Trend Pulse cards */}
         <section className="max-w-7xl mx-auto px-4 pb-20">
-          <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-6">Trend Pulse</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-6">Wakeman Capital Insights</h2>
           <div className="grid md:grid-cols-3 gap-6">
             {cards.map((c) => (
-              <article key={c.title} className="rounded-lg border border-border bg-card p-6">
+              <article key={c.title} className="rounded-xl bg-card p-6 shadow-elegant">
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-xl font-semibold text-card-foreground">{c.title}</h3>
-                  <span className="text-xs text-muted-foreground border border-border rounded px-2 py-0.5">{c.source}</span>
+                  <span className="text-xs text-muted-foreground rounded px-2 py-0.5 bg-muted/40">{c.source}</span>
                 </div>
                 <p className="text-sm text-muted-foreground mb-3">Sentiment: {c.sentiment > 0 ? `+${c.sentiment.toFixed(2)}` : c.sentiment.toFixed(2)}</p>
                 <div className="h-2 rounded bg-muted overflow-hidden">
@@ -131,7 +129,7 @@ const Index = () => {
                 </div>
                 <div className="mt-4 flex flex-wrap gap-2">
                   {c.tags.map(t => (
-                    <span key={t} className="text-xs rounded-full border border-border px-2 py-1 text-muted-foreground">{t}</span>
+                    <span key={t} className="text-xs rounded-full px-2 py-1 text-muted-foreground bg-muted/40">{t}</span>
                   ))}
                 </div>
               </article>

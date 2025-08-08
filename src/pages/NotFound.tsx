@@ -6,8 +6,8 @@ const NotFound = () => {
   return (
     <>
       <Helmet>
-        <title>Page Not Found | Trend Pulse</title>
-        <meta name="description" content="404 page not found - Trend Pulse AI market analytics." />
+        <title>Page Not Found | Wakeman Capital</title>
+        <meta name="description" content="404 page not found — Wakeman Capital." />
         <link rel="canonical" href="/404" />
       </Helmet>
       <main className="min-h-screen bg-background">

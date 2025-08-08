@@ -25,7 +25,7 @@ const MarketingHeader: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center gap-6">
           <Link to="/" className="font-bold text-lg tracking-tight">
-            <span className="font-display">Trend Pulse</span>
+            <span className="font-display">Wakeman Capital</span>
           </Link>
           <nav className="hidden md:flex items-center gap-6">
             <NavLink to="/trends">Features</NavLink>

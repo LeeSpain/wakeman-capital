@@ -6,8 +6,8 @@ const MarketingFooter: React.FC = () => {
     <footer className="border-t border-border bg-card/50">
       <div className="max-w-7xl mx-auto px-4 py-10 grid md:grid-cols-3 gap-8 text-sm">
         <div>
-          <div className="font-bold text-card-foreground mb-2">Trend Pulse</div>
-          <p className="text-muted-foreground">AI-driven market sentiment for modern traders.</p>
+          <div className="font-bold text-card-foreground mb-2">Wakeman Capital</div>
+          <p className="text-muted-foreground">AI-driven market intelligence for modern traders.</p>
         </div>
         <div className="grid grid-cols-2 gap-6">
           <div>
@@ -26,7 +26,7 @@ const MarketingFooter: React.FC = () => {
             </ul>
           </div>
         </div>
-        <div className="md:text-right text-muted-foreground">© {new Date().getFullYear()} Trend Pulse. All rights reserved.</div>
+        <div className="md:text-right text-muted-foreground">© {new Date().getFullYear()} Wakeman Capital. All rights reserved.</div>
       </div>
     </footer>
   );
