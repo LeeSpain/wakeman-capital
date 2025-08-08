@@ -9,11 +9,22 @@ export interface SignalRecord {
   entry_price: number
   stop_loss: number
   take_profit_1?: number | null
+  take_profit_2?: number | null
+  take_profit_3?: number | null
   risk_reward_ratio?: number | null
   confidence_score: number
   backtested_win_rate?: number | null
   backtested_avg_rr?: number | null
   status: string
+  tradingview_symbol?: string
+  trade_rationale?: string
+  chart_template?: string
+  supply_zones?: any[]
+  demand_zones?: any[]
+  order_blocks?: any[]
+  imbalances_data?: any[]
+  choch_levels?: any[]
+  higher_tf_context?: any
 }
 
 const demoSignals: SignalRecord[] = [

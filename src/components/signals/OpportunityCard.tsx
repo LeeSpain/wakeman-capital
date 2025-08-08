@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Button } from '../ui/button'
 import { useAuth } from '../../hooks/useAuth'
 import { supabase } from '../../integrations/supabase/client'
+import { ChartLinkButton } from './ChartLinkButton'
 import type { SignalRecord } from '../../hooks/useSignals'
 
 function computeRR(signal: SignalRecord): number | null {
@@ -69,7 +70,8 @@ export const OpportunityCard: React.FC<{ signal: SignalRecord }> = ({ signal }) 
           <div className="text-primary font-semibold">{rr ? `${rr}:1` : '—'}</div>
           <div className="text-xs text-muted-foreground">Minimum 2:1</div>
         </div>
-        <div className="flex items-center justify-end">
+        <div className="flex items-center justify-end gap-2">
+          <ChartLinkButton signal={signal} />
           <Button onClick={onEnableAlerts} variant={enabled ? 'secondary' : 'outline'}>
             {enabled ? 'Alerts Enabled' : 'Enable Alerts'}
           </Button>
@@ -94,6 +96,14 @@ export const OpportunityCard: React.FC<{ signal: SignalRecord }> = ({ signal }) 
           <div className="text-foreground font-semibold">—</div>
         </div>
       </div>
+
+      {/* Trade Rationale */}
+      {(signal as any).trade_rationale && (
+        <div className="p-6 border-t border-border">
+          <div className="text-sm font-medium text-muted-foreground mb-2">Trade Rationale</div>
+          <p className="text-sm text-foreground leading-relaxed">{(signal as any).trade_rationale}</p>
+        </div>
+      )}
     </section>
   )
 }

@@ -479,6 +479,56 @@ export type Database = {
         }
         Relationships: []
       }
+      chart_annotations: {
+        Row: {
+          annotation_type: string
+          created_at: string
+          formed_at: string
+          id: string
+          metadata: Json | null
+          price_high: number
+          price_low: number
+          signal_id: string
+          strength: number | null
+          timeframe: string
+          updated_at: string
+        }
+        Insert: {
+          annotation_type: string
+          created_at?: string
+          formed_at: string
+          id?: string
+          metadata?: Json | null
+          price_high: number
+          price_low: number
+          signal_id: string
+          strength?: number | null
+          timeframe: string
+          updated_at?: string
+        }
+        Update: {
+          annotation_type?: string
+          created_at?: string
+          formed_at?: string
+          id?: string
+          metadata?: Json | null
+          price_high?: number
+          price_low?: number
+          signal_id?: string
+          strength?: number | null
+          timeframe?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chart_annotations_signal_id_fkey"
+            columns: ["signal_id"]
+            isOneToOne: false
+            referencedRelation: "signals_detailed"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       crawl_results: {
         Row: {
           created_at: string
@@ -867,25 +917,34 @@ export type Database = {
           actual_pnl: number | null
           backtested_avg_rr: number | null
           backtested_win_rate: number | null
+          chart_template: string | null
+          choch_levels: Json | null
           closed_at: string | null
           confidence_score: number
           confluence_factors: Json | null
           created_at: string
+          demand_zones: Json | null
           direction: string
           entry_price: number
           higher_tf_bias: string | null
+          higher_tf_context: Json | null
           id: string
           imbalance_id: string | null
+          imbalances_data: Json | null
           market_structure_id: string | null
+          order_blocks: Json | null
           risk_reward_ratio: number | null
           signal_type: string
           status: string
           stop_loss: number
+          supply_zones: Json | null
           symbol: string
           take_profit_1: number | null
           take_profit_2: number | null
           take_profit_3: number | null
           timeframe: string
+          trade_rationale: string | null
+          tradingview_symbol: string | null
           triggered_at: string | null
           updated_at: string
         }
@@ -893,25 +952,34 @@ export type Database = {
           actual_pnl?: number | null
           backtested_avg_rr?: number | null
           backtested_win_rate?: number | null
+          chart_template?: string | null
+          choch_levels?: Json | null
           closed_at?: string | null
           confidence_score?: number
           confluence_factors?: Json | null
           created_at?: string
+          demand_zones?: Json | null
           direction: string
           entry_price: number
           higher_tf_bias?: string | null
+          higher_tf_context?: Json | null
           id?: string
           imbalance_id?: string | null
+          imbalances_data?: Json | null
           market_structure_id?: string | null
+          order_blocks?: Json | null
           risk_reward_ratio?: number | null
           signal_type: string
           status?: string
           stop_loss: number
+          supply_zones?: Json | null
           symbol: string
           take_profit_1?: number | null
           take_profit_2?: number | null
           take_profit_3?: number | null
           timeframe: string
+          trade_rationale?: string | null
+          tradingview_symbol?: string | null
           triggered_at?: string | null
           updated_at?: string
         }
@@ -919,25 +987,34 @@ export type Database = {
           actual_pnl?: number | null
           backtested_avg_rr?: number | null
           backtested_win_rate?: number | null
+          chart_template?: string | null
+          choch_levels?: Json | null
           closed_at?: string | null
           confidence_score?: number
           confluence_factors?: Json | null
           created_at?: string
+          demand_zones?: Json | null
           direction?: string
           entry_price?: number
           higher_tf_bias?: string | null
+          higher_tf_context?: Json | null
           id?: string
           imbalance_id?: string | null
+          imbalances_data?: Json | null
           market_structure_id?: string | null
+          order_blocks?: Json | null
           risk_reward_ratio?: number | null
           signal_type?: string
           status?: string
           stop_loss?: number
+          supply_zones?: Json | null
           symbol?: string
           take_profit_1?: number | null
           take_profit_2?: number | null
           take_profit_3?: number | null
           timeframe?: string
+          trade_rationale?: string | null
+          tradingview_symbol?: string | null
           triggered_at?: string | null
           updated_at?: string
         }

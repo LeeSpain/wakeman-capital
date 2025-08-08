@@ -1,4 +1,5 @@
 import React from 'react'
+import { ChartLinkButton } from './ChartLinkButton'
 import type { SignalRecord } from '../../hooks/useSignals'
 
 export const SignalsTable: React.FC<{ signals: SignalRecord[]; loading?: boolean }>
@@ -17,13 +18,14 @@ export const SignalsTable: React.FC<{ signals: SignalRecord[]; loading?: boolean
             <th className="px-4 py-3">RRR</th>
             <th className="px-4 py-3">Score</th>
             <th className="px-4 py-3">Status</th>
+            <th className="px-4 py-3">Chart</th>
           </tr>
         </thead>
         <tbody>
           {loading ? (
-            <tr><td className="px-4 py-6 text-center text-muted-foreground" colSpan={9}>Loading signals…</td></tr>
+            <tr><td className="px-4 py-6 text-center text-muted-foreground" colSpan={10}>Loading signals…</td></tr>
           ) : signals.length === 0 ? (
-            <tr><td className="px-4 py-6 text-center text-muted-foreground" colSpan={9}>No signals found.</td></tr>
+            <tr><td className="px-4 py-6 text-center text-muted-foreground" colSpan={10}>No signals found.</td></tr>
           ) : (
             signals.map(s => (
               <tr key={s.id} className="border-t border-border">
@@ -36,6 +38,9 @@ export const SignalsTable: React.FC<{ signals: SignalRecord[]; loading?: boolean
                 <td className="px-4 py-3">{s.risk_reward_ratio ?? '—'}</td>
                 <td className="px-4 py-3">{s.confidence_score}</td>
                 <td className="px-4 py-3">{s.status}</td>
+                <td className="px-4 py-3">
+                  <ChartLinkButton signal={s} size="sm" />
+                </td>
               </tr>
             ))
           )}
