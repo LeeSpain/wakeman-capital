@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface User {
   id: string;
-  email: string;
+  email: string | null;
 }
 
 export const useAuth = () => {
@@ -10,14 +11,30 @@ export const useAuth = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate auth check
-    const timer = setTimeout(() => {
-      setLoading(false);
-      // For now, no user is logged in
-      setUser(null);
-    }, 1000);
+    let mounted = true;
 
-    return () => clearTimeout(timer);
+    const init = async () => {
+      const { data } = await supabase.auth.getSession();
+      const sessionUser = data.session?.user;
+      if (mounted) {
+        setUser(sessionUser ? { id: sessionUser.id, email: sessionUser.email } : null);
+        setLoading(false);
+      }
+    };
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!mounted) return;
+      const u = session?.user;
+      setUser(u ? { id: u.id, email: u.email } : null);
+      setLoading(false);
+    });
+
+    init();
+
+    return () => {
+      mounted = false;
+      listener.subscription.unsubscribe();
+    };
   }, []);
 
   return { user, loading };
