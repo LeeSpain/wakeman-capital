@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import MarketingHeader from './MarketingHeader';
+import MarketingFooter from './MarketingFooter';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -8,6 +12,7 @@ interface AppLayoutProps {
 const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
+  const { user } = useAuth();
 
   const menu = [
     { path: '/dashboard', label: 'Dashboard' },
@@ -20,6 +25,17 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   ];
 
   const isActive = (path: string) => location.pathname === path;
+  const isMarketing = location.pathname === '/' || location.pathname.startsWith('/auth');
+
+  if (isMarketing) {
+    return (
+      <div className="min-h-screen bg-background text-foreground flex flex-col">
+        <MarketingHeader />
+        <main className="flex-1">{children}</main>
+        <MarketingFooter />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -42,9 +58,21 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
           </Link>
         </nav>
         <div>
-          <button className="px-3 py-1.5 rounded-md border border-border bg-secondary text-secondary-foreground hover:bg-muted transition-colors">
-            Sign Out
-          </button>
+          {user ? (
+            <button
+              onClick={() => supabase.auth.signOut()}
+              className="px-3 py-1.5 rounded-md border border-border bg-secondary text-secondary-foreground hover:bg-muted transition-colors"
+            >
+              Sign Out
+            </button>
+          ) : (
+            <Link
+              to="/auth"
+              className="px-3 py-1.5 rounded-md border border-border bg-secondary text-secondary-foreground hover:bg-muted transition-colors"
+            >
+              Sign In
+            </Link>
+          )}
         </div>
       </header>
 
@@ -91,3 +119,4 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 };
 
 export default AppLayout;
+

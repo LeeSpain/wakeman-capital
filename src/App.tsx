@@ -29,6 +29,7 @@ function App() {
             <Route path="/ai-coach" element={<AICoach />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/billing" element={<Billing />} />
+            <Route path="/auth" element={<Auth />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AppLayout>

@@ -1,8 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { supabase } from '@/integrations/supabase/client';
+import { useNavigate } from 'react-router-dom';
 const heroImageUrl = new URL('../assets/hero-trend-grid.jpg', import.meta.url).href;
 
 const Index = () => {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const cards = [
     { title: 'BTCUSD', sentiment: 0.45, source: 'X', tags: ['bullish', 'ETF', 'breakout'] },
     { title: 'EURUSD', sentiment: -0.30, source: 'NewsAPI', tags: ['ECB', 'policy', 'weakness'] },
@@ -39,8 +46,73 @@ const Index = () => {
           </div>
         </section>
 
+        {/* Account Access */}
+        <section className="max-w-7xl mx-auto px-4 pb-12">
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="rounded-lg border border-border bg-card p-6">
+              <h2 className="text-2xl font-bold text-card-foreground mb-2">Account Access</h2>
+              <p className="text-sm text-muted-foreground mb-4">Sign in to your Trend Pulse account.</p>
+              <form
+                className="space-y-3"
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  setError(null);
+                  setLoading(true);
+                  const { error } = await supabase.auth.signInWithPassword({ email, password });
+                  setLoading(false);
+                  if (error) setError(error.message);
+                  else navigate('/dashboard');
+                }}
+              >
+                <div className="grid gap-2">
+                  <label className="text-sm text-muted-foreground" htmlFor="email">Email</label>
+                  <input
+                    id="email"
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+                    placeholder="you@example.com"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <label className="text-sm text-muted-foreground" htmlFor="password">Password</label>
+                  <input
+                    id="password"
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+                    placeholder="Your password"
+                  />
+                </div>
+                {error && <p className="text-sm text-destructive">{error}</p>}
+                <div className="flex items-center gap-3">
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+                  >
+                    {loading ? 'Signing in...' : 'Sign In'}
+                  </button>
+                  <a href="/auth" className="text-sm text-primary hover:underline">Create account</a>
+                </div>
+              </form>
+            </div>
+            <div className="rounded-lg border border-border bg-card p-6">
+              <h3 className="text-lg font-semibold text-card-foreground mb-2">Quick start</h3>
+              <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                <li>Use the Dashboard for an overview of your signals and trades</li>
+                <li>Explore Trends for real-time narrative shifts</li>
+                <li>Upgrade in Billing to unlock pro features</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
         {/* Trend Pulse cards */}
-        <section className="max-w-7xl mx-auto px-4 pb-16">
           <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-6">Trend Pulse</h2>
           <div className="grid md:grid-cols-3 gap-6">
             {cards.map((c) => (
