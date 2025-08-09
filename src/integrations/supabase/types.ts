@@ -708,6 +708,51 @@ export type Database = {
         }
         Relationships: []
       }
+      market_data_realtime: {
+        Row: {
+          close: number
+          created_at: string
+          high: number
+          id: string
+          low: number
+          open: number
+          source: string | null
+          symbol: string
+          timeframe: string
+          timestamp: string
+          updated_at: string
+          volume: number | null
+        }
+        Insert: {
+          close: number
+          created_at?: string
+          high: number
+          id?: string
+          low: number
+          open: number
+          source?: string | null
+          symbol: string
+          timeframe: string
+          timestamp: string
+          updated_at?: string
+          volume?: number | null
+        }
+        Update: {
+          close?: number
+          created_at?: string
+          high?: number
+          id?: string
+          low?: number
+          open?: number
+          source?: string | null
+          symbol?: string
+          timeframe?: string
+          timestamp?: string
+          updated_at?: string
+          volume?: number | null
+        }
+        Relationships: []
+      }
       market_structure: {
         Row: {
           created_at: string

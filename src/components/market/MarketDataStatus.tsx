@@ -1,11 +1,17 @@
 import React from 'react';
 import { useRealMarketData } from '../../hooks/useRealMarketData';
+import { triggerMarketDataUpdate } from '../../utils/triggerMarketDataUpdate';
 
 export const MarketDataStatus: React.FC = () => {
   const { marketData, loading, error, lastUpdated, refreshMarketData } = useRealMarketData();
 
   const handleRefresh = async () => {
-    await refreshMarketData();
+    // First trigger the edge function to generate new data
+    const result = await triggerMarketDataUpdate();
+    if (result.success) {
+      // Then refresh the local data
+      await refreshMarketData();
+    }
   };
 
   return (
