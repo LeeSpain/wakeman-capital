@@ -28,7 +28,9 @@ export const MarketDataStatus: React.FC = () => {
                     )}
                   </>
                 ) : (
-                  <span className="text-yellow-500">●</span> Initializing market data...
+                  <>
+                    <span className="text-yellow-500">●</span> Initializing market data...
+                  </>
                 )}
               </>
             )}
