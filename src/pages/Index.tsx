@@ -4,7 +4,6 @@ import { supabase } from '../integrations/supabase/client';
 import { useNavigate, Link } from 'react-router-dom';
 import LiteYouTube from '../components/media/LiteYouTube';
 
-
 const Index = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
@@ -77,12 +76,7 @@ const Index = () => {
                   </ul>
                 </div>
                 <aside className="md:col-span-5">
-                  <div className="relative aspect-video rounded-lg overflow-hidden border border-border bg-muted/20 shadow-elegant hover-scale">
-                    <LiteYouTube
-                      id="QjRlVX1e7JM"
-                      title="Wakeman Capital Overview"
-                    />
-                  </div>
+                  <LiteYouTube videoId="QjRlVX1e7JM" title="Wakeman Capital Overview" />
                   <p className="mt-3 text-sm text-muted-foreground">Watch a quick overview of how Wakeman Capital turns market intelligence into profits. <a className="text-primary hover:underline" href="https://www.youtube.com/watch?v=QjRlVX1e7JM" target="_blank" rel="noopener noreferrer">Open on YouTube</a></p>
                 </aside>
               </div>

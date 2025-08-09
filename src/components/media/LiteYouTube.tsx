@@ -1,67 +1,56 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
+
 
 interface LiteYouTubeProps {
-  id: string;
+  videoId: string;
   title?: string;
-  className?: string;
-  alt?: string;
-  params?: string; // optional extra query params, e.g. "start=30"
 }
 
-const LiteYouTube: React.FC<LiteYouTubeProps> = ({ id, title, className, alt, params }) => {
+const LiteYouTube: React.FC<LiteYouTubeProps> = ({ videoId, title = 'YouTube video' }) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [posterIndex, setPosterIndex] = useState(0);
-
-  const qualities = ['maxresdefault', 'sddefault', 'hqdefault', 'mqdefault', 'default'] as const;
-
-  const posters = useMemo(() => qualities.map(q => `https://i.ytimg.com/vi/${id}/${q}.jpg`), [id]);
-
-  const handlePosterError = () => {
-    setPosterIndex((i) => (i < posters.length - 1 ? i + 1 : i));
-  };
-
-  const iframeSrc = useMemo(() => {
-    const base = `https://www.youtube-nocookie.com/embed/${id}`;
-    const query = new URLSearchParams({
-      autoplay: '1',
-      modestbranding: '1',
-      rel: '0',
-      playsinline: '1',
-      ...(params ? Object.fromEntries(new URLSearchParams(params)) : {}),
-    }).toString();
-    return `${base}?${query}`;
-  }, [id, params]);
+  const [thumbIndex, setThumbIndex] = useState(0);
+  const thumbnailCandidates = [
+    `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+    `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`,
+    `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
+    `https://i.ytimg.com/vi/${videoId}/sddefault.jpg`,
+    `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+    `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+    `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+    `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`,
+    `https://img.youtube.com/vi/${videoId}/default.jpg`,
+    `https://i.ytimg.com/vi/${videoId}/default.jpg`,
+  ];
+  const thumbnailUrl = thumbnailCandidates[Math.min(thumbIndex, thumbnailCandidates.length - 1)];
 
   return (
-    <div className={`absolute inset-0 h-full w-full ${className ?? ''}`}>
-      {!isPlaying ? (
-        <>
-          <img
-            src={posters[posterIndex]}
-            alt={alt ?? `${title ?? 'YouTube'} thumbnail`}
-            onError={handlePosterError}
-            loading="lazy"
-            decoding="async"
-            className="h-full w-full object-cover"
-          />
-          {/* Invisible button overlay to start playback without any icon overlay */}
-          <button
-            type="button"
-            aria-label={`Play video: ${title ?? 'YouTube video'}`}
-            onClick={() => setIsPlaying(true)}
-            className="absolute inset-0 h-full w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
-          />
-        </>
-      ) : (
+    <div className="relative aspect-video rounded-lg overflow-hidden border border-border bg-muted/20 shadow-elegant">
+      {isPlaying ? (
         <iframe
-          src={iframeSrc}
-          title={title ?? 'YouTube video'}
+          src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&modestbranding=1&rel=0&playsinline=1`}
+          title={title}
           loading="lazy"
           className="absolute inset-0 h-full w-full"
           referrerPolicy="strict-origin-when-cross-origin"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen
         />
+      ) : (
+        <button
+          type="button"
+          onClick={() => setIsPlaying(true)}
+          className="group absolute inset-0 w-full h-full focus:outline-none"
+          aria-label={`Play video: ${title}`}
+        >
+          <img
+            src={thumbnailUrl}
+            alt={`${title} thumbnail`}
+            loading="lazy"
+            decoding="async"
+            className="w-full h-full object-cover"
+            onError={() => setThumbIndex((i) => Math.min(i + 1, thumbnailCandidates.length - 1))}
+          />
+        </button>
       )}
     </div>
   );
