@@ -27,7 +27,7 @@ const MarketingHeader: React.FC = () => {
     <header className="sticky top-0 z-40 bg-background/80 backdrop-blur border-b border-border">
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center gap-6">
-          <Link to="/" className="font-bold text-lg tracking-tight">
+          <Link to="/" className={`font-bold text-lg tracking-tight ${location.pathname === '/' ? 'text-primary' : 'text-foreground'}`}>
             <span className="font-display">Wakeman Capital</span>
           </Link>
         </div>
