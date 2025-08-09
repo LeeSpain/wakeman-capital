@@ -801,6 +801,117 @@ export type Database = {
         }
         Relationships: []
       }
+      paper_positions: {
+        Row: {
+          created_at: string
+          current_price: number
+          entry_price: number
+          id: string
+          opened_at: string
+          qty: number
+          symbol: string
+          unrealized_pnl: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_price: number
+          entry_price: number
+          id?: string
+          opened_at: string
+          qty: number
+          symbol: string
+          unrealized_pnl?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_price?: number
+          entry_price?: number
+          id?: string
+          opened_at?: string
+          qty?: number
+          symbol?: string
+          unrealized_pnl?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      paper_trades_history: {
+        Row: {
+          closed_at: string
+          created_at: string
+          entry_price: number
+          exit_price: number
+          id: string
+          opened_at: string
+          qty: number
+          realized_pnl: number
+          symbol: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          closed_at: string
+          created_at?: string
+          entry_price: number
+          exit_price: number
+          id?: string
+          opened_at: string
+          qty: number
+          realized_pnl: number
+          symbol: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          closed_at?: string
+          created_at?: string
+          entry_price?: number
+          exit_price?: number
+          id?: string
+          opened_at?: string
+          qty?: number
+          realized_pnl?: number
+          symbol?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      paper_wallets: {
+        Row: {
+          balance: number
+          created_at: string
+          id: string
+          total_equity: number
+          total_pnl: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          created_at?: string
+          id?: string
+          total_equity?: number
+          total_pnl?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          id?: string
+          total_equity?: number
+          total_pnl?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string

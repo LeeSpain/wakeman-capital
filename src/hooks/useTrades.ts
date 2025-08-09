@@ -36,20 +36,7 @@ export interface NewTradeInput {
   notes?: string
 }
 
-const demoTrades: TradeRow[] = [
-  {
-    id: 'demo-t1', user_id: 'demo', symbol: 'EURUSD', direction: 'LONG', entry_price: 1.0932,
-    stop_price: 1.0912, take_profit: 1.0985, rr_target: 2.65, timeframe: 'M15', risk_percent: 1,
-    notes: 'CHoCH + OB confluence', status: 'closed', entry_time: new Date().toISOString(),
-    exit_time: new Date().toISOString(), created_at: new Date().toISOString(), updated_at: new Date().toISOString(), pl: 1.2
-  },
-  {
-    id: 'demo-t2', user_id: 'demo', symbol: 'GBPJPY', direction: 'SHORT', entry_price: 185.61,
-    stop_price: 186.00, take_profit: 184.70, rr_target: 2.15, timeframe: 'H1', risk_percent: 1,
-    notes: 'Liquidity sweep into OB', status: 'open', entry_time: new Date().toISOString(),
-    exit_time: null, created_at: new Date().toISOString(), updated_at: new Date().toISOString(), pl: 0
-  }
-]
+// Demo trades removed - system now requires authentication for all trade data
 
 export function useUserTrades(userId: string | null) {
   const [trades, setTrades] = useState<TradeRow[]>([])

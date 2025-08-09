@@ -40,7 +40,7 @@ serve(async (req) => {
           // Create realistic market data
           const ohlcData = generateRealisticOHLC(basePrice, volatility, timeframe);
           
-          // Insert market data
+          // Insert market data with unique constraint handling
           const { error: insertError } = await supabaseClient
             .from('market_data_realtime')
             .upsert({
@@ -54,7 +54,8 @@ serve(async (req) => {
               timestamp: currentTime.toISOString(),
               source: 'generated'
             }, {
-              onConflict: 'symbol,timeframe,timestamp'
+              onConflict: 'symbol,timeframe,timestamp',
+              ignoreDuplicates: false
             });
 
           if (insertError) {
