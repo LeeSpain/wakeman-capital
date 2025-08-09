@@ -8,6 +8,7 @@ import SignInCard from '../components/settings/SignInCard';
 import OandaIntegration from '../components/settings/OandaIntegration';
 import { supabase } from '../integrations/supabase/client';
 import { Button } from '../components/ui/button';
+import { TestNewsButton } from '../components/TestNewsButton';
 
 const Settings = () => {
   const { user, loading } = useAuth();
@@ -25,9 +26,10 @@ const Settings = () => {
       </Helmet>
       <main className="min-h-screen bg-background">
         <div className="max-w-7xl mx-auto px-4 py-8">
-          <header className="mb-8">
+            <header className="mb-8">
             <h1 className="text-3xl font-bold text-foreground mb-2">Settings</h1>
             <p className="text-muted-foreground">Update your profile and customize your experience.</p>
+            <TestNewsButton />
           </header>
 
           {loading ? (
