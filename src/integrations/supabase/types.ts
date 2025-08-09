@@ -413,6 +413,50 @@ export type Database = {
         }
         Relationships: []
       }
+      automated_email_rules: {
+        Row: {
+          conditions: Json | null
+          created_at: string
+          delay_minutes: number
+          id: string
+          is_active: boolean
+          name: string
+          template_id: string
+          trigger_event: string
+          updated_at: string
+        }
+        Insert: {
+          conditions?: Json | null
+          created_at?: string
+          delay_minutes?: number
+          id?: string
+          is_active?: boolean
+          name: string
+          template_id: string
+          trigger_event: string
+          updated_at?: string
+        }
+        Update: {
+          conditions?: Json | null
+          created_at?: string
+          delay_minutes?: number
+          id?: string
+          is_active?: boolean
+          name?: string
+          template_id?: string
+          trigger_event?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "automated_email_rules_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "email_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       backtesting_results: {
         Row: {
           avg_loser: number
@@ -649,6 +693,171 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      email_campaigns: {
+        Row: {
+          clicked_count: number
+          created_at: string
+          html_content: string
+          id: string
+          name: string
+          opened_count: number
+          recipient_count: number
+          sent_at: string | null
+          sent_count: number
+          status: string
+          subject: string
+          text_content: string | null
+          updated_at: string
+        }
+        Insert: {
+          clicked_count?: number
+          created_at?: string
+          html_content: string
+          id?: string
+          name: string
+          opened_count?: number
+          recipient_count?: number
+          sent_at?: string | null
+          sent_count?: number
+          status?: string
+          subject: string
+          text_content?: string | null
+          updated_at?: string
+        }
+        Update: {
+          clicked_count?: number
+          created_at?: string
+          html_content?: string
+          id?: string
+          name?: string
+          opened_count?: number
+          recipient_count?: number
+          sent_at?: string | null
+          sent_count?: number
+          status?: string
+          subject?: string
+          text_content?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      email_history: {
+        Row: {
+          campaign_id: string | null
+          clicked_at: string | null
+          created_at: string
+          id: string
+          opened_at: string | null
+          recipient_email: string
+          recipient_user_id: string | null
+          sent_at: string
+          status: string
+          subject: string
+          template_id: string | null
+        }
+        Insert: {
+          campaign_id?: string | null
+          clicked_at?: string | null
+          created_at?: string
+          id?: string
+          opened_at?: string | null
+          recipient_email: string
+          recipient_user_id?: string | null
+          sent_at?: string
+          status?: string
+          subject: string
+          template_id?: string | null
+        }
+        Update: {
+          campaign_id?: string | null
+          clicked_at?: string | null
+          created_at?: string
+          id?: string
+          opened_at?: string | null
+          recipient_email?: string
+          recipient_user_id?: string | null
+          sent_at?: string
+          status?: string
+          subject?: string
+          template_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_history_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "email_campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "email_history_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "email_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      email_settings: {
+        Row: {
+          created_at: string
+          id: string
+          sender_email: string
+          sender_name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          sender_email?: string
+          sender_name?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          sender_email?: string
+          sender_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      email_templates: {
+        Row: {
+          created_at: string
+          html_content: string
+          id: string
+          is_active: boolean
+          name: string
+          subject: string
+          template_type: string
+          text_content: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          html_content: string
+          id?: string
+          is_active?: boolean
+          name: string
+          subject: string
+          template_type: string
+          text_content?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          html_content?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          subject?: string
+          template_type?: string
+          text_content?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       imbalances: {
         Row: {
