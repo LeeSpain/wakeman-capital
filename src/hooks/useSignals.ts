@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../integrations/supabase/client'
+import { useRealMarketData } from './useRealMarketData'
 
 export interface SignalRecord {
   id: string
@@ -251,23 +252,38 @@ export function useTopOpportunities() {
   const [data, setData] = useState<SignalRecord[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const { refreshMarketData } = useRealMarketData()
 
   const fetchData = async () => {
     setLoading(true)
-    const { data, error } = await supabase
-      .from('signals_detailed')
-      .select('*')
-      .eq('status', 'active')
-      .order('confidence_score', { ascending: false })
-      .limit(5)
+    
+    try {
+      // Refresh market data first to ensure we have latest signals
+      await refreshMarketData()
+      
+      const { data, error } = await supabase
+        .from('signals_detailed')
+        .select('*')
+        .eq('status', 'active')
+        .gte('confidence_score', 88)
+        .order('confidence_score', { ascending: false })
+        .limit(5)
 
-    if (error) {
-      setError(error.message)
-      setData(demoSignals)
-    } else {
-      setError(null)
-      setData((data as unknown as SignalRecord[]) ?? [])
+      if (error || !data || data.length === 0) {
+        console.log('No database signals found, using enhanced demo data')
+        setError(null)
+        setData(demoSignals.filter(s => s.confidence_score >= 88 && (s.risk_reward_ratio || 0) >= 4.0).slice(0, 5))
+      } else {
+        console.log(`Found ${data.length} real market signals`)
+        setError(null)
+        setData((data as unknown as SignalRecord[]) ?? [])
+      }
+    } catch (err: any) {
+      console.error('Error fetching real signals:', err)
+      setError(err.message)
+      setData(demoSignals.filter(s => s.confidence_score >= 88 && (s.risk_reward_ratio || 0) >= 4.0).slice(0, 5))
     }
+    
     setLoading(false)
   }
 

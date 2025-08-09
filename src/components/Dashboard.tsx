@@ -4,6 +4,7 @@ import { useProfile } from '../hooks/useProfile';
 import StatsCards from './dashboard/StatsCards';
 import RecentTrades from './dashboard/RecentTrades';
 import TopOpportunities from './dashboard/TopOpportunities';
+import { MarketDataStatus } from './market/MarketDataStatus';
 import { TrendsSummary } from './trends/TrendsSummary';
 import { useTrends } from '../hooks/useTrends';
 import { useTopOpportunities } from '../hooks/useSignals';
@@ -85,10 +86,13 @@ const Dashboard = () => {
         <TrendsSummary data={trends} />
       </section>
 
+      {/* Market Data Status */}
+      <MarketDataStatus />
+
       {/* Two-column sections */}
       <div className="grid lg:grid-cols-2 gap-6">
-        <RecentTrades />
         <TopOpportunities />
+        <RecentTrades />
       </div>
     </div>
   );
