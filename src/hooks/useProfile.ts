@@ -5,6 +5,8 @@ export type Profile = {
   id: string;
   display_name: string | null;
   preferred_currency: string | null;
+  preferred_language: string | null;
+  region: string | null;
   first_name: string | null;
   last_name: string | null;
   mobile: string | null;

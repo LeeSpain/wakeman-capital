@@ -5,6 +5,7 @@ import MarketingFooter from './MarketingFooter';
 import { useAuth } from '../../hooks/useAuth';
 import { useUserRole } from '../../hooks/useUserRole';
 import { supabase } from '../../integrations/supabase/client';
+import LanguageSwitcher from '../i18n/LanguageSwitcher';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -60,7 +61,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
             Analytics
           </Link>
         </nav>
-        <div>
+        <div className="flex items-center gap-3">
+          <LanguageSwitcher />
           {user ? (
             <button
               onClick={() => supabase.auth.signOut()}

@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { supabase } from '../../integrations/supabase/client';
+import LanguageSwitcher from '../i18n/LanguageSwitcher';
 
 const MarketingHeader: React.FC = () => {
   const location = useLocation();
@@ -29,6 +30,7 @@ const MarketingHeader: React.FC = () => {
           </Link>
         </div>
         <div className="flex items-center gap-3">
+          <LanguageSwitcher />
           {!user ? (
             <Link
               to="/auth"

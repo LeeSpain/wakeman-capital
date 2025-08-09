@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { supabase } from '../integrations/supabase/client';
 import { useNavigate, Link } from 'react-router-dom';
+import FirstVisitModal from '../components/i18n/FirstVisitModal';
 
 
 const Index = () => {
