@@ -8,7 +8,20 @@ interface LiteYouTubeProps {
 
 const LiteYouTube: React.FC<LiteYouTubeProps> = ({ videoId, title = 'YouTube video' }) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const thumbnail = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+  const [thumbIndex, setThumbIndex] = useState(0);
+  const thumbnailCandidates = [
+    `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+    `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`,
+    `https://img.youtube.com/vi/${videoId}/sddefault.jpg`,
+    `https://i.ytimg.com/vi/${videoId}/sddefault.jpg`,
+    `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+    `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+    `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+    `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`,
+    `https://img.youtube.com/vi/${videoId}/default.jpg`,
+    `https://i.ytimg.com/vi/${videoId}/default.jpg`,
+  ];
+  const thumbnailUrl = thumbnailCandidates[Math.min(thumbIndex, thumbnailCandidates.length - 1)];
 
   return (
     <div className="relative aspect-video rounded-lg overflow-hidden border border-border bg-muted/20 shadow-elegant">
@@ -30,10 +43,12 @@ const LiteYouTube: React.FC<LiteYouTubeProps> = ({ videoId, title = 'YouTube vid
           aria-label={`Play video: ${title}`}
         >
           <img
-            src={thumbnail}
+            src={thumbnailUrl}
             alt={`${title} thumbnail`}
             loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover"
+            onError={() => setThumbIndex((i) => Math.min(i + 1, thumbnailCandidates.length - 1))}
           />
         </button>
       )}
