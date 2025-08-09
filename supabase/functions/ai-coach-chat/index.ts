@@ -174,8 +174,22 @@ serve(async (req) => {
     const selectedModel = settings.model || body.model || 'gpt-4o-mini'
     const temperature = typeof settings.temperature === 'number' ? settings.temperature : 0.3
 
-    const systemPrompt = [DEFAULT_SYS, settings.systemPrompt?.trim() ? `\nUser system overrides:\n${settings.systemPrompt.trim()}` : '' ].join('')
+    const systemPrompt = [
+      DEFAULT_SYS,
+      settings.systemPrompt?.trim() ? `\nUser system overrides:\n${settings.systemPrompt.trim()}` : ''
+    ].join('')
 
+    // Per-request user-aware Supabase client to respect RLS
+    const authHeader = req.headers.get('Authorization') || ''
+    const userClient = createClient(
+      SUPABASE_URL!,
+      (SUPABASE_ANON_KEY || SUPABASE_SERVICE_ROLE_KEY)!,
+      { global: { headers: { Authorization: authHeader } } }
+    )
+    const { data: authData } = await userClient.auth.getUser()
+    const currentUser = authData?.user || null
+
+    // Tools available to the model
     const tools = [
       {
         type: 'function',
@@ -244,7 +258,7 @@ serve(async (req) => {
         type: 'function',
         function: {
           name: 'search_sources',
-          description: 'Fetch and summarize the given source URLs or keywords (best-effort, short excerpts)',
+          description: 'Fetch and summarize the given source URLs or keywords (best-effort, short excerpts). If no sources are provided, it will use the user\'s saved sources when authenticated.',
           parameters: {
             type: 'object',
             properties: {
@@ -253,8 +267,82 @@ serve(async (req) => {
             }
           }
         }
+      },
+      {
+        type: 'function',
+        function: {
+          name: 'get_user_context',
+          description: 'Get personalized context for the authenticated user: profile, latest alerts, recent trades, OANDA account summary, and subscription status. Requires authentication.',
+          parameters: { type: 'object', properties: { alerts_limit: { type: 'number' }, trades_limit: { type: 'number' } } }
+        }
+      },
+      {
+        type: 'function',
+        function: {
+          name: 'get_sources_db',
+          description: 'Return the authenticated user\'s saved AI Coach sources (active only by default). Requires authentication.',
+          parameters: { type: 'object', properties: { include_inactive: { type: 'boolean' } } }
+        }
       }
     ]
+
+    // Tool runner capturing per-request user client
+    const runTool = async (name: string, args: any) => {
+      switch (name) {
+        case 'get_signals':
+          return await getSignals(args)
+        case 'get_trends':
+          return await getTrends(args)
+        case 'get_market_data':
+          return await getMarketData(args)
+        case 'generate_chart_link':
+          if (!args?.symbol) return { error: 'symbol is required' }
+          return { url: generateChartUrl(args.symbol, args.timeframe) }
+        case 'search_sources': {
+          let list = Array.isArray(args?.sources) ? args.sources : []
+          if ((!list || list.length === 0) && currentUser) {
+            const { data, error } = await userClient
+              .from('ai_coach_sources')
+              .select('url,is_active')
+              .eq('user_id', currentUser.id)
+              .order('created_at', { ascending: false })
+            if (!error && data) {
+              list = data.filter(r => r.is_active).map(r => r.url)
+            }
+          }
+          return await searchSources({ sources: list, max: args?.max })
+        }
+        case 'get_user_context': {
+          if (!currentUser) return { error: 'not_authenticated' }
+
+          const [profileRes, alertsRes, tradesRes, acctRes, subRes] = await Promise.all([
+            userClient.from('profiles').select('id,display_name,preferred_currency,access_level,payment_status').eq('id', currentUser.id).maybeSingle(),
+            userClient.from('alerts').select('id,title,message,created_at,severity').eq('user_id', currentUser.id).order('created_at', { ascending: false }).limit(Math.min(Number(args?.alerts_limit) || 5, 20)),
+            userClient.from('oanda_trades').select('id,symbol,direction,units,entry_price,opened_at,status,unrealized_pnl').eq('user_id', currentUser.id).order('opened_at', { ascending: false }).limit(Math.min(Number(args?.trades_limit) || 5, 20)),
+            userClient.from('oanda_accounts').select('id,environment,connection_verified,last_verified_at,account_id').eq('user_id', currentUser.id).eq('is_active', true).maybeSingle(),
+            userClient.from('client_subscriptions').select('subscription_status,profit_share_percentage,next_billing_date').eq('user_id', currentUser.id).maybeSingle(),
+          ])
+          return {
+            profile: profileRes.data || null,
+            alerts: alertsRes.data || [],
+            trades: tradesRes.data || [],
+            oanda_account: acctRes.data || null,
+            subscription: subRes.data || null
+          }
+        }
+        case 'get_sources_db': {
+          if (!currentUser) return { error: 'not_authenticated' }
+          const q = userClient.from('ai_coach_sources').select('id,url,label,is_active,created_at')
+            .eq('user_id', currentUser.id)
+            .order('created_at', { ascending: false })
+          const { data, error } = await q
+          if (error) return { error: error.message }
+          return { rows: data }
+        }
+        default:
+          return { error: `unknown tool ${name}` }
+      }
+    }
 
     // Build message history for the model
     const history = [
@@ -262,7 +350,7 @@ serve(async (req) => {
       ...messages
     ]
 
-    let loopMessages = [...history]
+    let loopMessages: any[] = [...history]
     const usedTools = new Set<string>()
     const usedSources: string[] = []
 
@@ -310,12 +398,7 @@ serve(async (req) => {
           let args: any
           try { args = JSON.parse(argsRaw) } catch { args = {} }
 
-          // Attach user-provided sources by default if not passed
-          if (name === 'search_sources' && (!args?.sources || args.sources.length === 0)) {
-            args.sources = Array.isArray(sources) ? sources : []
-          }
-
-          const result = await handleToolCall(name, args)
+          const result = await runTool(name, args)
           if (name) usedTools.add(name)
           if (name === 'search_sources' && result?.items) {
             for (const it of result.items) {

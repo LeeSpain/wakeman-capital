@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Button } from '../components/ui/button';
 import { supabase } from '../integrations/supabase/client';
+import { useAuth } from '../hooks/useAuth';
 import { AlertsList } from '../components/signals/AlertsList';
 
 const tabs = ['Chat', 'Settings', 'Sources', 'Alerts'] as const;
@@ -26,7 +27,7 @@ const AICoach = () => {
   const [sources, setSources] = useState<string[]>([]);
   const [newSource, setNewSource] = useState('');
   const [contextUsed, setContextUsed] = useState<{ tools: string[]; sources: string[] }>({ tools: [], sources: [] });
-
+  const { user } = useAuth();
   useEffect(() => {
     try {
       const s = localStorage.getItem('aiCoach.settings');
@@ -42,6 +43,22 @@ const AICoach = () => {
       localStorage.setItem('aiCoach.sources', JSON.stringify(sources));
     } catch {}
   }, [settings, sources]);
+
+  // Load saved sources from DB when authenticated
+  useEffect(() => {
+    const load = async () => {
+      if (!user) return;
+      const { data, error } = await supabase
+        .from('ai_coach_sources')
+        .select('url,is_active')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+      if (!error && data) {
+        setSources(data.filter((r: any) => r.is_active).map((r: any) => r.url));
+      }
+    };
+    load();
+  }, [user]);
 
   const canSend = useMemo(() => input.trim().length > 0 && !loading, [input, loading]);
 
@@ -206,12 +223,22 @@ const AICoach = () => {
                       className="flex-1 rounded-md border border-input bg-background p-2 text-sm"
                     />
                     <Button
-                      onClick={() => {
+                      onClick={async () => {
                         const v = newSource.trim();
                         if (!v) return;
                         if (sources.includes(v)) return setNewSource('');
                         setSources(prev => [...prev, v]);
                         setNewSource('');
+                        try {
+                          if (user) {
+                            const { error } = await supabase
+                              .from('ai_coach_sources')
+                              .insert({ user_id: user.id, url: v, is_active: true });
+                            if (error) console.error('Add source error:', error);
+                          }
+                        } catch (e) {
+                          console.error('Add source exception:', e);
+                        }
                       }}
                       disabled={!newSource.trim()}
                     >Add</Button>
@@ -224,7 +251,21 @@ const AICoach = () => {
                         <li key={i} className="flex items-center justify-between rounded-md border border-border bg-card/50 p-2">
                           <span className="truncate text-sm text-card-foreground" title={s}>{s}</span>
                           <button
-                            onClick={() => setSources(prev => prev.filter((_, idx) => idx !== i))}
+                            onClick={async () => {
+                              const url = s;
+                              setSources(prev => prev.filter((_, idx) => idx !== i));
+                              try {
+                                if (user) {
+                                  const { error } = await supabase
+                                    .from('ai_coach_sources')
+                                    .delete()
+                                    .match({ user_id: user.id, url });
+                                  if (error) console.error('Remove source error:', error);
+                                }
+                              } catch (e) {
+                                console.error('Remove source exception:', e);
+                              }
+                            }}
                             className="text-xs text-muted-foreground hover:text-foreground"
                           >Remove</button>
                         </li>

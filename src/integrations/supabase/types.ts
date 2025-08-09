@@ -226,6 +226,36 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_coach_sources: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          label: string | null
+          updated_at: string
+          url: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          label?: string | null
+          updated_at?: string
+          url: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          label?: string | null
+          updated_at?: string
+          url?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       ai_conversations: {
         Row: {
           agent_id: string | null
