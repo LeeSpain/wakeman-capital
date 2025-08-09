@@ -1366,34 +1366,82 @@ export type Database = {
         }
         Relationships: []
       }
+      payments: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          id: string
+          paid_at: string | null
+          payment_method: string | null
+          status: string
+          stripe_payment_intent_id: string | null
+          stripe_session_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string
+          id?: string
+          paid_at?: string | null
+          payment_method?: string | null
+          status?: string
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          paid_at?: string | null
+          payment_method?: string | null
+          status?: string
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
+          access_level: string | null
           created_at: string
           display_name: string | null
           first_name: string | null
           id: string
           last_name: string | null
           mobile: string | null
+          payment_status: string | null
           preferred_currency: string | null
           updated_at: string
         }
         Insert: {
+          access_level?: string | null
           created_at?: string
           display_name?: string | null
           first_name?: string | null
           id: string
           last_name?: string | null
           mobile?: string | null
+          payment_status?: string | null
           preferred_currency?: string | null
           updated_at?: string
         }
         Update: {
+          access_level?: string | null
           created_at?: string
           display_name?: string | null
           first_name?: string | null
           id?: string
           last_name?: string | null
           mobile?: string | null
+          payment_status?: string | null
           preferred_currency?: string | null
           updated_at?: string
         }

@@ -7,7 +7,8 @@ import AdminOverview from './AdminOverview';
 import AdminSettings from './AdminSettings';
 import EmailManagement from './EmailManagement';
 import AdminTasksList from './AdminTasksList';
-import { Users, DollarSign, FileText, BarChart3, Settings, Mail } from 'lucide-react';
+import PaymentTracking from './PaymentTracking';
+import { Users, DollarSign, FileText, BarChart3, Settings, Mail, CreditCard } from 'lucide-react';
 
 const AdminDashboard = () => {
   return (
@@ -22,7 +23,7 @@ const AdminDashboard = () => {
       <AdminTasksList />
 
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <BarChart3 className="h-4 w-4" />
             Overview
@@ -38,6 +39,10 @@ const AdminDashboard = () => {
           <TabsTrigger value="billing" className="flex items-center gap-2">
             <FileText className="h-4 w-4" />
             Billing
+          </TabsTrigger>
+          <TabsTrigger value="payments" className="flex items-center gap-2">
+            <CreditCard className="h-4 w-4" />
+            Payments
           </TabsTrigger>
           <TabsTrigger value="emails" className="flex items-center gap-2">
             <Mail className="h-4 w-4" />
@@ -59,6 +64,10 @@ const AdminDashboard = () => {
 
         <TabsContent value="profits">
           <ProfitTracking />
+        </TabsContent>
+
+        <TabsContent value="payments">
+          <PaymentTracking />
         </TabsContent>
 
         <TabsContent value="emails">

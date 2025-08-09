@@ -140,17 +140,26 @@ const Index = () => {
             <div className="text-center">
               <Link 
                 to="/auth" 
-                className="inline-flex items-center justify-center px-6 py-3 text-base font-semibold bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors shadow-lg"
+                className="inline-flex items-center justify-center px-8 py-4 text-lg font-bold bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors shadow-lg hover:shadow-xl transform hover:scale-105"
               >
-                Start Earning Today
+                🚀 Join Wakeman Capital Now
               </Link>
-              <p className="text-sm text-muted-foreground mt-2">
-                Already have an account? <Link to="/auth" className="text-primary hover:underline">Sign in here</Link>
+              <p className="text-sm text-muted-foreground mt-3">
+                Already a member? <Link to="/auth" className="text-primary hover:underline font-semibold">Sign in here</Link>
               </p>
-              <div className="flex items-center justify-center gap-4 mt-3 text-xs text-muted-foreground">
-                <span className="flex items-center gap-1">✓ No setup fees</span>
-                <span className="flex items-center gap-1">✓ Cancel anytime</span>
-                <span className="flex items-center gap-1">✓ 30-day money back</span>
+              <div className="flex items-center justify-center gap-6 mt-4 text-sm text-muted-foreground">
+                <span className="flex items-center gap-2">
+                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                  One-time payment
+                </span>
+                <span className="flex items-center gap-2">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                  Lifetime access
+                </span>
+                <span className="flex items-center gap-2">
+                  <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+                  30-day guarantee
+                </span>
               </div>
             </div>
           </div>
