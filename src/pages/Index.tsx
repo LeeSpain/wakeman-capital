@@ -15,6 +15,9 @@ const Index = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { t } = useTranslation();
+  const heroTitle = t('home.hero.title');
+  const [heroBrand, ...heroRestParts] = heroTitle.split('—');
+  const heroRest = heroRestParts.join('—').trim();
   const cards = [
     { title: 'BTCUSD', sentiment: 0.45, source: 'X', tags: ['bullish', 'ETF', 'breakout'] },
     { title: 'EURUSD', sentiment: -0.30, source: 'NewsAPI', tags: ['ECB', 'policy', 'weakness'] },
@@ -51,7 +54,7 @@ const Index = () => {
             <div className="rounded-xl bg-card/80 backdrop-blur shadow-elegant p-8 md:p-12">
               <div className="grid md:grid-cols-12 gap-8 items-start">
                 <div className="md:col-span-7">
-                  <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-4">{t('home.hero.title')}</h1>
+                  <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-4"><span className="text-primary">{heroBrand?.trim()}</span>{heroRest ? ` — ${heroRest}` : ''}</h1>
                   <p className="text-lg md:text-xl text-muted-foreground max-w-3xl">{t('home.hero.subtitle')}</p>
 
                   {/* Stats */}
