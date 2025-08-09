@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Play } from 'lucide-react';
+
 
 interface LiteYouTubeProps {
   videoId: string;
@@ -35,13 +35,6 @@ const LiteYouTube: React.FC<LiteYouTubeProps> = ({ videoId, title = 'YouTube vid
             loading="lazy"
             className="w-full h-full object-cover"
           />
-          <span
-            className="absolute inset-0 bg-gradient-to-t from-background/60 via-background/10 to-transparent transition-opacity group-hover:opacity-60"
-            aria-hidden
-          />
-          <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary text-primary-foreground shadow-lg ring-1 ring-border transition-transform group-hover:scale-105">
-            <Play className="w-6 h-6" />
-          </span>
         </button>
       )}
     </div>
