@@ -18,6 +18,7 @@ import PaperTrading from "./pages/PaperTrading";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentConfirmation from "./pages/PaymentConfirmation";
 import Admin from "./pages/Admin";
+import Videos from "./pages/Videos";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
             <Route path="/" element={<Index />} />
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/analytics" element={<Analytics />} />
+            <Route path="/videos" element={<Videos />} />
             <Route path="/trends" element={<Trends />} />
             <Route path="/signals" element={<SignalCenter />} />
             <Route path="/signal-center" element={<SignalCenter />} />

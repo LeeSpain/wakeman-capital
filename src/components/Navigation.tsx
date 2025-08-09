@@ -10,6 +10,7 @@ const navItems = [
   { path: '/', label: t('nav.home') },
   { path: '/dashboard', label: t('nav.dashboard') },
   { path: '/analytics', label: t('nav.analytics') },
+  { path: '/videos', label: 'Videos' },
   { path: '/paper', label: t('nav.paperTrading') },
   { path: '/coach', label: t('nav.aiCoach') },
 ];
