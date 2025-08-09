@@ -2,6 +2,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '../hooks/useAuth';
 import ProfileForm from '../components/settings/ProfileForm';
+import PasswordChangeForm from '../components/settings/PasswordChangeForm';
 import ThemeSection from '../components/settings/ThemeSection';
 import SignInCard from '../components/settings/SignInCard';
 import OandaIntegration from '../components/settings/OandaIntegration';
@@ -35,10 +36,18 @@ const Settings = () => {
             <SignInCard />
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <section className="lg:col-span-2 p-6 border border-border rounded-lg bg-card">
-                <h2 className="text-xl font-semibold text-foreground mb-4">Profile</h2>
-                <ProfileForm userId={user.id} />
-              </section>
+              <div className="lg:col-span-2 space-y-6">
+                <section className="p-6 border border-border rounded-lg bg-card">
+                  <h2 className="text-xl font-semibold text-foreground mb-4">Profile</h2>
+                  <ProfileForm userId={user.id} />
+                </section>
+
+                <section className="p-6 border border-border rounded-lg bg-card">
+                  <h2 className="text-xl font-semibold text-foreground mb-4">Change Password</h2>
+                  <p className="text-sm text-muted-foreground mb-4">Update your account password for enhanced security.</p>
+                  <PasswordChangeForm />
+                </section>
+              </div>
 
               <aside className="space-y-6">
                 <section className="p-6 border border-border rounded-lg bg-card">
