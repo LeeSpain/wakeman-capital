@@ -10,12 +10,14 @@ const Auth: React.FC = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [mode, setMode] = useState<'login' | 'signup' | 'reset'>('login');
+  const [mode, setMode] = useState<'login' | 'signup' | 'reset' | 'update-password'>('login');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [mobile, setMobile] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -23,8 +25,19 @@ const Auth: React.FC = () => {
   const [paymentStep, setPaymentStep] = useState<'form' | 'payment' | 'processing'>('form');
 
   useEffect(() => {
-    if (user) navigate('/dashboard');
-  }, [user, navigate]);
+    // Check if this is a password recovery session
+    const handleAuthStateChange = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user && window.location.hash.includes('type=recovery')) {
+        setMode('update-password');
+        setEmail(session.user.email || '');
+      } else if (user && mode !== 'update-password') {
+        navigate('/dashboard');
+      }
+    };
+    
+    handleAuthStateChange();
+  }, [user, navigate, mode]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,6 +55,31 @@ const Auth: React.FC = () => {
       }
       setLoading(false);
       setMessage('Password reset link sent to your email!');
+      return;
+    }
+
+    if (mode === 'update-password') {
+      if (newPassword !== confirmPassword) {
+        setLoading(false);
+        return setError('Passwords do not match');
+      }
+      if (newPassword.length < 6) {
+        setLoading(false);
+        return setError('Password must be at least 6 characters');
+      }
+      
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) {
+        setLoading(false);
+        return setError(error.message);
+      }
+      
+      setLoading(false);
+      toast({
+        title: "Password Updated",
+        description: "Your password has been successfully updated.",
+      });
+      navigate('/dashboard');
       return;
     }
 
@@ -324,13 +362,15 @@ const Auth: React.FC = () => {
                 <span className="text-2xl">📈</span>
               </div>
               <h1 className="text-3xl font-bold text-card-foreground mb-2">
-                {mode === 'login' ? 'Welcome Back!' : mode === 'reset' ? 'Reset Password' : 'Join Wakeman Capital'}
+                {mode === 'login' ? 'Welcome Back!' : mode === 'reset' ? 'Reset Password' : mode === 'update-password' ? 'Set New Password' : 'Join Wakeman Capital'}
               </h1>
               <p className="text-muted-foreground">
                 {mode === 'login' 
                   ? 'Sign in to access your trading dashboard and continue your profitable journey.' 
                   : mode === 'reset'
                   ? 'Enter your email address and we\'ll send you a link to reset your password.'
+                  : mode === 'update-password'
+                  ? 'Please enter your new password below.'
                   : 'Join thousands of traders using AI-powered market intelligence to maximize profits.'
                 }
               </p>
@@ -365,38 +405,40 @@ const Auth: React.FC = () => {
               </div>
             )}
             
-            <div className="flex gap-1 mb-6">
-              <button
-                onClick={() => setMode('login')}
-                className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${
-                  mode === 'login' 
-                    ? 'bg-primary text-primary-foreground border-transparent' 
-                    : 'border-border hover:bg-muted text-muted-foreground'
-                }`}
-              >
-                Sign In
-              </button>
-              <button
-                onClick={() => setMode('signup')}
-                className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${
-                  mode === 'signup' 
-                    ? 'bg-primary text-primary-foreground border-transparent' 
-                    : 'border-border hover:bg-muted text-muted-foreground'
-                }`}
-              >
-                Join Now
-              </button>
-              <button
-                onClick={() => setMode('reset')}
-                className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${
-                  mode === 'reset' 
-                    ? 'bg-primary text-primary-foreground border-transparent' 
-                    : 'border-border hover:bg-muted text-muted-foreground'
-                }`}
-              >
-                Reset
-              </button>
-            </div>
+            {mode !== 'update-password' && (
+              <div className="flex gap-1 mb-6">
+                <button
+                  onClick={() => setMode('login')}
+                  className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${
+                    mode === 'login' 
+                      ? 'bg-primary text-primary-foreground border-transparent' 
+                      : 'border-border hover:bg-muted text-muted-foreground'
+                  }`}
+                >
+                  Sign In
+                </button>
+                <button
+                  onClick={() => setMode('signup')}
+                  className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${
+                    mode === 'signup' 
+                      ? 'bg-primary text-primary-foreground border-transparent' 
+                      : 'border-border hover:bg-muted text-muted-foreground'
+                  }`}
+                >
+                  Join Now
+                </button>
+                 <button
+                   onClick={() => setMode('reset')}
+                   className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${
+                     mode === 'reset' 
+                       ? 'bg-primary text-primary-foreground border-transparent' 
+                       : 'border-border hover:bg-muted text-muted-foreground'
+                   }`}
+                 >
+                   Reset
+                 </button>
+               </div>
+             )}
 
             <form className="space-y-4" onSubmit={handleSubmit}>
               {mode === 'signup' && (
@@ -460,7 +502,39 @@ const Auth: React.FC = () => {
                   placeholder="you@example.com"
                 />
               </div>
-{mode !== 'reset' && (
+              
+              {mode === 'update-password' ? (
+                <>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground" htmlFor="newPassword">
+                      New Password *
+                    </label>
+                    <input
+                      id="newPassword"
+                      type="password"
+                      required
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring transition-colors"
+                      placeholder="Enter your new password"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground" htmlFor="confirmPassword">
+                      Confirm New Password *
+                    </label>
+                    <input
+                      id="confirmPassword"
+                      type="password"
+                      required
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring transition-colors"
+                      placeholder="Confirm your new password"
+                    />
+                  </div>
+                </>
+              ) : mode !== 'reset' && (
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-foreground" htmlFor="password">
                     Password *
@@ -495,8 +569,8 @@ const Auth: React.FC = () => {
                 className="w-full px-6 py-4 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-xl"
               >
                 {loading 
-                  ? (mode === 'login' ? 'Signing you in...' : mode === 'reset' ? 'Sending reset link...' : 'Creating your account...') 
-                  : (mode === 'login' ? 'Sign In to Dashboard' : mode === 'reset' ? 'Send Reset Link' : 'Continue to Subscription →')
+                  ? (mode === 'login' ? 'Signing you in...' : mode === 'reset' ? 'Sending reset link...' : mode === 'update-password' ? 'Updating password...' : 'Creating your account...') 
+                  : (mode === 'login' ? 'Sign In to Dashboard' : mode === 'reset' ? 'Send Reset Link' : mode === 'update-password' ? 'Update Password' : 'Continue to Subscription →')
                 }
               </button>
             </form>
