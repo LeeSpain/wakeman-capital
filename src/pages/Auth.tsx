@@ -77,10 +77,10 @@ const Auth: React.FC = () => {
         });
         setLoading(false);
         setShowPayment(true);
-        setMessage('Account created successfully! Complete your registration with a one-time payment to access all features.');
+        setMessage('Account created successfully! Start your monthly subscription to access all features.');
       } else {
         setLoading(false);
-        setMessage('Check your email to confirm your account, then complete payment to access all features.');
+        setMessage('Check your email to confirm your account, then start your subscription to access all features.');
       }
     }
   };
@@ -92,8 +92,8 @@ const Auth: React.FC = () => {
     try {
       const { data, error } = await supabase.functions.invoke('create-payment', {
         body: {
-          amount: 4999, // $49.99 in cents
-          description: 'Wakeman Capital Access - One-time Payment'
+          amount: 2999, // $29.99 in cents for monthly subscription
+          description: 'Wakeman Capital Monthly Subscription'
         }
       });
 
@@ -135,9 +135,9 @@ const Auth: React.FC = () => {
                 <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-2xl">🎉</span>
                 </div>
-                <h1 className="text-2xl font-bold text-card-foreground mb-2">Welcome to Wakeman Capital!</h1>
+                <h1 className="text-2xl font-bold text-card-foreground mb-2">Complete Your Subscription!</h1>
                 <p className="text-muted-foreground">
-                  Your account has been created successfully. Complete your registration with a one-time payment to unlock:
+                  Your account has been created successfully. Complete your subscription to unlock:
                 </p>
               </div>
 
@@ -162,8 +162,8 @@ const Auth: React.FC = () => {
 
               <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 mb-6">
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-primary mb-1">$49.99</div>
-                  <div className="text-sm text-muted-foreground">One-time payment • Lifetime access</div>
+                  <div className="text-3xl font-bold text-primary mb-1">$29.99/month</div>
+                  <div className="text-sm text-muted-foreground">Monthly subscription • 10% profit share</div>
                 </div>
               </div>
 
@@ -174,7 +174,7 @@ const Auth: React.FC = () => {
                 disabled={paymentLoading}
                 className="w-full px-6 py-3 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 font-medium mb-4"
               >
-                {paymentLoading ? 'Processing...' : 'Complete Payment & Get Started'}
+                {paymentLoading ? 'Processing...' : 'Start Monthly Subscription'}
               </button>
 
               <div className="text-center">
@@ -188,7 +188,7 @@ const Auth: React.FC = () => {
 
               <div className="mt-6 pt-4 border-t border-border text-center">
                 <p className="text-xs text-muted-foreground">
-                  Secure payment powered by Stripe • No monthly fees • Cancel anytime
+                  Secure payment powered by Stripe • Monthly billing • 10% profit share • Cancel anytime
                 </p>
               </div>
             </div>
@@ -234,7 +234,7 @@ const Auth: React.FC = () => {
                 </ul>
                 <div className="mt-3 text-center">
                   <span className="inline-flex items-center gap-2 text-sm font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">
-                    💰 One-time payment: $49.99 • Lifetime access
+                    💰 $29.99/month + 10% profit share
                   </span>
                 </div>
               </div>
@@ -369,7 +369,7 @@ const Auth: React.FC = () => {
                 <p className="text-xs text-muted-foreground">
                   By creating an account, you agree to our Terms of Service and Privacy Policy.
                   <br />
-                  Payment will be processed securely via Stripe after account creation.
+                  Monthly subscription will be processed securely via Stripe after account creation.
                 </p>
               </div>
             )}

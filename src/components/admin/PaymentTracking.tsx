@@ -23,19 +23,19 @@ interface Payment {
 }
 
 interface PaymentStats {
-  totalRevenue: number;
-  totalPayments: number;
-  paidUsers: number;
-  pendingPayments: number;
+  monthlyRevenue: number;
+  totalSubscriptions: number;
+  activeSubscribers: number;
+  pendingSubscriptions: number;
 }
 
 const PaymentTracking = () => {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [stats, setStats] = useState<PaymentStats>({
-    totalRevenue: 0,
-    totalPayments: 0,
-    paidUsers: 0,
-    pendingPayments: 0
+    monthlyRevenue: 0,
+    totalSubscriptions: 0,
+    activeSubscribers: 0,
+    pendingSubscriptions: 0
   });
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'paid' | 'pending' | 'failed'>('all');
@@ -61,17 +61,17 @@ const PaymentTracking = () => {
 
       setPayments(data || []);
 
-      // Calculate stats
-      const totalRevenue = data?.filter(p => p.status === 'paid').reduce((sum, p) => sum + p.amount, 0) || 0;
-      const totalPayments = data?.length || 0;
-      const paidUsers = data?.filter(p => p.status === 'paid').length || 0;
-      const pendingPayments = data?.filter(p => p.status === 'pending').length || 0;
+      // Calculate subscription stats
+      const monthlyRevenue = data?.filter(p => p.status === 'paid').reduce((sum, p) => sum + p.amount, 0) || 0;
+      const totalSubscriptions = data?.length || 0;
+      const activeSubscribers = data?.filter(p => p.status === 'paid').length || 0;
+      const pendingSubscriptions = data?.filter(p => p.status === 'pending').length || 0;
 
       setStats({
-        totalRevenue: totalRevenue / 100, // Convert from cents to dollars
-        totalPayments,
-        paidUsers,
-        pendingPayments
+        monthlyRevenue: monthlyRevenue / 100, // Convert from cents to dollars
+        totalSubscriptions,
+        activeSubscribers,
+        pendingSubscriptions
       });
     } catch (error) {
       console.error('Error:', error);
@@ -134,8 +134,8 @@ const PaymentTracking = () => {
             <div className="flex items-center gap-2">
               <DollarSign className="h-5 w-5 text-green-600" />
               <div>
-                <p className="text-sm text-muted-foreground">Total Revenue</p>
-                <p className="text-2xl font-bold">${stats.totalRevenue.toFixed(2)}</p>
+                <p className="text-sm text-muted-foreground">Monthly Revenue</p>
+                <p className="text-2xl font-bold">${stats.monthlyRevenue.toFixed(2)}</p>
               </div>
             </div>
           </CardContent>
@@ -146,8 +146,8 @@ const PaymentTracking = () => {
             <div className="flex items-center gap-2">
               <Users className="h-5 w-5 text-blue-600" />
               <div>
-                <p className="text-sm text-muted-foreground">Paid Users</p>
-                <p className="text-2xl font-bold">{stats.paidUsers}</p>
+                <p className="text-sm text-muted-foreground">Active Subscribers</p>
+                <p className="text-2xl font-bold">{stats.activeSubscribers}</p>
               </div>
             </div>
           </CardContent>
@@ -158,8 +158,8 @@ const PaymentTracking = () => {
             <div className="flex items-center gap-2">
               <CreditCard className="h-5 w-5 text-purple-600" />
               <div>
-                <p className="text-sm text-muted-foreground">Total Payments</p>
-                <p className="text-2xl font-bold">{stats.totalPayments}</p>
+                <p className="text-sm text-muted-foreground">Total Subscriptions</p>
+                <p className="text-2xl font-bold">{stats.totalSubscriptions}</p>
               </div>
             </div>
           </CardContent>
@@ -171,7 +171,7 @@ const PaymentTracking = () => {
               <Clock className="h-5 w-5 text-yellow-600" />
               <div>
                 <p className="text-sm text-muted-foreground">Pending</p>
-                <p className="text-2xl font-bold">{stats.pendingPayments}</p>
+                <p className="text-2xl font-bold">{stats.pendingSubscriptions}</p>
               </div>
             </div>
           </CardContent>
@@ -182,7 +182,7 @@ const PaymentTracking = () => {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle>Payment History</CardTitle>
+            <CardTitle>Subscription History</CardTitle>
             <div className="flex gap-2">
               <Button
                 variant={filter === 'all' ? 'default' : 'outline'}
@@ -218,7 +218,7 @@ const PaymentTracking = () => {
         <CardContent>
           {filteredPayments.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
-              No payments found for the selected filter.
+              No subscriptions found for the selected filter.
             </div>
           ) : (
             <div className="space-y-3">
@@ -246,11 +246,13 @@ const PaymentTracking = () => {
                       <div className="font-medium">
                         ${(payment.amount / 100).toFixed(2)} {payment.currency.toUpperCase()}
                       </div>
-                      {payment.paid_at && (
-                        <div className="text-sm text-muted-foreground">
-                          Paid {format(new Date(payment.paid_at), 'MMM d, yyyy')}
-                        </div>
-                      )}
+                      <div className="text-sm text-muted-foreground">
+                        {payment.paid_at && (
+                          <div className="text-sm text-muted-foreground">
+                            Subscribed {format(new Date(payment.paid_at), 'MMM d, yyyy')}
+                          </div>
+                        )}
+                      </div>
                     </div>
                     <Badge variant={getStatusColor(payment.status)}>
                       {payment.status.charAt(0).toUpperCase() + payment.status.slice(1)}

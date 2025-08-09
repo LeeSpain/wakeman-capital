@@ -28,8 +28,8 @@ const PaymentSuccess = () => {
             });
           } else if (data?.access_granted) {
             toast({
-              title: "Payment Successful! 🎉",
-              description: "Welcome to Wakeman Capital! You now have full access.",
+              title: "Subscription Active! 🎉",
+              description: "Welcome to Wakeman Capital! Your monthly subscription is now active.",
             });
           }
         } catch (err) {
@@ -54,10 +54,13 @@ const PaymentSuccess = () => {
         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <span className="text-2xl">✅</span>
         </div>
-        <h1 className="text-2xl font-bold text-foreground mb-2">Payment Successful!</h1>
+        <h1 className="text-2xl font-bold text-foreground mb-2">Subscription Active!</h1>
         <p className="text-muted-foreground mb-4">
-          Thank you for joining Wakeman Capital. You now have full access to all premium features.
+          Thank you for subscribing to Wakeman Capital. Your monthly subscription is now active and you have full access to all premium features.
         </p>
+        <div className="text-sm text-muted-foreground mb-2">
+          Monthly: $29.99 + 10% profit share when you win
+        </div>
         <div className="animate-pulse text-sm text-muted-foreground">
           Redirecting to your dashboard...
         </div>

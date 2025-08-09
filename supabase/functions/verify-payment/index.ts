@@ -54,26 +54,29 @@ serve(async (req) => {
 
     // Retrieve the checkout session
     const session = await stripe.checkout.sessions.retrieve(session_id);
-    console.log("Session retrieved:", session.id, "Payment status:", session.payment_status);
+    console.log("Session retrieved:", session.id, "Status:", session.status);
 
-    // Update payment record in database
-    const { error: paymentError } = await supabaseService
+    // For subscriptions, check if the session is complete and subscription is active
+    const isSubscriptionActive = session.status === "complete" && session.subscription;
+
+    // Update subscription record in database
+    const { error: subscriptionError } = await supabaseService
       .from("payments")
       .update({
-        status: session.payment_status === "paid" ? "paid" : "failed",
-        stripe_payment_intent_id: session.payment_intent,
+        status: isSubscriptionActive ? "paid" : "failed",
+        stripe_payment_intent_id: session.subscription || session.payment_intent,
         payment_method: session.payment_method_types?.[0] || null,
-        paid_at: session.payment_status === "paid" ? new Date().toISOString() : null
+        paid_at: isSubscriptionActive ? new Date().toISOString() : null
       })
       .eq("stripe_session_id", session_id)
       .eq("user_id", user.id);
 
-    if (paymentError) {
-      console.error("Error updating payment:", paymentError);
+    if (subscriptionError) {
+      console.error("Error updating subscription:", subscriptionError);
     }
 
-    // If payment successful, update user profile
-    if (session.payment_status === "paid") {
+    // If subscription successful, update user profile
+    if (isSubscriptionActive) {
       const { error: profileError } = await supabaseService
         .from("profiles")
         .update({
@@ -86,12 +89,12 @@ serve(async (req) => {
         console.error("Error updating profile:", profileError);
       }
 
-      console.log("User access granted:", user.id);
+      console.log("User subscription access granted:", user.id);
     }
 
     return new Response(JSON.stringify({ 
-      payment_status: session.payment_status,
-      access_granted: session.payment_status === "paid"
+      subscription_status: session.status,
+      access_granted: isSubscriptionActive
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,

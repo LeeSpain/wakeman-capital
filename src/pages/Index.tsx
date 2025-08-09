@@ -73,7 +73,7 @@ const Index = () => {
                 Turn Market Intelligence Into <span className="text-primary">Profit</span>
               </h2>
               <p className="text-base text-muted-foreground max-w-2xl mx-auto">
-                Join traders who only pay when they profit. Our AI-powered insights deliver SMC-aligned opportunities with a simple 10% success fee model.
+                Join traders who pay a low monthly fee plus share profits when they win. Our AI-powered insights deliver SMC-aligned opportunities with transparent pricing.
               </p>
             </div>
 
@@ -97,8 +97,8 @@ const Index = () => {
                 <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
                   <span className="text-xl">💰</span>
                 </div>
-                <h3 className="font-semibold text-foreground mb-2">Profit-First Model</h3>
-                <p className="text-sm text-muted-foreground">Only pay 10% when you profit. No monthly fees, no hidden costs</p>
+                <h3 className="font-semibold text-foreground mb-2">Transparent Pricing</h3>
+                <p className="text-sm text-muted-foreground">$29.99/month + 10% profit share. Pay to access, share when you win</p>
               </div>
             </div>
 
@@ -127,11 +127,11 @@ const Index = () => {
                 <h3 className="text-lg font-semibold text-foreground">Aligned Success Model</h3>
               </div>
               <p className="text-center text-muted-foreground mb-3 text-sm">
-                We succeed when you succeed. Pay only 10% of your profits—no upfront costs, no monthly subscriptions, no risk.
+                $29.99/month gives you access to all features. We only take 10% when you make profits—complete alignment with your success.
               </p>
               <div className="text-center">
                 <span className="inline-flex items-center gap-2 text-sm font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">
-                  ✓ Zero risk, maximum reward alignment
+                  ✓ Affordable monthly access + profit sharing when you win
                 </span>
               </div>
             </div>
@@ -150,15 +150,15 @@ const Index = () => {
               <div className="flex items-center justify-center gap-6 mt-4 text-sm text-muted-foreground">
                 <span className="flex items-center gap-2">
                   <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                  One-time payment
+                  $29.99/month
                 </span>
                 <span className="flex items-center gap-2">
                   <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-                  Lifetime access
+                  10% profit share
                 </span>
                 <span className="flex items-center gap-2">
                   <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
-                  30-day guarantee
+                  Cancel anytime
                 </span>
               </div>
             </div>

@@ -17,7 +17,7 @@ serve(async (req) => {
     console.log("Payment function started");
 
     // Get request body
-    const { amount = 4999, description = "Wakeman Capital Access - One-time Payment" } = await req.json();
+    const { amount = 2999, description = "Wakeman Capital Monthly Subscription" } = await req.json();
 
     // Create Supabase client with service role for secure operations
     const supabaseService = createClient(
@@ -71,7 +71,7 @@ serve(async (req) => {
       console.log("New customer created:", customerId);
     }
 
-    // Create checkout session
+    // Create checkout session for subscription
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       line_items: [
@@ -79,15 +79,18 @@ serve(async (req) => {
           price_data: {
             currency: "usd",
             product_data: {
-              name: "Wakeman Capital Premium Access",
-              description: description,
+              name: "Wakeman Capital Monthly Subscription",
+              description: "AI-powered market intelligence with monthly access + 10% profit share",
             },
             unit_amount: amount,
+            recurring: {
+              interval: "month"
+            }
           },
           quantity: 1,
         },
       ],
-      mode: "payment",
+      mode: "subscription",
       success_url: `${req.headers.get("origin")}/dashboard?payment=success`,
       cancel_url: `${req.headers.get("origin")}/auth?payment=cancelled`,
       metadata: {
@@ -96,10 +99,10 @@ serve(async (req) => {
       }
     });
 
-    console.log("Checkout session created:", session.id);
+    console.log("Subscription session created:", session.id);
 
-    // Record payment in database
-    const { error: paymentError } = await supabaseService
+    // Record subscription in database
+    const { error: subscriptionError } = await supabaseService
       .from("payments")
       .insert({
         user_id: user.id,
@@ -109,8 +112,8 @@ serve(async (req) => {
         status: "pending"
       });
 
-    if (paymentError) {
-      console.error("Error recording payment:", paymentError);
+    if (subscriptionError) {
+      console.error("Error recording subscription:", subscriptionError);
       // Don't fail the request, just log the error
     }
 
