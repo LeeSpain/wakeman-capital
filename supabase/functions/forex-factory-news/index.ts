@@ -66,17 +66,24 @@ Deno.serve(async (req) => {
 
     console.log(`Processing ${sampleEvents.length} economic events...`)
 
-    // Insert events into database
+    // Clean up existing test events first
+    const { error: deleteError } = await supabaseClient
+      .from('economic_events')
+      .delete()
+      .in('event_name', ['Non-Farm Payrolls', 'Interest Rate Decision', 'GDP Growth Rate'])
+
+    if (deleteError) {
+      console.error('Error cleaning up test events:', deleteError)
+    }
+
+    // Insert new events into database
     for (const event of sampleEvents) {
       const { error } = await supabaseClient
         .from('economic_events')
-        .upsert({
+        .insert({
           ...event,
           event_time: event.event_time,
           is_active: true
-        }, {
-          onConflict: 'event_name,event_time',
-          ignoreDuplicates: false
         })
 
       if (error) {
