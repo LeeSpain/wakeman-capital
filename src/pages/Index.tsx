@@ -78,7 +78,7 @@ const Index = () => {
                 <aside className="md:col-span-5">
                   <div className="relative aspect-video rounded-lg overflow-hidden border border-border bg-muted/20 shadow-elegant hover-scale">
                     <iframe
-                      src="https://www.youtube-nocookie.com/embed/QjRlVX1e7JM"
+                      src="https://www.youtube.com/embed/QjRlVX1e7JM?rel=0&modestbranding=1&playsinline=1"
                       title="Wakeman Capital Overview"
                       loading="lazy"
                       className="absolute inset-0 h-full w-full"
@@ -87,7 +87,7 @@ const Index = () => {
                       allowFullScreen
                     />
                   </div>
-                  <p className="mt-3 text-sm text-muted-foreground">Watch a quick overview of how Wakeman Capital turns market intelligence into profits.</p>
+                  <p className="mt-3 text-sm text-muted-foreground">Watch a quick overview of how Wakeman Capital turns market intelligence into profits. <a className="text-primary hover:underline" href="https://www.youtube.com/watch?v=QjRlVX1e7JM" target="_blank" rel="noopener noreferrer">Open on YouTube</a></p>
                 </aside>
               </div>
             </div>
