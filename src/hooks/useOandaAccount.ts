@@ -62,9 +62,12 @@ export const useOandaAccount = () => {
   const placeOrder = async (orderData: {
     symbol: string;
     direction: 'long' | 'short';
-    units: number;
+    units?: number;
     stopLoss?: number;
     takeProfit?: number;
+    takeProfit2?: number;
+    takeProfit3?: number;
+    riskPercentage?: number; // % of balance to risk; if provided and units not set, server computes units
     signalId?: string;
   }) => {
     if (!user) throw new Error('User not authenticated');

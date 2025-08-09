@@ -31,11 +31,11 @@ serve(async (req) => {
       throw new Error('Invalid auth token');
     }
 
-    const { symbol, direction, units, stopLoss, takeProfit, signalId } = await req.json();
+    const { symbol, direction, units, stopLoss, takeProfit, takeProfit2, takeProfit3, riskPercentage, signalId } = await req.json();
 
     // Validate input
-    if (!symbol || !direction || !units) {
-      throw new Error('Missing required fields: symbol, direction, units');
+    if (!symbol || !direction) {
+      throw new Error('Missing required fields: symbol, direction');
     }
 
     if (!['long', 'short'].includes(direction)) {
@@ -59,12 +59,25 @@ serve(async (req) => {
       ? 'https://api-fxpractice.oanda.com' 
       : 'https://api-fxtrade.oanda.com';
 
+    // If units not provided but riskPercentage is, do a simple server-side calc
+    let computedUnits = units;
+    if ((!computedUnits || computedUnits <= 0) && typeof riskPercentage === 'number' && stopLoss && (typeof takeProfit === 'number' || typeof stopLoss === 'number')) {
+      // Fetch account summary to get balance
+      const accountSummaryRes = await fetch(`${oandaUrl}/v3/accounts/${accounts.account_id}/summary`, {
+        headers: { 'Authorization': `Bearer ${apiToken}` },
+      });
+      const accountSummary = await accountSummaryRes.json();
+      const balance = parseFloat(accountSummary.account.balance);
+      const priceRisk = Math.max(0.0001, Math.abs((takeProfit ?? symbol.includes('JPY') ? 0.01 : 0.0001) - stopLoss));
+      computedUnits = Math.floor((balance * (riskPercentage / 100)) / priceRisk);
+    }
+
     // Prepare order data
     const orderData = {
       order: {
         type: 'MARKET',
         instrument: symbol,
-        units: direction === 'long' ? Math.abs(units) : -Math.abs(units),
+        units: direction === 'long' ? Math.abs(computedUnits ?? 0) : -Math.abs(computedUnits ?? 0),
         timeInForce: 'FOK',
         positionFill: 'DEFAULT',
         ...(stopLoss && { stopLossOnFill: { price: stopLoss.toString() } }),
@@ -107,6 +120,10 @@ serve(async (req) => {
         entry_price: parseFloat(fillTx.price),
         stop_loss: stopLoss,
         take_profit: takeProfit,
+        take_profit_2: takeProfit2 ?? null,
+        take_profit_3: takeProfit3 ?? null,
+        risk_percentage: typeof riskPercentage === 'number' ? riskPercentage : 1.0,
+        calculated_lot_size: Math.abs(parseInt(fillTx.units)),
         signal_id: signalId || null,
         status: 'open',
       });

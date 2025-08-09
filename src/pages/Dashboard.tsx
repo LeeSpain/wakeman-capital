@@ -1,6 +1,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import Dashboard from '../components/Dashboard';
+import OpenOandaTrades from '@/components/trading/OpenOandaTrades';
 
 const DashboardPage = () => {
   return (
@@ -12,8 +13,9 @@ const DashboardPage = () => {
       </Helmet>
       
       <main className="min-h-screen bg-background">
-        <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
           <Dashboard />
+          <OpenOandaTrades />
         </div>
       </main>
     </>
