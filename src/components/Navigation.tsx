@@ -1,16 +1,18 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const Navigation = () => {
   const location = useLocation();
+  const { t } = useTranslation();
   
-  const navItems = [
-    { path: '/', label: 'Home' },
-    { path: '/dashboard', label: 'Dashboard' },
-    { path: '/analytics', label: 'Analytics' },
-    { path: '/paper', label: 'Paper' },
-    { path: '/coach', label: 'AI Coach' },
-  ];
+const navItems = [
+  { path: '/', label: t('nav.home') },
+  { path: '/dashboard', label: t('nav.dashboard') },
+  { path: '/analytics', label: t('nav.analytics') },
+  { path: '/paper', label: t('nav.paperTrading') },
+  { path: '/coach', label: t('nav.aiCoach') },
+];
 
   return (
     <nav className="bg-card border-b border-border">

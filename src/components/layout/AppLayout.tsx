@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import MarketingHeader from './MarketingHeader';
 import MarketingFooter from './MarketingFooter';
@@ -6,6 +6,8 @@ import { useAuth } from '../../hooks/useAuth';
 import { useUserRole } from '../../hooks/useUserRole';
 import { supabase } from '../../integrations/supabase/client';
 import LanguageSwitcher from '../i18n/LanguageSwitcher';
+import { useTranslation } from 'react-i18next';
+import { useProfile } from '../../hooks/useProfile';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -16,17 +18,26 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const location = useLocation();
   const { user } = useAuth();
   const { isAdmin } = useUserRole();
+  const { t, i18n } = useTranslation();
+  const { profile } = useProfile(user?.id);
 
-  const menu = [
-    { path: '/dashboard', label: 'Dashboard' },
-    { path: '/signals', label: 'Signal Center' },
-    { path: '/journal', label: 'Trade Journal' },
-    { path: '/coach', label: 'AI Coach' },
-    { path: '/trends', label: 'Trends' },
-    { path: '/paper', label: 'Paper Trading' },
-    { path: '/settings', label: 'Settings' },
-    { path: '/billing', label: 'Billing' },
-  ];
+  React.useEffect(() => {
+    const desired = profile?.preferred_language || localStorage.getItem('app_language') || 'en';
+    if (i18n.language !== desired) {
+      i18n.changeLanguage(desired);
+    }
+  }, [profile?.preferred_language, i18n]);
+
+const menu = [
+  { path: '/dashboard', label: t('nav.dashboard') },
+  { path: '/signals', label: t('nav.signals') },
+  { path: '/journal', label: t('nav.journal') },
+  { path: '/coach', label: t('nav.aiCoach') },
+  { path: '/trends', label: t('nav.trends') },
+  { path: '/paper', label: t('nav.paperTrading') },
+  { path: '/settings', label: t('nav.settings') },
+  { path: '/billing', label: t('nav.billing') },
+];
 
   const isActive = (path: string) => location.pathname === path;
   const isMarketing = location.pathname === '/' || location.pathname.startsWith('/auth');
@@ -58,7 +69,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         </div>
         <nav className="hidden md:flex items-center gap-6 text-sm text-muted-foreground">
           <Link to="/analytics" className={location.pathname === '/analytics' ? 'text-primary' : 'hover:text-foreground'}>
-            Analytics
+            {t('nav.analytics')}
           </Link>
         </nav>
         <div className="flex items-center gap-3">
@@ -68,14 +79,14 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
               onClick={() => supabase.auth.signOut()}
               className="px-3 py-1.5 rounded-md border border-border bg-secondary text-secondary-foreground hover:bg-muted transition-colors"
             >
-              Sign Out
+              {t('common.signOut')}
             </button>
           ) : (
             <Link
               to="/auth"
               className="px-3 py-1.5 rounded-md border border-border bg-secondary text-secondary-foreground hover:bg-muted transition-colors"
             >
-              Sign In
+              {t('common.signIn')}
             </Link>
           )}
         </div>
@@ -123,7 +134,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                     : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
                 }`}
               >
-                <span className="truncate inline-block align-middle">Admin</span>
+                <span className="truncate inline-block align-middle">{t('nav.admin')}</span>
               </Link>
             )}
           </nav>

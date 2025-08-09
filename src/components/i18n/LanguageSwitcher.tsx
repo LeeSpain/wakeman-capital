@@ -1,25 +1,40 @@
 import React from 'react';
-import i18n from '../../i18n';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
 import { supabase } from '../../integrations/supabase/client';
 
 const languages = [
   { code: 'en', label: 'English' },
   { code: 'es', label: 'Español' },
+  { code: 'fr', label: 'Français' },
+  { code: 'de', label: 'Deutsch' },
+  { code: 'it', label: 'Italiano' },
+  { code: 'pt', label: 'Português' },
+  { code: 'pt-BR', label: 'Português (Brasil)' },
+  { code: 'zh-CN', label: '简体中文' },
+  { code: 'ja', label: '日本語' },
+  { code: 'ko', label: '한국어' },
+  { code: 'ar', label: 'العربية' },
+  { code: 'hi', label: 'हिन्दी' },
+  { code: 'ru', label: 'Русский' },
 ];
 
 const LanguageSwitcher: React.FC = () => {
   const { user } = useAuth();
+  const { i18n } = useTranslation();
   const current = i18n.language || 'en';
 
   const onChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const lang = e.target.value;
-    i18n.changeLanguage(lang);
+    await i18n.changeLanguage(lang);
     localStorage.setItem('app_language', lang);
 
     if (user) {
-      // Persist preference to profile
-      await supabase.from('profiles').upsert({ id: user.id, preferred_language: lang }).select().single();
+      await supabase
+        .from('profiles')
+        .upsert({ id: user.id, preferred_language: lang })
+        .select()
+        .single();
     }
   };
 
@@ -30,8 +45,10 @@ const LanguageSwitcher: React.FC = () => {
       onChange={onChange}
       className="px-2 py-1 rounded-md border border-border bg-card text-sm"
     >
-      {languages.map(l => (
-        <option key={l.code} value={l.code}>{l.label}</option>
+      {languages.map((l) => (
+        <option key={l.code} value={l.code}>
+          {l.label}
+        </option>
       ))}
     </select>
   );

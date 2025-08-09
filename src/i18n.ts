@@ -17,6 +17,19 @@ const resources = {
         save: 'Save',
         continue: 'Continue'
       },
+      nav: {
+        home: 'Home',
+        dashboard: 'Dashboard',
+        analytics: 'Analytics',
+        paperTrading: 'Paper Trading',
+        aiCoach: 'AI Coach',
+        signals: 'Signals',
+        journal: 'Trade Journal',
+        trends: 'Trends',
+        settings: 'Settings',
+        billing: 'Billing',
+        admin: 'Admin'
+      },
       modal: {
         title: 'Choose your preferences',
         intro: 'Select your language, region and currency to personalize your experience.'
@@ -36,6 +49,19 @@ const resources = {
         save: 'Guardar',
         continue: 'Continuar'
       },
+      nav: {
+        home: 'Inicio',
+        dashboard: 'Panel',
+        analytics: 'Analítica',
+        paperTrading: 'Simulación',
+        aiCoach: 'AI Coach',
+        signals: 'Señales',
+        journal: 'Diario de Operaciones',
+        trends: 'Tendencias',
+        settings: 'Configuración',
+        billing: 'Facturación',
+        admin: 'Admin'
+      },
       modal: {
         title: 'Elige tus preferencias',
         intro: 'Selecciona tu idioma, región y moneda para personalizar tu experiencia.'
@@ -50,6 +76,7 @@ i18n
   .init({
     resources,
     fallbackLng: 'en',
+    supportedLngs: ['en','es','fr','de','it','pt','pt-BR','zh-CN','ja','ko','ar','hi','ru'],
     interpolation: { escapeValue: false },
     detection: {
       order: ['localStorage', 'navigator', 'htmlTag'],

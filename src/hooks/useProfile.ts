@@ -26,7 +26,7 @@ export const useProfile = (userId?: string) => {
       setLoading(true);
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, display_name, preferred_currency, first_name, last_name, mobile')
+        .select('id, display_name, preferred_currency, preferred_language, region, first_name, last_name, mobile')
         .eq('id', userId)
         .maybeSingle();
 
@@ -51,6 +51,8 @@ export const useProfile = (userId?: string) => {
       id: userId,
       ...(updates.display_name !== undefined ? { display_name: updates.display_name } : {}),
       ...(updates.preferred_currency !== undefined ? { preferred_currency: updates.preferred_currency } : {}),
+      ...(updates.preferred_language !== undefined ? { preferred_language: updates.preferred_language } : {}),
+      ...(updates.region !== undefined ? { region: updates.region } : {}),
       ...(updates.first_name !== undefined ? { first_name: updates.first_name } : {}),
       ...(updates.last_name !== undefined ? { last_name: updates.last_name } : {}),
       ...(updates.mobile !== undefined ? { mobile: updates.mobile } : {}),

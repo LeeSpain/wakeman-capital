@@ -3,10 +3,12 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { supabase } from '../../integrations/supabase/client';
 import LanguageSwitcher from '../i18n/LanguageSwitcher';
+import { useTranslation } from 'react-i18next';
 
 const MarketingHeader: React.FC = () => {
   const location = useLocation();
   const { user } = useAuth();
+  const { t } = useTranslation();
 
   const NavLink = ({ to, children }: { to: string; children: React.ReactNode }) => (
     <Link
@@ -36,7 +38,7 @@ const MarketingHeader: React.FC = () => {
               to="/auth"
               className="px-3 py-1.5 rounded-md border border-border bg-secondary text-secondary-foreground hover:bg-muted transition-colors"
             >
-              Sign in
+              {t('common.signIn')}
             </Link>
           ) : (
             <>
@@ -44,13 +46,13 @@ const MarketingHeader: React.FC = () => {
                 to="/dashboard"
                 className="px-3 py-1.5 rounded-md border border-border bg-card hover:bg-muted transition-colors"
               >
-                Go to Dashboard
+                {t('common.goToDashboard')}
               </Link>
               <button
                 onClick={() => supabase.auth.signOut()}
                 className="px-3 py-1.5 rounded-md bg-primary text-primary-foreground hover:bg-primary/90"
               >
-                Sign out
+                {t('common.signOut')}
               </button>
             </>
           )}
