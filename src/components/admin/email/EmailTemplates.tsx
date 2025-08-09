@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../ui/select';
 import { FileText, Plus, Edit, Eye } from 'lucide-react';
 import { supabase } from '../../../integrations/supabase/client';
-import { toast } from 'sonner';
+import { toast } from '../../../hooks/use-toast';
 
 interface EmailTemplate {
   id: string;
@@ -41,7 +41,11 @@ const EmailTemplates = () => {
 
       if (error) {
         console.error('Error fetching templates:', error);
-        toast.error('Failed to load email templates');
+        toast({
+          title: "Error",
+          description: "Failed to load email templates",
+          variant: "destructive"
+        });
       } else {
         setTemplates(data || []);
       }
@@ -70,7 +74,10 @@ const EmailTemplates = () => {
           .eq('id', editingTemplate.id);
 
         if (error) throw error;
-        toast.success('Template updated successfully!');
+        toast({
+          title: "Success",
+          description: "Template updated successfully!"
+        });
       } else {
         const { error } = await supabase
           .from('email_templates')
@@ -84,7 +91,10 @@ const EmailTemplates = () => {
           });
 
         if (error) throw error;
-        toast.success('Template created successfully!');
+        toast({
+          title: "Success", 
+          description: "Template created successfully!"
+        });
       }
 
       setIsDialogOpen(false);
@@ -92,7 +102,11 @@ const EmailTemplates = () => {
       fetchTemplates();
     } catch (error) {
       console.error('Error saving template:', error);
-      toast.error('Failed to save template');
+      toast({
+        title: "Error",
+        description: "Failed to save template",
+        variant: "destructive"
+      });
     }
   };
 
@@ -124,11 +138,18 @@ const EmailTemplates = () => {
 
       if (error) throw error;
       
-      toast.success(`Template ${template.is_active ? 'deactivated' : 'activated'}`);
+      toast({
+        title: "Success",
+        description: `Template ${template.is_active ? 'deactivated' : 'activated'}`
+      });
       fetchTemplates();
     } catch (error) {
       console.error('Error updating template status:', error);
-      toast.error('Failed to update template status');
+      toast({
+        title: "Error",
+        description: "Failed to update template status",
+        variant: "destructive"
+      });
     }
   };
 

@@ -6,7 +6,7 @@ import { Label } from '../../ui/label';
 import { Badge } from '../../ui/badge';
 import { Mail, CheckCircle } from 'lucide-react';
 import { supabase } from '../../../integrations/supabase/client';
-import { toast } from 'sonner';
+import { toast } from '../../../hooks/use-toast';
 
 const EmailSettings = () => {
   const [settings, setSettings] = useState({
@@ -31,7 +31,11 @@ const EmailSettings = () => {
 
       if (error && error.code !== 'PGRST116') {
         console.error('Error fetching email settings:', error);
-        toast.error('Failed to load email settings');
+        toast({
+          title: "Error",
+          description: "Failed to load email settings",
+          variant: "destructive"
+        });
       } else if (data) {
         setSettings({
           sender_email: data.sender_email,
@@ -57,13 +61,24 @@ const EmailSettings = () => {
 
       if (error) {
         console.error('Error saving settings:', error);
-        toast.error('Failed to save settings');
+        toast({
+          title: "Error",
+          description: "Failed to save settings",
+          variant: "destructive"
+        });
       } else {
-        toast.success('Email settings saved successfully!');
+        toast({
+          title: "Success",
+          description: "Email settings saved successfully!"
+        });
       }
     } catch (error) {
       console.error('Error:', error);
-      toast.error('Failed to save settings');
+      toast({
+        title: "Error",
+        description: "Failed to save settings", 
+        variant: "destructive"
+      });
     } finally {
       setSaving(false);
     }

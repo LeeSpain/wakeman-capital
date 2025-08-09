@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { supabase } from '../../integrations/supabase/client';
+import { toast } from '../../hooks/use-toast';
 import { X, Mail, User, Loader2 } from 'lucide-react';
 
 interface InviteClientModalProps {
@@ -24,14 +25,45 @@ const InviteClientModal: React.FC<InviteClientModalProps> = ({ open, onClose, on
     setError('');
 
     try {
-      const { data, error } = await supabase.functions.invoke('send-invite', {
+      const { data, error: inviteError } = await supabase.functions.invoke('send-invite', {
         body: {
           name: formData.name,
           email: formData.email
         }
       });
 
-      if (error) throw error;
+      if (inviteError) {
+        console.error('Error sending invite:', inviteError);
+        toast({
+          title: "Error",
+          description: "Failed to send invitation email",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Trigger welcome email automation (will be processed when user actually signs up)
+      try {
+        await supabase.functions.invoke('trigger-automated-emails', {
+          body: {
+            trigger_event: 'user_signup',
+            user_id: 'placeholder', // This will be set when the user actually signs up
+            template_type: 'welcome',
+            variables: {
+              client_name: formData.name,
+              client_email: formData.email
+            }
+          }
+        });
+        console.log('Welcome email automation prepared');
+      } catch (automationError) {
+        console.log('Welcome email automation setup skipped:', automationError);
+      }
+
+      toast({
+        title: "Success",
+        description: "Invitation sent successfully!"
+      });
 
       setSuccess(true);
       setFormData({ name: '', email: '' });
@@ -43,6 +75,11 @@ const InviteClientModal: React.FC<InviteClientModalProps> = ({ open, onClose, on
       }, 2000);
     } catch (err: any) {
       setError(err.message || 'Failed to send invitation');
+      toast({
+        title: "Error",
+        description: err.message || 'Failed to send invitation',
+        variant: "destructive"
+      });
     } finally {
       setLoading(false);
     }

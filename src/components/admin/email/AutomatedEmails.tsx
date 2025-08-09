@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Switch } from '../../ui/switch';
 import { Zap, Plus, Clock, Users, Settings } from 'lucide-react';
 import { supabase } from '../../../integrations/supabase/client';
-import { toast } from 'sonner';
+import { toast } from '../../../hooks/use-toast';
 
 interface AutomatedRule {
   id: string;
@@ -63,7 +63,11 @@ const AutomatedEmails = () => {
 
       if (error) {
         console.error('Error fetching rules:', error);
-        toast.error('Failed to load automated email rules');
+        toast({
+          title: "Error",
+          description: "Failed to load automated email rules",
+          variant: "destructive"
+        });
       } else {
         setRules(data || []);
       }
@@ -105,7 +109,10 @@ const AutomatedEmails = () => {
 
       if (error) throw error;
 
-      toast.success('Automated email rule created successfully!');
+      toast({
+        title: "Success",
+        description: "Automated email rule created successfully!"
+      });
       setIsDialogOpen(false);
       setNewRule({
         name: '',
@@ -117,7 +124,11 @@ const AutomatedEmails = () => {
       fetchRules();
     } catch (error) {
       console.error('Error creating rule:', error);
-      toast.error('Failed to create automated email rule');
+      toast({
+        title: "Error",
+        description: "Failed to create automated email rule",
+        variant: "destructive"
+      });
     }
   };
 
@@ -130,11 +141,18 @@ const AutomatedEmails = () => {
 
       if (error) throw error;
 
-      toast.success(`Rule ${rule.is_active ? 'deactivated' : 'activated'}`);
+      toast({
+        title: "Success",
+        description: `Rule ${rule.is_active ? 'deactivated' : 'activated'}`
+      });
       fetchRules();
     } catch (error) {
       console.error('Error updating rule:', error);
-      toast.error('Failed to update rule');
+      toast({
+        title: "Error",
+        description: "Failed to update rule",
+        variant: "destructive"
+      });
     }
   };
 

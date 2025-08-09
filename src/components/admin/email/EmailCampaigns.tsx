@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../ui/select';
 import { Send, Plus, Users, Eye, BarChart3 } from 'lucide-react';
 import { supabase } from '../../../integrations/supabase/client';
-import { toast } from 'sonner';
+import { toast } from '../../../hooks/use-toast';
 
 interface EmailCampaign {
   id: string;
@@ -52,7 +52,11 @@ const EmailCampaigns = () => {
 
       if (error) {
         console.error('Error fetching campaigns:', error);
-        toast.error('Failed to load email campaigns');
+        toast({
+          title: "Error",
+          description: "Failed to load email campaigns",
+          variant: "destructive"
+        });
       } else {
         setCampaigns(data || []);
       }
@@ -65,41 +69,26 @@ const EmailCampaigns = () => {
 
   const fetchClients = async () => {
     try {
-      const { data: subscriptions, error } = await supabase
-        .from('client_subscriptions')
-        .select('user_id')
-        .eq('subscription_status', 'active');
+      const { data, error } = await supabase.functions.invoke('get-client-emails');
 
       if (error) {
         console.error('Error fetching clients:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load client data",
+          variant: "destructive"
+        });
         return;
       }
 
-      const userIds = subscriptions?.map(sub => sub.user_id) || [];
-      if (userIds.length === 0) {
-        setClients([]);
-        return;
-      }
-
-      // Get user emails from auth.users using admin API
-      const clientEmails: any[] = [];
-      for (const userId of userIds) {
-        try {
-          const { data: userData } = await supabase.auth.admin.getUserById(userId);
-          if (userData.user?.email) {
-            clientEmails.push({
-              id: userId,
-              email: userData.user.email
-            });
-          }
-        } catch (error) {
-          console.error('Error fetching user:', error);
-        }
-      }
-      
-      setClients(clientEmails);
+      setClients(data.clients || []);
     } catch (error) {
       console.error('Error:', error);
+      toast({
+        title: "Error", 
+        description: "Failed to load client data",
+        variant: "destructive"
+      });
     }
   };
 
@@ -120,13 +109,20 @@ const EmailCampaigns = () => {
 
       if (error) throw error;
 
-      toast.success('Campaign created successfully!');
+      toast({
+        title: "Success",
+        description: "Campaign created successfully!"
+      });
       setIsDialogOpen(false);
       setNewCampaign({ name: '', subject: '', html_content: '', text_content: '' });
       fetchCampaigns();
     } catch (error) {
       console.error('Error creating campaign:', error);
-      toast.error('Failed to create campaign');
+      toast({
+        title: "Error",
+        description: "Failed to create campaign",
+        variant: "destructive"
+      });
     }
   };
 
@@ -151,11 +147,18 @@ const EmailCampaigns = () => {
 
       if (error) throw error;
 
-      toast.success('Campaign sent successfully!');
+      toast({
+        title: "Success",
+        description: "Campaign sent successfully!"
+      });
       fetchCampaigns();
     } catch (error) {
       console.error('Error sending campaign:', error);
-      toast.error('Failed to send campaign');
+      toast({
+        title: "Error", 
+        description: "Failed to send campaign",
+        variant: "destructive"
+      });
       
       // Revert status on error
       await supabase

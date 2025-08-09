@@ -17,6 +17,18 @@ interface BulkEmailRequest {
   text_content?: string;
 }
 
+const processTemplate = (content: string, variables: Record<string, any>): string => {
+  let processedContent = content;
+  
+  // Replace all variables in the format {{variable_name}}
+  for (const [key, value] of Object.entries(variables)) {
+    const regex = new RegExp(`{{${key}}}`, 'g');
+    processedContent = processedContent.replace(regex, value?.toString() || '');
+  }
+  
+  return processedContent;
+};
+
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -48,18 +60,75 @@ const handler = async (req: Request): Promise<Response> => {
     // Send emails to all recipients
     for (const recipient of recipients) {
       try {
+        // Get recipient user data for personalization
+        const { data: users } = await supabase.auth.admin.listUsers();
+        const recipientUser = users.users.find(u => u.email === recipient);
+        
+        let templateVariables = {
+          client_name: recipient.split('@')[0],
+          client_email: recipient,
+          profit_amount: '$0.00',
+          fee_amount: '$0.00',
+          billing_date: new Date().toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          })
+        };
+
+        if (recipientUser) {
+          // Get profile data
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('display_name, first_name, last_name')
+            .eq('id', recipientUser.id)
+            .single();
+
+          // Get latest profit data
+          const { data: profitData } = await supabase
+            .from('profit_calculations')
+            .select('profit_amount, fee_amount')
+            .eq('user_id', recipientUser.id)
+            .order('calculation_date', { ascending: false })
+            .limit(1)
+            .single();
+
+          const displayName = profile?.display_name || 
+                             (profile?.first_name && profile?.last_name 
+                               ? `${profile.first_name} ${profile.last_name}` 
+                               : recipient.split('@')[0]);
+
+          templateVariables = {
+            client_name: displayName,
+            client_email: recipient,
+            profit_amount: profitData?.profit_amount ? `$${Number(profitData.profit_amount).toFixed(2)}` : '$0.00',
+            fee_amount: profitData?.fee_amount ? `$${Number(profitData.fee_amount).toFixed(2)}` : '$0.00',
+            billing_date: new Date().toLocaleDateString('en-US', { 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            })
+          };
+        }
+
+        // Process template with variables
+        const processedSubject = processTemplate(subject, templateVariables);
+        const processedHtmlContent = processTemplate(html_content, templateVariables);
+        const processedTextContent = text_content ? processTemplate(text_content, templateVariables) : undefined;
+
         const emailResponse = await resend.emails.send({
           from: `${senderName} <${senderEmail}>`,
           to: [recipient],
-          subject: subject,
-          html: html_content,
-          text: text_content,
+          subject: processedSubject,
+          html: processedHtmlContent,
+          text: processedTextContent,
         });
 
         // Record email history
         await supabase.from('email_history').insert({
           recipient_email: recipient,
-          subject: subject,
+          recipient_user_id: recipientUser?.id,
+          subject: processedSubject,
           campaign_id: campaign_id,
           status: 'sent'
         });
