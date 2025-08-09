@@ -1,7 +1,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import Dashboard from '../components/Dashboard';
-import OpenOandaTrades from '@/components/trading/OpenOandaTrades';
+import OpenOandaTrades from '../components/trading/OpenOandaTrades';
 
 const DashboardPage = () => {
   return (
