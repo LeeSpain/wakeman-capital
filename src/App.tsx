@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import AppLayout from "./components/layout/AppLayout";
 import { Toaster } from "./components/ui/toaster";
+import ScrollToTop from "./components/util/ScrollToTop";
 import Index from "./pages/Index";
 import DashboardPage from "./pages/Dashboard";
 import Analytics from "./pages/Analytics";
@@ -22,6 +23,7 @@ function App() {
   return (
     <HelmetProvider>
       <Router>
+        <ScrollToTop />
         <AppLayout>
           <Routes>
             <Route path="/" element={<Index />} />
