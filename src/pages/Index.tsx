@@ -66,36 +66,36 @@ const Index = () => {
 
         {/* Sales Section */}
         <section className="max-w-7xl mx-auto px-4 pb-12">
-          <div className="rounded-xl bg-card/80 backdrop-blur shadow-elegant p-8 md:p-12 border border-primary/20">
+          <div className="rounded-xl bg-card/80 backdrop-blur shadow-elegant p-6 md:p-8 border border-primary/20">
             {/* Hero Sales Message */}
-            <div className="text-center mb-8">
-              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+            <div className="text-center mb-6">
+              <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
                 Turn Market Intelligence Into <span className="text-primary">Profit</span>
               </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              <p className="text-base text-muted-foreground max-w-2xl mx-auto">
                 Join traders who only pay when they profit. Our AI-powered insights deliver SMC-aligned opportunities with a simple 10% success fee model.
               </p>
             </div>
 
             {/* Value Proposition Grid */}
-            <div className="grid md:grid-cols-3 gap-6 mb-8">
-              <div className="text-center p-6 rounded-lg bg-muted/20 border border-border">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl">🎯</span>
+            <div className="grid md:grid-cols-3 gap-4 mb-6">
+              <div className="text-center p-4 rounded-lg bg-muted/20 border border-border">
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
+                  <span className="text-xl">🎯</span>
                 </div>
                 <h3 className="font-semibold text-foreground mb-2">Precision Entries</h3>
                 <p className="text-sm text-muted-foreground">SMC-aligned signals with clear invalidation levels and profit targets</p>
               </div>
-              <div className="text-center p-6 rounded-lg bg-muted/20 border border-border">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl">⚡</span>
+              <div className="text-center p-4 rounded-lg bg-muted/20 border border-border">
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
+                  <span className="text-xl">⚡</span>
                 </div>
                 <h3 className="font-semibold text-foreground mb-2">Real-Time Intelligence</h3>
                 <p className="text-sm text-muted-foreground">10,000+ daily signals processed in ~1.2s latency across all major markets</p>
               </div>
-              <div className="text-center p-6 rounded-lg bg-muted/20 border border-border">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl">💰</span>
+              <div className="text-center p-4 rounded-lg bg-muted/20 border border-border">
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
+                  <span className="text-xl">💰</span>
                 </div>
                 <h3 className="font-semibold text-foreground mb-2">Profit-First Model</h3>
                 <p className="text-sm text-muted-foreground">Only pay 10% when you profit. No monthly fees, no hidden costs</p>
@@ -103,30 +103,30 @@ const Index = () => {
             </div>
 
             {/* Social Proof & Stats */}
-            <div className="bg-muted/30 rounded-lg p-6 mb-8">
+            <div className="bg-muted/30 rounded-lg p-4 mb-6">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
                 <div>
-                  <div className="text-2xl font-bold text-primary">95%+</div>
+                  <div className="text-xl font-bold text-primary">95%+</div>
                   <div className="text-sm text-muted-foreground">Signal Accuracy</div>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-primary">$2.4M+</div>
+                  <div className="text-xl font-bold text-primary">$2.4M+</div>
                   <div className="text-sm text-muted-foreground">Profits Tracked</div>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-primary">1,200+</div>
+                  <div className="text-xl font-bold text-primary">1,200+</div>
                   <div className="text-sm text-muted-foreground">Active Traders</div>
                 </div>
               </div>
             </div>
 
             {/* Profit Sharing Highlight */}
-            <div className="bg-primary/5 border border-primary/20 rounded-lg p-6 mb-8">
-              <div className="flex items-center justify-center gap-3 mb-3">
-                <span className="text-2xl">🤝</span>
-                <h3 className="text-xl font-semibold text-foreground">Aligned Success Model</h3>
+            <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 mb-6">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <span className="text-xl">🤝</span>
+                <h3 className="text-lg font-semibold text-foreground">Aligned Success Model</h3>
               </div>
-              <p className="text-center text-muted-foreground mb-4">
+              <p className="text-center text-muted-foreground mb-3 text-sm">
                 We succeed when you succeed. Pay only 10% of your profits—no upfront costs, no monthly subscriptions, no risk.
               </p>
               <div className="text-center">
@@ -140,14 +140,14 @@ const Index = () => {
             <div className="text-center">
               <Link 
                 to="/auth" 
-                className="inline-flex items-center justify-center px-8 py-3 text-lg font-semibold bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors shadow-lg"
+                className="inline-flex items-center justify-center px-6 py-3 text-base font-semibold bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors shadow-lg"
               >
                 Start Earning Today
               </Link>
-              <p className="text-sm text-muted-foreground mt-3">
+              <p className="text-sm text-muted-foreground mt-2">
                 Already have an account? <Link to="/auth" className="text-primary hover:underline">Sign in here</Link>
               </p>
-              <div className="flex items-center justify-center gap-4 mt-4 text-xs text-muted-foreground">
+              <div className="flex items-center justify-center gap-4 mt-3 text-xs text-muted-foreground">
                 <span className="flex items-center gap-1">✓ No setup fees</span>
                 <span className="flex items-center gap-1">✓ Cancel anytime</span>
                 <span className="flex items-center gap-1">✓ 30-day money back</span>
