@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import ClientList from './ClientList';
@@ -10,7 +11,8 @@ import AdminTasksList from './AdminTasksList';
 import PaymentTracking from './PaymentTracking';
 import AICoachSettings from './AICoachSettings';
 import { NewsManagement } from './NewsManagement';
-import { Users, DollarSign, FileText, BarChart3, Settings, Mail, CreditCard, Bot, Calendar } from 'lucide-react';
+import { Users, DollarSign, FileText, BarChart3, Settings, Mail, CreditCard, Bot, Calendar, Video } from 'lucide-react';
+import VideosAdmin from './VideosAdmin';
 
 const AdminDashboard = () => {
   return (
@@ -25,7 +27,7 @@ const AdminDashboard = () => {
       <AdminTasksList />
 
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-9">
+        <TabsList className="grid w-full grid-cols-10">
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <BarChart3 className="h-4 w-4" />
             Overview
@@ -57,6 +59,10 @@ const AdminDashboard = () => {
           <TabsTrigger value="ai-coach" className="flex items-center gap-2">
             <Bot className="h-4 w-4" />
             AI Coach
+          </TabsTrigger>
+          <TabsTrigger value="videos" className="flex items-center gap-2">
+            <Video className="h-4 w-4" />
+            Videos
           </TabsTrigger>
           <TabsTrigger value="settings" className="flex items-center gap-2">
             <Settings className="h-4 w-4" />
@@ -90,6 +96,10 @@ const AdminDashboard = () => {
 
         <TabsContent value="ai-coach">
           <AICoachSettings />
+        </TabsContent>
+
+        <TabsContent value="videos">
+          <VideosAdmin />
         </TabsContent>
 
         <TabsContent value="settings">

@@ -1,25 +1,27 @@
-import React, { useMemo, useState } from 'react';
+
+import React, { useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Input } from '../components/ui/input';
-import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { useToast } from '../hooks/use-toast';
+import { supabase } from '../integrations/supabase/client';
 
 interface VideoItem {
   id: string;
   title: string;
   url: string;
-  description?: string;
+  description?: string | null;
+  is_published: boolean;
+  sort_order: number;
+  created_at: string;
 }
 
-// Helper to normalize YouTube links to embeddable format
+// Helper to normalize YouTube/Vimeo links to embeddable format
 const toEmbedUrl = (url: string) => {
   try {
     const u = new URL(url);
     if (u.hostname.includes('youtube.com')) {
       const v = u.searchParams.get('v');
       if (v) return `https://www.youtube.com/embed/${v}`;
-      // handle /embed/ or /shorts/
       if (u.pathname.startsWith('/embed/')) return url;
       if (u.pathname.startsWith('/shorts/')) {
         const id = u.pathname.split('/')[2];
@@ -40,117 +42,147 @@ const toEmbedUrl = (url: string) => {
   }
 };
 
-const defaultVideos: VideoItem[] = [
-  {
-    id: 'getting-started',
-    title: 'Getting Started: Dashboard Tour',
-    url: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-    description: 'Overview of the interface and where to find key features.'
-  },
-  {
-    id: 'signals',
-    title: 'Using Real-time Signals',
-    url: 'https://www.youtube.com/embed/aqz-KE-bpKQ',
-    description: 'Learn how to act on signals, manage risk, and log outcomes.'
-  }
-];
+type VideoSettings = {
+  nav_label: string;
+  page_title: string;
+  page_description: string | null;
+  show_in_nav: boolean;
+};
+
+const defaultSettings: VideoSettings = {
+  nav_label: 'Videos',
+  page_title: 'How‑to Videos',
+  page_description: 'Short tutorials to get the most out of the platform.',
+  show_in_nav: true,
+};
 
 const Videos: React.FC = () => {
   const { toast } = useToast();
-  const [videos, setVideos] = useState<VideoItem[]>(defaultVideos);
-  const [title, setTitle] = useState('');
-  const [url, setUrl] = useState('');
+  const [videos, setVideos] = useState<VideoItem[]>([]);
+  const [settings, setSettings] = useState<VideoSettings>(defaultSettings);
+  const [loading, setLoading] = useState(true);
 
-  const structuredData = useMemo(() => ({
-    '@context': 'https://schema.org',
-    '@type': 'ItemList',
-    itemListElement: videos.map((v, i) => ({
-      '@type': 'VideoObject',
-      position: i + 1,
-      name: v.title,
-      description: v.description || 'Instructional video',
-      embedUrl: toEmbedUrl(v.url),
-      url: v.url
-    }))
-  }), [videos]);
+  useEffect(() => {
+    const loadAll = async () => {
+      // Load settings (available to authenticated users per RLS; fallback to defaults)
+      const settingsPromise = supabase
+        .from('videos_settings')
+        .select('nav_label, page_title, page_description, show_in_nav')
+        .eq('key', 'default')
+        .maybeSingle();
 
-  const addVideo = () => {
-    if (!title.trim() || !url.trim()) {
-      toast({ title: 'Missing info', description: 'Please add a title and a URL.' });
-      return;
-    }
-    const item: VideoItem = { id: `${Date.now()}`, title: title.trim(), url: url.trim() };
-    setVideos((prev) => [item, ...prev]);
-    setTitle('');
-    setUrl('');
-    toast({ title: 'Video added', description: 'Your video was added locally. Persisting can be added later.' });
-  };
+      // Load only published videos (RLS enforces is_published = true for authenticated users)
+      const videosPromise = supabase
+        .from('videos')
+        .select('id, title, url, description, is_published, sort_order, created_at')
+        .eq('is_published', true)
+        .order('sort_order', { ascending: true })
+        .order('created_at', { ascending: false });
+
+      const [{ data: sData, error: sErr }, { data: vData, error: vErr }] = await Promise.all([
+        settingsPromise,
+        videosPromise,
+      ]);
+
+      if (sErr) {
+        console.warn('Videos settings not available, using defaults:', sErr);
+        setSettings(defaultSettings);
+      } else if (sData) {
+        setSettings({
+          nav_label: sData.nav_label ?? defaultSettings.nav_label,
+          page_title: sData.page_title ?? defaultSettings.page_title,
+          page_description: sData.page_description ?? defaultSettings.page_description,
+          show_in_nav: sData.show_in_nav ?? true,
+        });
+      }
+
+      if (vErr) {
+        console.error('Error loading videos:', vErr);
+        toast({ title: 'Error', description: 'Unable to load videos right now.' });
+        setVideos([]);
+      } else {
+        setVideos((vData || []) as VideoItem[]);
+      }
+
+      setLoading(false);
+    };
+
+    loadAll();
+  }, [toast]);
+
+  const structuredData = useMemo(
+    () => ({
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      itemListElement: videos.map((v, i) => ({
+        '@type': 'VideoObject',
+        position: i + 1,
+        name: v.title,
+        description: v.description || 'Instructional video',
+        embedUrl: toEmbedUrl(v.url),
+        url: v.url,
+      })),
+    }),
+    [videos]
+  );
 
   return (
     <>
       <Helmet>
-        <title>Videos | Tutorials and How-To</title>
-        <meta name="description" content="Instructional videos to learn how to use the platform, real-time signals, analytics, and journaling." />
+        <title>{settings.page_title} | Tutorials and How-To</title>
+        <meta
+          name="description"
+          content={settings.page_description || 'Instructional videos to learn how to use the platform.'}
+        />
         <link rel="canonical" href="/videos" />
         <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
       </Helmet>
 
       <header className="border-b border-border bg-card/60">
         <div className="max-w-7xl mx-auto px-4 py-6">
-          <h1 className="text-2xl md:text-3xl font-bold text-foreground">How‑to Videos</h1>
-          <p className="text-muted-foreground mt-1">Short tutorials to get the most out of the platform.</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground">
+            {settings.page_title}
+          </h1>
+          {settings.page_description && (
+            <p className="text-muted-foreground mt-1">{settings.page_description}</p>
+          )}
         </div>
       </header>
 
       <main className="max-w-7xl mx-auto px-4 py-6">
-        {/* Add new video */}
-        <section className="mb-6">
-          <Card className="p-4 bg-muted/30 border-border">
-            <div className="grid md:grid-cols-3 gap-3">
-              <div className="md:col-span-1">
-                <Input
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Video title"
-                  aria-label="Video title"
-                />
-              </div>
-              <div className="md:col-span-2 flex gap-3">
-                <Input
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  placeholder="YouTube/Vimeo URL"
-                  aria-label="Video URL"
-                />
-                <Button onClick={addVideo} variant="default">Add</Button>
-              </div>
-            </div>
-          </Card>
-        </section>
-
-        {/* Video grid */}
-        <section className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {videos.map((v) => (
-            <Card key={v.id} className="overflow-hidden">
-              <div className="aspect-video bg-muted">
-                <iframe
-                  className="w-full h-full"
-                  src={toEmbedUrl(v.url)}
-                  title={v.title}
-                  loading="lazy"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowFullScreen
-                />
-              </div>
-              <div className="p-3">
-                <h3 className="font-semibold text-card-foreground truncate" title={v.title}>{v.title}</h3>
-                {v.description && (
-                  <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{v.description}</p>
-                )}
-              </div>
-            </Card>
-          ))}
-        </section>
+        {loading ? (
+          <div className="text-muted-foreground">Loading videos...</div>
+        ) : (
+          <section className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {videos.map((v) => (
+              <Card key={v.id} className="overflow-hidden">
+                <div className="aspect-video bg-muted">
+                  <iframe
+                    className="w-full h-full"
+                    src={toEmbedUrl(v.url)}
+                    title={v.title}
+                    loading="lazy"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  />
+                </div>
+                <div className="p-3">
+                  <h3 className="font-semibold text-card-foreground truncate" title={v.title}>
+                    {v.title}
+                  </h3>
+                  {v.description && (
+                    <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                      {v.description}
+                    </p>
+                  )}
+                </div>
+              </Card>
+            ))}
+            {videos.length === 0 && (
+              <div className="text-muted-foreground">No videos available yet.</div>
+            )}
+          </section>
+        )}
       </main>
     </>
   );
