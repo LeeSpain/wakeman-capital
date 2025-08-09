@@ -27,11 +27,35 @@ const AICoach = () => {
   type Settings = { provider: 'OpenAI' | 'Anthropic'; model: string; systemPrompt: string; temperature: number };
   const defaultPrompt = "You are Wakeman Capital's AI Trading Coach. Be concise, structured, and risk-aware. Prefer London session setups, SMC concepts (CHoCH, BOS, FVG, OB, liquidity), and enforce RRR ≥ 2:1 with disciplined risk management.";
 
+  const normalizeUrl = (u: string) => {
+    try {
+      let url = u.trim();
+      if (!url) return '';
+      // Add protocol if missing
+      if (!/^https?:\/\//i.test(url)) {
+        url = 'https://' + url;
+      }
+      // Remove trailing punctuation
+      url = url.replace(/[),.;]+$/g, '');
+      const parsed = new URL(url);
+      // Lowercase host and remove default ports
+      parsed.host = parsed.host.toLowerCase();
+      if ((parsed.protocol === 'http:' && parsed.port === '80') || (parsed.protocol === 'https:' && parsed.port === '443')) {
+        parsed.port = '';
+      }
+      return parsed.toString();
+    } catch {
+      return '';
+    }
+  };
+
   const [settings, setSettings] = useState<Settings>({ provider: 'OpenAI', model: 'gpt-4o-mini', systemPrompt: defaultPrompt, temperature: 0.3 });
   const [sources, setSources] = useState<string[]>([]);
   const [newSource, setNewSource] = useState('');
   const [contextUsed, setContextUsed] = useState<{ tools: string[]; sources: string[] }>({ tools: [], sources: [] });
   const { user } = useAuth();
+  const [settingsRowId, setSettingsRowId] = useState<string | null>(null);
+  const [savingSettings, setSavingSettings] = useState(false);
   useEffect(() => {
     try {
       const s = localStorage.getItem('aiCoach.settings');
@@ -62,6 +86,31 @@ const AICoach = () => {
       }
     };
     load();
+  }, [user]);
+
+  // Load saved settings from DB when authenticated
+  useEffect(() => {
+    const loadSettings = async () => {
+      if (!user) return;
+      const { data, error } = await supabase
+        .from('ai_coach_settings')
+        .select('id, provider, model, system_prompt, tools')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (!error && data) {
+        setSettingsRowId((data as any).id);
+        setSettings(prev => ({
+          ...prev,
+          provider: (data as any).provider?.toLowerCase() === 'anthropic' ? 'Anthropic' : 'OpenAI',
+          model: (data as any).model ?? prev.model,
+          systemPrompt: (data as any).system_prompt ?? prev.systemPrompt,
+          temperature: typeof (data as any).tools?.temperature === 'number' ? (data as any).tools.temperature : prev.temperature,
+        }));
+      }
+    };
+    loadSettings();
   }, [user]);
 
   const canSend = useMemo(() => input.trim().length > 0 && !loading, [input, loading]);
@@ -100,41 +149,56 @@ const AICoach = () => {
       const buf = await file.arrayBuffer();
       const wb = XLSX.read(buf, { type: 'array' });
       const ws = wb.Sheets[wb.SheetNames[0]];
-      const rows: any[] = XLSX.utils.sheet_to_json(ws, { header: 1 });
-      const urlRegex = /https?:\/\/[^\s]+/i;
+
+      // Extract URLs/domains from all cells (supports multiple URLs per cell and bare domains)
+      const rows: any[] = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+      const DOMAIN_OR_URL = /((https?:\/\/)?(?:[a-z0-9-]+\.)+[a-z]{2,}(?:\/[\w\-._~:/?#\[\]@!$&'()*+,;=%]*)?)/gi;
       const extracted = new Set<string>();
-      rows.forEach((row) => {
-        if (Array.isArray(row)) {
-          row.forEach((cell) => {
-            if (typeof cell === 'string') {
-              const m = cell.match(urlRegex);
-              if (m) extracted.add(m[0].trim());
-            }
-          });
+      for (const row of rows) {
+        if (!Array.isArray(row)) continue;
+        for (const cell of row) {
+          if (typeof cell !== 'string') continue;
+          for (const match of cell.matchAll(DOMAIN_OR_URL)) {
+            const raw = match[0];
+            const norm = normalizeUrl(raw);
+            if (norm) extracted.add(norm);
+          }
         }
-      });
+      }
+
+      // Fallback: try common column names
       if (extracted.size === 0) {
         const objs: any[] = XLSX.utils.sheet_to_json(ws, { defval: '' });
-        objs.forEach((o) => {
-          const candidate = (o.url || o.source || o.link || '').toString().trim();
-          if (candidate && urlRegex.test(candidate)) extracted.add(candidate);
-        });
+        const keys = ['url', 'source', 'link', 'website', 'domain'];
+        for (const o of objs) {
+          for (const k of keys) {
+            if (o[k]) {
+              const norm = normalizeUrl(String(o[k]));
+              if (norm) extracted.add(norm);
+            }
+          }
+        }
       }
-      const newUrls = Array.from(extracted).filter((u) => !sources.includes(u));
+
+      // De-duplicate against current sources (case-insensitive by href)
+      const existingSet = new Set(sources.map(s => normalizeUrl(s)).filter(Boolean));
+      const newUrls = Array.from(extracted).filter((u) => !existingSet.has(u));
       if (newUrls.length === 0) {
-        toast({ title: 'No new sources found', description: 'Ensure the file contains URLs (http/https).' });
+        toast({ title: 'No new sources found', description: 'Make sure cells contain URLs or domains.' });
         return;
       }
+
       setSources((prev) => [...prev, ...newUrls]);
       if (user) {
+        const payload = newUrls.map((url) => ({ user_id: user.id, url, is_active: true }));
         const { error } = await supabase
           .from('ai_coach_sources')
-          .insert(newUrls.map((url) => ({ user_id: user.id, url, is_active: true })));
+          .upsert(payload, { onConflict: 'user_id,url' });
         if (error) {
-          console.error('Bulk insert sources error:', error);
+          console.error('Bulk upsert sources error:', error);
           toast({ title: 'Imported locally only', description: 'Saved to browser. Sign in to sync.' });
         } else {
-          toast({ title: 'Sources imported', description: `Added ${newUrls.length} source(s).` });
+          toast({ title: 'Sources imported', description: `Added/updated ${newUrls.length} source(s).` });
         }
       } else {
         toast({ title: 'Sources imported (local)', description: `Added ${newUrls.length} source(s) locally.` });
@@ -144,6 +208,45 @@ const AICoach = () => {
       toast({ title: 'Import failed', description: e?.message ?? 'Please check your file and try again.' });
     } finally {
       if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const saveSettings = async () => {
+    try {
+      setSavingSettings(true);
+      if (!user) {
+        toast({ title: 'Saved locally', description: 'Sign in to sync settings across devices.' });
+        return;
+      }
+      const payload: any = {
+        user_id: user.id,
+        provider: settings.provider.toLowerCase(),
+        model: settings.model,
+        system_prompt: settings.systemPrompt,
+        tools: { temperature: settings.temperature },
+      };
+      if (settingsRowId) {
+        const { error } = await supabase
+          .from('ai_coach_settings')
+          .update(payload)
+          .eq('id', settingsRowId);
+        if (error) throw error;
+        toast({ title: 'Settings saved', description: 'Your AI Coach settings were updated.' });
+      } else {
+        const { data, error } = await supabase
+          .from('ai_coach_settings')
+          .insert(payload)
+          .select('id')
+          .single();
+        if (error) throw error;
+        setSettingsRowId((data as any)?.id ?? null);
+        toast({ title: 'Settings saved', description: 'Your AI Coach settings were created.' });
+      }
+    } catch (e: any) {
+      console.error('Save settings error:', e);
+      toast({ title: 'Save failed', description: e?.message ?? 'Could not save settings.' });
+    } finally {
+      setSavingSettings(false);
     }
   };
 
@@ -268,7 +371,11 @@ const AICoach = () => {
                       rows={5}
                     />
                   </div>
-                  <p className="text-xs text-muted-foreground">Settings are saved locally and used for all AI Coach replies.</p>
+                  <p className="text-xs text-muted-foreground">Settings are saved locally and synced to your account when signed in.</p>
+                  <div className="flex gap-2">
+                    <Button onClick={saveSettings} disabled={savingSettings}>{savingSettings ? 'Saving…' : 'Save settings'}</Button>
+                    <Button variant="outline" onClick={() => setSettings({ provider: 'OpenAI', model: 'gpt-4o-mini', systemPrompt: defaultPrompt, temperature: 0.3 })}>Reset to default</Button>
+                  </div>
                 </section>
               )}
               {active === 'Sources' && (
@@ -282,7 +389,8 @@ const AICoach = () => {
                       />
                       <Button
                         onClick={async () => {
-                          const v = newSource.trim();
+                          const raw = newSource.trim();
+                          const v = normalizeUrl(raw);
                           if (!v) return;
                           if (sources.includes(v)) return setNewSource('');
                           setSources(prev => [...prev, v]);
@@ -291,7 +399,7 @@ const AICoach = () => {
                             if (user) {
                               const { error } = await supabase
                                 .from('ai_coach_sources')
-                                .insert({ user_id: user.id, url: v, is_active: true });
+                                .upsert({ user_id: user.id, url: v, is_active: true }, { onConflict: 'user_id,url' });
                               if (error) console.error('Add source error:', error);
                             }
                           } catch (e) {
@@ -326,7 +434,7 @@ const AICoach = () => {
                                 if (user) {
                                   const { error } = await supabase
                                     .from('ai_coach_sources')
-                                    .delete()
+                                    .update({ is_active: false })
                                     .match({ user_id: user.id, url });
                                   if (error) console.error('Remove source error:', error);
                                 }
