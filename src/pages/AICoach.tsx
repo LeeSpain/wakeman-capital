@@ -4,6 +4,8 @@ import { Button } from '../components/ui/button';
 import { supabase } from '../integrations/supabase/client';
 import { useAuth } from '../hooks/useAuth';
 import { AlertsList } from '../components/signals/AlertsList';
+import * as XLSX from 'xlsx';
+import { useToast } from '../hooks/use-toast';
 
 const tabs = ['Chat', 'Settings', 'Sources', 'Alerts'] as const;
 
@@ -19,6 +21,8 @@ const AICoach = () => {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
 
   type Settings = { provider: 'OpenAI' | 'Anthropic'; model: string; systemPrompt: string; temperature: number };
   const defaultPrompt = "You are Wakeman Capital's AI Trading Coach. Be concise, structured, and risk-aware. Prefer London session setups, SMC concepts (CHoCH, BOS, FVG, OB, liquidity), and enforce RRR ≥ 2:1 with disciplined risk management.";
@@ -86,6 +90,60 @@ const AICoach = () => {
     } finally {
       setLoading(false);
       setTimeout(() => listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: 'smooth' }), 50);
+    }
+  };
+
+  const handleImportFile = async (files: FileList | null) => {
+    try {
+      if (!files || files.length === 0) return;
+      const file = files[0];
+      const buf = await file.arrayBuffer();
+      const wb = XLSX.read(buf, { type: 'array' });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows: any[] = XLSX.utils.sheet_to_json(ws, { header: 1 });
+      const urlRegex = /https?:\/\/[^\s]+/i;
+      const extracted = new Set<string>();
+      rows.forEach((row) => {
+        if (Array.isArray(row)) {
+          row.forEach((cell) => {
+            if (typeof cell === 'string') {
+              const m = cell.match(urlRegex);
+              if (m) extracted.add(m[0].trim());
+            }
+          });
+        }
+      });
+      if (extracted.size === 0) {
+        const objs: any[] = XLSX.utils.sheet_to_json(ws, { defval: '' });
+        objs.forEach((o) => {
+          const candidate = (o.url || o.source || o.link || '').toString().trim();
+          if (candidate && urlRegex.test(candidate)) extracted.add(candidate);
+        });
+      }
+      const newUrls = Array.from(extracted).filter((u) => !sources.includes(u));
+      if (newUrls.length === 0) {
+        toast({ title: 'No new sources found', description: 'Ensure the file contains URLs (http/https).' });
+        return;
+      }
+      setSources((prev) => [...prev, ...newUrls]);
+      if (user) {
+        const { error } = await supabase
+          .from('ai_coach_sources')
+          .insert(newUrls.map((url) => ({ user_id: user.id, url, is_active: true })));
+        if (error) {
+          console.error('Bulk insert sources error:', error);
+          toast({ title: 'Imported locally only', description: 'Saved to browser. Sign in to sync.' });
+        } else {
+          toast({ title: 'Sources imported', description: `Added ${newUrls.length} source(s).` });
+        }
+      } else {
+        toast({ title: 'Sources imported (local)', description: `Added ${newUrls.length} source(s) locally.` });
+      }
+    } catch (e: any) {
+      console.error('Import file error:', e);
+      toast({ title: 'Import failed', description: e?.message ?? 'Please check your file and try again.' });
+    } finally {
+      if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 
@@ -214,35 +272,45 @@ const AICoach = () => {
                 </section>
               )}
               {active === 'Sources' && (
-                <section className="space-y-4">
-                  <div className="flex gap-2">
-                    <input
-                      value={newSource}
-                      onChange={(e) => setNewSource(e.target.value)}
-                      placeholder="Add source URL or keyword (e.g. https://news.site/forex)"
-                      className="flex-1 rounded-md border border-input bg-background p-2 text-sm"
-                    />
-                    <Button
-                      onClick={async () => {
-                        const v = newSource.trim();
-                        if (!v) return;
-                        if (sources.includes(v)) return setNewSource('');
-                        setSources(prev => [...prev, v]);
-                        setNewSource('');
-                        try {
-                          if (user) {
-                            const { error } = await supabase
-                              .from('ai_coach_sources')
-                              .insert({ user_id: user.id, url: v, is_active: true });
-                            if (error) console.error('Add source error:', error);
+                  <section className="space-y-4">
+                    <div className="flex flex-wrap gap-2">
+                      <input
+                        value={newSource}
+                        onChange={(e) => setNewSource(e.target.value)}
+                        placeholder="Add source URL or keyword (e.g. https://news.site/forex)"
+                        className="flex-1 min-w-[240px] rounded-md border border-input bg-background p-2 text-sm"
+                      />
+                      <Button
+                        onClick={async () => {
+                          const v = newSource.trim();
+                          if (!v) return;
+                          if (sources.includes(v)) return setNewSource('');
+                          setSources(prev => [...prev, v]);
+                          setNewSource('');
+                          try {
+                            if (user) {
+                              const { error } = await supabase
+                                .from('ai_coach_sources')
+                                .insert({ user_id: user.id, url: v, is_active: true });
+                              if (error) console.error('Add source error:', error);
+                            }
+                          } catch (e) {
+                            console.error('Add source exception:', e);
                           }
-                        } catch (e) {
-                          console.error('Add source exception:', e);
-                        }
-                      }}
-                      disabled={!newSource.trim()}
-                    >Add</Button>
-                  </div>
+                        }}
+                        disabled={!newSource.trim()}
+                      >Add</Button>
+                      <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
+                        Import file
+                      </Button>
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        accept=".xlsx,.xls,.csv"
+                        className="hidden"
+                        onChange={(e) => handleImportFile(e.target.files)}
+                      />
+                    </div>
                   {sources.length === 0 ? (
                     <p className="text-muted-foreground text-sm">No sources yet. Add your preferred news, X accounts, or custom URLs.</p>
                   ) : (
