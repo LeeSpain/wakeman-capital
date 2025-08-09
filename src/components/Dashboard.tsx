@@ -14,13 +14,17 @@ import { useNewsAlerts } from '../hooks/useNewsAlerts';
 
 const Dashboard = () => {
   const { user } = useAuth();
-  const { profile } = useProfile(user?.id);
+  const { profile, loading: profileLoading } = useProfile(user?.id);
   const { data: trends } = useTrends();
   const { trades, loading: tradesLoading } = useUserTrades(user?.id ?? null);
   const { data: opps, loading: oppsLoading } = useTopOpportunities();
   const { upcomingEvents, isWithinDangerZone } = useNewsAlerts();
 
-  const displayName = profile?.first_name || profile?.display_name || user?.email || 'Guest';
+  const displayName = useMemo(() => {
+    if (profileLoading) return null;
+    const name = profile?.first_name?.trim() || profile?.display_name?.trim();
+    return name || user?.email || 'Guest';
+  }, [profile, profileLoading, user?.email]);
 
   const activeSignals = oppsLoading ? null : opps.length;
   const openTrades = trades.filter(t => t.status === 'open').length;
@@ -57,8 +61,9 @@ const Dashboard = () => {
       <section className="rounded-xl bg-card p-6 shadow-elegant">
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
-            <div className="text-sm text-muted-foreground mb-1">Welcome back{displayName ? ',' : ''}</div>
-            <h2 className="text-2xl font-bold text-card-foreground">{displayName}</h2>
+            <h2 className="text-2xl font-bold text-card-foreground" aria-live="polite">
+              Welcome back{displayName ? `, ${displayName}` : ''}
+            </h2>
             <div className="mt-3 flex flex-wrap items-center gap-2">
               <Chip label="Active signals" value={activeSignals} />
               <Chip label="Open trades" value={tradesLoading ? '…' : openTrades} />
