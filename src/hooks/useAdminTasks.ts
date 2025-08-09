@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '../integrations/supabase/client';
 import { useToast } from './use-toast';
 
@@ -20,10 +20,6 @@ export const useAdminTasks = () => {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
-  useEffect(() => {
-    fetchTasks();
-  }, []);
-
   const fetchTasks = async () => {
     try {
       const { data, error } = await supabase
@@ -31,10 +27,19 @@ export const useAdminTasks = () => {
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching tasks:', error);
+        toast({
+          title: "Error",
+          description: "Failed to fetch tasks",
+          variant: "destructive",
+        });
+        return;
+      }
+
       setTasks(data || []);
     } catch (error) {
-      console.error('Error fetching tasks:', error);
+      console.error('Error:', error);
       toast({
         title: "Error",
         description: "Failed to fetch tasks",
@@ -45,25 +50,37 @@ export const useAdminTasks = () => {
     }
   };
 
-  const addTask = async (task: Omit<AdminTask, 'id' | 'created_at' | 'updated_at' | 'created_by' | 'completed_at'>) => {
+  const addTask = async (taskData: Partial<AdminTask>) => {
     try {
       const { data, error } = await supabase
         .from('admin_tasks')
         .insert([{
-          ...task,
+          title: taskData.title,
+          description: taskData.description,
+          priority: taskData.priority || 'medium',
+          due_date: taskData.due_date,
           created_by: (await supabase.auth.getUser()).data.user?.id
         }])
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error adding task:', error);
+        toast({
+          title: "Error",
+          description: "Failed to add task",
+          variant: "destructive",
+        });
+        return;
+      }
+
       setTasks(prev => [data, ...prev]);
       toast({
         title: "Success",
         description: "Task added successfully",
       });
     } catch (error) {
-      console.error('Error adding task:', error);
+      console.error('Error:', error);
       toast({
         title: "Error",
         description: "Failed to add task",
@@ -74,10 +91,13 @@ export const useAdminTasks = () => {
 
   const updateTask = async (id: string, updates: Partial<AdminTask>) => {
     try {
-      const updateData = {
-        ...updates,
-        ...(updates.status === 'completed' && !updates.completed_at ? { completed_at: new Date().toISOString() } : {})
-      };
+      const updateData: any = { ...updates };
+      
+      if (updates.status === 'completed' && !updates.completed_at) {
+        updateData.completed_at = new Date().toISOString();
+      } else if (updates.status !== 'completed') {
+        updateData.completed_at = null;
+      }
 
       const { data, error } = await supabase
         .from('admin_tasks')
@@ -86,14 +106,23 @@ export const useAdminTasks = () => {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error updating task:', error);
+        toast({
+          title: "Error",
+          description: "Failed to update task",
+          variant: "destructive",
+        });
+        return;
+      }
+
       setTasks(prev => prev.map(task => task.id === id ? data : task));
       toast({
         title: "Success",
         description: "Task updated successfully",
       });
     } catch (error) {
-      console.error('Error updating task:', error);
+      console.error('Error:', error);
       toast({
         title: "Error",
         description: "Failed to update task",
@@ -109,14 +138,23 @@ export const useAdminTasks = () => {
         .delete()
         .eq('id', id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error deleting task:', error);
+        toast({
+          title: "Error",
+          description: "Failed to delete task",
+          variant: "destructive",
+        });
+        return;
+      }
+
       setTasks(prev => prev.filter(task => task.id !== id));
       toast({
         title: "Success",
         description: "Task deleted successfully",
       });
     } catch (error) {
-      console.error('Error deleting task:', error);
+      console.error('Error:', error);
       toast({
         title: "Error",
         description: "Failed to delete task",
@@ -125,12 +163,16 @@ export const useAdminTasks = () => {
     }
   };
 
+  useEffect(() => {
+    fetchTasks();
+  }, []);
+
   return {
     tasks,
     loading,
     addTask,
     updateTask,
     deleteTask,
-    refetch: fetchTasks
+    refreshTasks: fetchTasks
   };
 };
