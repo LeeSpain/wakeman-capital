@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowDownRight, ArrowUpRight } from 'lucide-react';
-import { Badge } from '../ui/badge';
+
 import { useTrends } from '../../hooks/useTrends';
 import { useTopOpportunities } from '../../hooks/useSignals';
 import { useMarketPrices } from '../../hooks/useMarketPrices';
@@ -166,10 +166,6 @@ const PhoneMockup: React.FC<{ targetHeight?: number }> = ({ targetHeight }) => {
         </div>
       </div>
     </div>
-  </div>
-  {/* Overlay badge to match hero style */}
-  <div className="absolute -top-2 -left-2">
-    <Badge variant="secondary" className="bg-secondary/80 backdrop-blur">AI</Badge>
   </div>
 </div>
   );

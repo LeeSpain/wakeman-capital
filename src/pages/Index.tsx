@@ -5,7 +5,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import FirstVisitModal from '../components/i18n/FirstVisitModal';
 import { useTranslation } from 'react-i18next';
 import appMockup from '../assets/app-mockup-hero.png';
-import { Badge } from '../components/ui/badge';
+
 import PhoneMockup from '../components/marketing/PhoneMockup';
 
 
@@ -102,21 +102,6 @@ const Index = () => {
                 <aside className="md:col-span-5">
                   <div className="relative rounded-lg overflow-hidden border border-border bg-muted/20 shadow-elegant hover-scale">
                     <PhoneMockup targetHeight={targetH} />
-                    <div className="absolute top-3 left-3">
-                      <Badge variant="secondary" className="bg-secondary/80 backdrop-blur">
-                        {t('home.hero.points.realtime')}
-                      </Badge>
-                    </div>
-                    <div className="absolute top-3 right-3">
-                      <Badge variant="secondary" className="bg-secondary/80 backdrop-blur">
-                        {t('home.hero.points.smc')}
-                      </Badge>
-                    </div>
-                    <div className="absolute bottom-3 left-3">
-                      <Badge variant="secondary" className="bg-secondary/80 backdrop-blur">
-                        {t('home.hero.points.risk')}
-                      </Badge>
-                    </div>
                   </div>
                   <p className="mt-3 text-sm text-muted-foreground">{t('home.hero.mockupCaption')}</p>
                 </aside>
