@@ -14,6 +14,7 @@ import Billing from "./pages/Billing";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
 import PaperTrading from "./pages/PaperTrading";
+import PaymentSuccess from "./pages/PaymentSuccess";
 import Admin from "./pages/Admin";
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
             <Route path="/billing" element={<Billing />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/paper" element={<PaperTrading />} />
+            <Route path="/payment-success" element={<PaymentSuccess />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
