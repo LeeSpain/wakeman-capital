@@ -269,19 +269,19 @@ export function useTopOpportunities() {
         .order('confidence_score', { ascending: false })
         .limit(5)
 
-      if (error || !data || data.length === 0) {
-        console.log('No database signals found, using enhanced demo data')
-        setError(null)
-        setData(demoSignals.filter(s => s.confidence_score >= 88 && (s.risk_reward_ratio || 0) >= 4.0).slice(0, 5))
+      if (error) {
+        console.error('Error fetching signals:', error)
+        setError(error.message)
+        setData([])
       } else {
-        console.log(`Found ${data.length} real market signals`)
+        console.log(`Found ${data?.length || 0} real market signals`)
         setError(null)
         setData((data as unknown as SignalRecord[]) ?? [])
       }
     } catch (err: any) {
       console.error('Error fetching real signals:', err)
       setError(err.message)
-      setData(demoSignals.filter(s => s.confidence_score >= 88 && (s.risk_reward_ratio || 0) >= 4.0).slice(0, 5))
+      setData([])
     }
     
     setLoading(false)
@@ -303,9 +303,8 @@ export function useTopOpportunities() {
   }, [])
 
   const finalData = useMemo(() => {
-    if (!loading && (!data || data.length === 0)) return demoSignals
     return data
-  }, [data, loading])
+  }, [data])
 
   return { data: finalData, loading, error }
 }
@@ -324,9 +323,11 @@ export function useAllSignals() {
       .limit(200)
 
     if (error) {
+      console.error('Error fetching all signals:', error)
       setError(error.message)
       setData([])
     } else {
+      console.log(`Fetched ${data?.length || 0} total signals`)
       setError(null)
       setData((data as unknown as SignalRecord[]) ?? [])
     }

@@ -58,8 +58,9 @@ export function useUserTrades(userId: string | null) {
 
   const fetchTrades = useCallback(async () => {
     if (!userId) {
-      setTrades(demoTrades)
+      setTrades([])
       setLoading(false)
+      setError('Please sign in to view your trades')
       return
     }
     setLoading(true)
@@ -71,9 +72,11 @@ export function useUserTrades(userId: string | null) {
       .limit(200)
 
     if (error) {
+      console.error('Error fetching trades:', error)
       setError(error.message)
       setTrades([])
     } else {
+      console.log(`Fetched ${data?.length || 0} trades for user`)
       setError(null)
       setTrades((data as unknown as TradeRow[]) ?? [])
     }
@@ -118,10 +121,5 @@ export function useUserTrades(userId: string | null) {
     return data as unknown as TradeRow
   }, [userId])
 
-  const data = useMemo(() => {
-    if (!userId) return demoTrades
-    return trades
-  }, [trades, userId])
-
-  return { trades: data, loading, error, addTrade, deleteTrade, updateTrade, isDemo: !userId }
+  return { trades, loading, error, addTrade, deleteTrade, updateTrade, isDemo: !userId }
 }
