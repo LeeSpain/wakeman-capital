@@ -4,6 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 import ProfileForm from '../components/settings/ProfileForm';
 import ThemeSection from '../components/settings/ThemeSection';
 import SignInCard from '../components/settings/SignInCard';
+import OandaIntegration from '../components/settings/OandaIntegration';
 import { supabase } from '../integrations/supabase/client';
 import { Button } from '../components/ui/button';
 
@@ -40,6 +41,10 @@ const Settings = () => {
               </section>
 
               <aside className="space-y-6">
+                <section className="p-6 border border-border rounded-lg bg-card">
+                  <h2 className="text-xl font-semibold text-foreground mb-4">OANDA Integration</h2>
+                  <OandaIntegration />
+                </section>
                 <section className="p-6 border border-border rounded-lg bg-card">
                   <h2 className="text-xl font-semibold text-foreground mb-2">Appearance</h2>
                   <ThemeSection />

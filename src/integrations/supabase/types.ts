@@ -801,6 +801,126 @@ export type Database = {
         }
         Relationships: []
       }
+      oanda_accounts: {
+        Row: {
+          account_id: string
+          api_token_encrypted: string
+          connection_verified: boolean
+          created_at: string
+          environment: string
+          id: string
+          is_active: boolean
+          last_verified_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_id: string
+          api_token_encrypted: string
+          connection_verified?: boolean
+          created_at?: string
+          environment: string
+          id?: string
+          is_active?: boolean
+          last_verified_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_id?: string
+          api_token_encrypted?: string
+          connection_verified?: boolean
+          created_at?: string
+          environment?: string
+          id?: string
+          is_active?: boolean
+          last_verified_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      oanda_trades: {
+        Row: {
+          closed_at: string | null
+          created_at: string
+          current_price: number | null
+          direction: string
+          entry_price: number
+          id: string
+          oanda_account_id: string
+          oanda_trade_id: string
+          opened_at: string
+          realized_pnl: number | null
+          signal_id: string | null
+          status: string
+          stop_loss: number | null
+          symbol: string
+          take_profit: number | null
+          units: number
+          unrealized_pnl: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          closed_at?: string | null
+          created_at?: string
+          current_price?: number | null
+          direction: string
+          entry_price: number
+          id?: string
+          oanda_account_id: string
+          oanda_trade_id: string
+          opened_at?: string
+          realized_pnl?: number | null
+          signal_id?: string | null
+          status?: string
+          stop_loss?: number | null
+          symbol: string
+          take_profit?: number | null
+          units: number
+          unrealized_pnl?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          closed_at?: string | null
+          created_at?: string
+          current_price?: number | null
+          direction?: string
+          entry_price?: number
+          id?: string
+          oanda_account_id?: string
+          oanda_trade_id?: string
+          opened_at?: string
+          realized_pnl?: number | null
+          signal_id?: string | null
+          status?: string
+          stop_loss?: number | null
+          symbol?: string
+          take_profit?: number | null
+          units?: number
+          unrealized_pnl?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "oanda_trades_oanda_account_id_fkey"
+            columns: ["oanda_account_id"]
+            isOneToOne: false
+            referencedRelation: "oanda_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "oanda_trades_signal_id_fkey"
+            columns: ["signal_id"]
+            isOneToOne: false
+            referencedRelation: "signals_detailed"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       paper_positions: {
         Row: {
           created_at: string

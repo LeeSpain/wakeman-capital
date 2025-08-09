@@ -3,6 +3,7 @@ import { Button } from '../ui/button'
 import { useAuth } from '../../hooks/useAuth'
 import { supabase } from '../../integrations/supabase/client'
 import { ChartLinkButton } from './ChartLinkButton'
+import LiveTradeModal from '../trading/LiveTradeModal'
 import type { SignalRecord } from '../../hooks/useSignals'
 
 function computeRR(signal: SignalRecord): number | null {
@@ -17,6 +18,7 @@ function computeRR(signal: SignalRecord): number | null {
 export const OpportunityCard: React.FC<{ signal: SignalRecord }> = ({ signal }) => {
   const { user } = useAuth()
   const [enabled, setEnabled] = useState(false)
+  const [showLiveTradeModal, setShowLiveTradeModal] = useState(false)
   const rr = computeRR(signal)
 
   const onEnableAlerts = async () => {
@@ -75,6 +77,12 @@ export const OpportunityCard: React.FC<{ signal: SignalRecord }> = ({ signal }) 
           <Button onClick={onEnableAlerts} variant={enabled ? 'secondary' : 'outline'}>
             {enabled ? 'Alerts Enabled' : 'Enable Alerts'}
           </Button>
+          <Button 
+            onClick={() => setShowLiveTradeModal(true)}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white"
+          >
+            Trade Live
+          </Button>
         </div>
       </div>
 
@@ -104,6 +112,13 @@ export const OpportunityCard: React.FC<{ signal: SignalRecord }> = ({ signal }) 
           <p className="text-sm text-foreground leading-relaxed">{(signal as any).trade_rationale}</p>
         </div>
       )}
+
+      {/* Live Trade Modal */}
+      <LiveTradeModal
+        signal={signal}
+        isOpen={showLiveTradeModal}
+        onClose={() => setShowLiveTradeModal(false)}
+      />
     </section>
   )
 }
