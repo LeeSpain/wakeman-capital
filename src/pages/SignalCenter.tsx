@@ -4,6 +4,8 @@ import { useTopOpportunities, useAllSignals } from '../hooks/useSignals';
 import { OpportunityCard } from '../components/signals/OpportunityCard';
 import { SignalsTable } from '../components/signals/SignalsTable';
 import { AlertsList } from '../components/signals/AlertsList';
+import { NewsPanel } from '../components/news/NewsPanel';
+import { useNewsAlerts } from '../hooks/useNewsAlerts';
 
 const tabs = ['Top 5 Opportunities', 'Trade Alerts', 'All Signals'] as const;
 
@@ -40,6 +42,7 @@ const SignalCenter = () => {
   const { data: topFive, loading: loadingTop } = useTopOpportunities()
   const { data: allSignals, loading: loadingAll } = useAllSignals()
   const { isActive, currentTimeStr, nextOpenLabel } = useLondonSessionStatus()
+  const { upcomingEvents, isWithinDangerZone } = useNewsAlerts()
 
   return (
     <>
@@ -69,20 +72,23 @@ const SignalCenter = () => {
             </div>
 
             <div className="p-6 space-y-6">
-              {/* London Session Status */}
-              <section className="rounded-lg border border-border bg-background/60">
-                <div className="flex items-center justify-between p-4">
-                  <div>
-                    <div className="text-sm text-muted-foreground">Current Time</div>
-                    <div className="text-lg font-semibold">{currentTimeStr}</div>
+              {/* London Session Status & News */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <section className="rounded-lg border border-border bg-background/60">
+                  <div className="flex items-center justify-between p-4">
+                    <div>
+                      <div className="text-sm text-muted-foreground">Current Time</div>
+                      <div className="text-lg font-semibold">{currentTimeStr}</div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-muted-foreground">{isActive ? 'Session Closes' : 'Next Open'}</div>
+                      <div className="text-lg font-semibold">{nextOpenLabel}</div>
+                    </div>
+                    <span className={`text-xs rounded-full px-2 py-1 border border-border ${isActive ? 'text-primary' : 'text-muted-foreground'}`}>{isActive ? 'ACTIVE' : 'CLOSED'}</span>
                   </div>
-                  <div>
-                    <div className="text-sm text-muted-foreground">{isActive ? 'Session Closes' : 'Next Open'}</div>
-                    <div className="text-lg font-semibold">{nextOpenLabel}</div>
-                  </div>
-                  <span className={`text-xs rounded-full px-2 py-1 border border-border ${isActive ? 'text-primary' : 'text-muted-foreground'}`}>{isActive ? 'ACTIVE' : 'CLOSED'}</span>
-                </div>
-              </section>
+                </section>
+                <NewsPanel events={upcomingEvents} isWithinDangerZone={isWithinDangerZone} />
+              </div>
 
               {/* Top Opportunities */}
               {active === 'Top 5 Opportunities' && (

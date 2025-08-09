@@ -6,9 +6,11 @@ import RecentTrades from './dashboard/RecentTrades';
 import TopOpportunities from './dashboard/TopOpportunities';
 import { MarketDataStatus } from './market/MarketDataStatus';
 import { TrendsSummary } from './trends/TrendsSummary';
+import { NewsAlert } from './news/NewsAlert';
 import { useTrends } from '../hooks/useTrends';
 import { useTopOpportunities } from '../hooks/useSignals';
 import { useUserTrades } from '../hooks/useTrades';
+import { useNewsAlerts } from '../hooks/useNewsAlerts';
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -16,6 +18,7 @@ const Dashboard = () => {
   const { data: trends } = useTrends();
   const { trades, loading: tradesLoading } = useUserTrades(user?.id ?? null);
   const { data: opps, loading: oppsLoading } = useTopOpportunities();
+  const { upcomingEvents, isWithinDangerZone } = useNewsAlerts();
 
   const displayName = profile?.first_name || profile?.display_name || user?.email || 'Guest';
 
@@ -85,6 +88,9 @@ const Dashboard = () => {
         <h4 className="text-xl font-semibold text-card-foreground mb-3">Trends Snapshot</h4>
         <TrendsSummary data={trends} />
       </section>
+
+      {/* News Alerts */}
+      <NewsAlert events={upcomingEvents} isWithinDangerZone={isWithinDangerZone} />
 
       {/* Market Data Status */}
       <MarketDataStatus />

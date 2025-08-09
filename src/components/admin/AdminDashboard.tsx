@@ -9,7 +9,8 @@ import EmailManagement from './EmailManagement';
 import AdminTasksList from './AdminTasksList';
 import PaymentTracking from './PaymentTracking';
 import AICoachSettings from './AICoachSettings';
-import { Users, DollarSign, FileText, BarChart3, Settings, Mail, CreditCard, Bot } from 'lucide-react';
+import { NewsManagement } from './NewsManagement';
+import { Users, DollarSign, FileText, BarChart3, Settings, Mail, CreditCard, Bot, Calendar } from 'lucide-react';
 
 const AdminDashboard = () => {
   return (
@@ -24,7 +25,7 @@ const AdminDashboard = () => {
       <AdminTasksList />
 
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-8">
+        <TabsList className="grid w-full grid-cols-9">
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <BarChart3 className="h-4 w-4" />
             Overview
@@ -48,6 +49,10 @@ const AdminDashboard = () => {
           <TabsTrigger value="emails" className="flex items-center gap-2">
             <Mail className="h-4 w-4" />
             Emails
+          </TabsTrigger>
+          <TabsTrigger value="news" className="flex items-center gap-2">
+            <Calendar className="h-4 w-4" />
+            News
           </TabsTrigger>
           <TabsTrigger value="ai-coach" className="flex items-center gap-2">
             <Bot className="h-4 w-4" />
@@ -77,6 +82,10 @@ const AdminDashboard = () => {
 
         <TabsContent value="emails">
           <EmailManagement />
+        </TabsContent>
+
+        <TabsContent value="news">
+          <NewsManagement />
         </TabsContent>
 
         <TabsContent value="ai-coach">
