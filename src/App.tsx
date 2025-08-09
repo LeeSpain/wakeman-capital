@@ -15,6 +15,7 @@ import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
 import PaperTrading from "./pages/PaperTrading";
 import PaymentSuccess from "./pages/PaymentSuccess";
+import PaymentConfirmation from "./pages/PaymentConfirmation";
 import Admin from "./pages/Admin";
 
 function App() {
@@ -37,6 +38,7 @@ function App() {
             <Route path="/auth" element={<Auth />} />
             <Route path="/paper" element={<PaperTrading />} />
             <Route path="/payment-success" element={<PaymentSuccess />} />
+            <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

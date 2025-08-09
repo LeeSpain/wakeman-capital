@@ -19,7 +19,7 @@ const Auth: React.FC = () => {
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
-  const [showPayment, setShowPayment] = useState(false);
+  const [paymentStep, setPaymentStep] = useState<'form' | 'payment' | 'processing'>('form');
 
   useEffect(() => {
     if (user) navigate('/dashboard');
@@ -76,11 +76,12 @@ const Auth: React.FC = () => {
           preferred_currency: 'AUD',
         });
         setLoading(false);
-        setShowPayment(true);
-        setMessage('Account created successfully! Start your monthly subscription to access all features.');
+        setPaymentStep('payment');
+        setMessage('Account created successfully! Complete your subscription to access all features.');
       } else {
         setLoading(false);
-        setMessage('Check your email to confirm your account, then start your subscription to access all features.');
+        setPaymentStep('payment');
+        setMessage('Check your email to confirm your account, then complete your subscription to access all features.');
       }
     }
   };
@@ -88,6 +89,7 @@ const Auth: React.FC = () => {
   const handlePayment = async () => {
     setPaymentLoading(true);
     setError(null);
+    setPaymentStep('processing');
 
     try {
       const { data, error } = await supabase.functions.invoke('create-payment', {
@@ -100,96 +102,175 @@ const Auth: React.FC = () => {
       if (error) {
         console.error('Payment error:', error);
         setError('Failed to initiate payment. Please try again.');
+        setPaymentStep('payment');
         setPaymentLoading(false);
         return;
       }
 
       if (data?.url) {
-        // Open Stripe checkout in a new tab
-        window.open(data.url, '_blank');
-        toast({
-          title: "Payment Processing",
-          description: "Complete your payment in the new tab to access all features.",
-        });
+        // Redirect to Stripe checkout
+        window.location.href = data.url;
       }
     } catch (err) {
       console.error('Payment error:', err);
       setError('Failed to initiate payment. Please try again.');
+      setPaymentStep('payment');
     } finally {
       setPaymentLoading(false);
     }
   };
 
-  if (showPayment) {
+  // Payment step rendering
+  if (paymentStep === 'payment' || paymentStep === 'processing') {
     return (
       <>
         <Helmet>
-          <title>Complete Your Registration — Wakeman Capital</title>
-          <meta name="description" content="Complete your registration with a one-time payment to access premium trading insights." />
+          <title>Complete Your Subscription — Wakeman Capital</title>
+          <meta name="description" content="Complete your monthly subscription to access professional trading insights and earn 10% profit share." />
           <link rel="canonical" href="/auth" />
         </Helmet>
-        <main className="min-h-[calc(100vh-4rem-4rem)] bg-background flex items-center">
-          <section className="max-w-7xl mx-auto px-4 w-full">
-            <div className="mx-auto max-w-lg rounded-xl border border-border bg-card p-8">
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl">🎉</span>
+        <main className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-primary/5 flex items-center">
+          <section className="max-w-4xl mx-auto px-4 w-full">
+            <div className="grid lg:grid-cols-2 gap-8 items-center">
+              {/* Left side - Features & Benefits */}
+              <div className="space-y-6">
+                <div className="text-center lg:text-left">
+                  <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium mb-4">
+                    🚀 Professional Trading Platform
+                  </div>
+                  <h1 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
+                    Join Elite Traders at<br />
+                    <span className="text-primary">Wakeman Capital</span>
+                  </h1>
+                  <p className="text-lg text-muted-foreground">
+                    Access institutional-grade market intelligence and earn alongside our expert traders
+                  </p>
                 </div>
-                <h1 className="text-2xl font-bold text-card-foreground mb-2">Complete Your Subscription!</h1>
-                <p className="text-muted-foreground">
-                  Your account has been created successfully. Complete your subscription to unlock:
-                </p>
+
+                <div className="grid gap-4">
+                  <div className="flex items-start gap-4 p-4 rounded-xl bg-card border border-border">
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <span className="text-lg">📊</span>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-foreground">Real-Time SMC Signals</h3>
+                      <p className="text-sm text-muted-foreground">Get instant notifications for high-probability trades based on Smart Money Concepts</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-4 p-4 rounded-xl bg-card border border-border">
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <span className="text-lg">🧠</span>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-foreground">AI-Powered Analytics</h3>
+                      <p className="text-sm text-muted-foreground">Advanced backtesting and market structure analysis using artificial intelligence</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-4 p-4 rounded-xl bg-card border border-border">
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <span className="text-lg">💰</span>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-foreground">Profit Share Program</h3>
+                      <p className="text-sm text-muted-foreground">Earn 10% of your trading profits - we succeed when you succeed</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 rounded-xl p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-2xl font-bold text-primary">$29.99/month</div>
+                      <div className="text-sm text-muted-foreground">+ 10% profit share</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm font-medium text-foreground">Cancel Anytime</div>
+                      <div className="text-xs text-muted-foreground">No long-term commitment</div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <div className="space-y-3 mb-6">
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/20">
-                  <span className="text-primary">✓</span>
-                  <span className="text-sm">Real-time market signals and alerts</span>
-                </div>
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/20">
-                  <span className="text-primary">✓</span>
-                  <span className="text-sm">SMC-aligned trading opportunities</span>
-                </div>
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/20">
-                  <span className="text-primary">✓</span>
-                  <span className="text-sm">Advanced analytics and backtesting</span>
-                </div>
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/20">
-                  <span className="text-primary">✓</span>
-                  <span className="text-sm">Paper trading and journal tools</span>
-                </div>
-              </div>
+              {/* Right side - Payment Form */}
+              <div className="bg-card border border-border rounded-2xl p-8 shadow-xl">
+                {paymentStep === 'processing' ? (
+                  <div className="text-center py-8">
+                    <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+                      <span className="text-2xl">⏳</span>
+                    </div>
+                    <h2 className="text-xl font-bold text-foreground mb-2">Redirecting to Payment...</h2>
+                    <p className="text-muted-foreground mb-4">
+                      Please wait while we redirect you to our secure payment portal
+                    </p>
+                    <div className="flex justify-center">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="text-center mb-6">
+                      <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <span className="text-xl">🔒</span>
+                      </div>
+                      <h2 className="text-xl font-bold text-foreground mb-2">Secure Subscription</h2>
+                      <p className="text-sm text-muted-foreground">
+                        {message || "Complete your subscription to unlock all premium features"}
+                      </p>
+                    </div>
 
-              <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 mb-6">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-primary mb-1">$29.99/month</div>
-                  <div className="text-sm text-muted-foreground">Monthly subscription • 10% profit share</div>
-                </div>
-              </div>
+                    {error && (
+                      <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                        <p className="text-sm text-destructive">{error}</p>
+                      </div>
+                    )}
 
-              {error && <p className="text-sm text-destructive mb-4 p-3 bg-destructive/10 rounded-lg">{error}</p>}
-              
-              <button
-                onClick={handlePayment}
-                disabled={paymentLoading}
-                className="w-full px-6 py-3 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 font-medium mb-4"
-              >
-                {paymentLoading ? 'Processing...' : 'Start Monthly Subscription'}
-              </button>
+                    <div className="space-y-4 mb-6">
+                      <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                        <span className="text-sm font-medium">Monthly Subscription</span>
+                        <span className="font-bold">$29.99</span>
+                      </div>
+                      <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                        <span className="text-sm font-medium">Profit Share Rate</span>
+                        <span className="font-bold text-primary">10%</span>
+                      </div>
+                    </div>
 
-              <div className="text-center">
-                <button
-                  onClick={() => setShowPayment(false)}
-                  className="text-sm text-muted-foreground hover:text-foreground"
-                >
-                  ← Back to sign up
-                </button>
-              </div>
+                    <button
+                      onClick={handlePayment}
+                      disabled={paymentLoading}
+                      className="w-full px-6 py-4 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-xl"
+                    >
+                      {paymentLoading ? (
+                        <span className="flex items-center justify-center gap-2">
+                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-current"></div>
+                          Processing...
+                        </span>
+                      ) : (
+                        'Complete Subscription →'
+                      )}
+                    </button>
 
-              <div className="mt-6 pt-4 border-t border-border text-center">
-                <p className="text-xs text-muted-foreground">
-                  Secure payment powered by Stripe • Monthly billing • 10% profit share • Cancel anytime
-                </p>
+                    <div className="text-center mt-4">
+                      <button
+                        onClick={() => setPaymentStep('form')}
+                        className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                        disabled={paymentLoading}
+                      >
+                        ← Back to account details
+                      </button>
+                    </div>
+
+                    <div className="mt-6 pt-4 border-t border-border text-center">
+                      <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
+                        <span>🔒 SSL Secured</span>
+                        <span>💳 Stripe Powered</span>
+                        <span>🔄 Cancel Anytime</span>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </section>
@@ -205,9 +286,9 @@ const Auth: React.FC = () => {
         <meta name="description" content="Access your Wakeman Capital account or join thousands of traders using AI-powered market intelligence." />
         <link rel="canonical" href="/auth" />
       </Helmet>
-      <main className="min-h-[calc(100vh-4rem-4rem)] bg-background flex items-center">
+      <main className="min-h-[calc(100vh-4rem-4rem)] bg-gradient-to-br from-background via-muted/20 to-primary/5 flex items-center">
         <section className="max-w-7xl mx-auto px-4 w-full">
-          <div className="mx-auto max-w-lg rounded-xl border border-border bg-card p-8">
+          <div className="mx-auto max-w-lg rounded-2xl border border-border bg-card p-8 shadow-xl">
             <div className="text-center mb-6">
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">📈</span>
@@ -224,18 +305,30 @@ const Auth: React.FC = () => {
             </div>
 
             {mode === 'signup' && (
-              <div className="mb-6 p-4 bg-primary/5 border border-primary/20 rounded-lg">
-                <h3 className="font-semibold text-foreground mb-2">🎯 What You'll Get:</h3>
-                <ul className="text-sm text-muted-foreground space-y-1">
-                  <li>• Real-time SMC trading signals</li>
-                  <li>• AI-powered market analysis</li>
-                  <li>• Advanced backtesting tools</li>
-                  <li>• Paper trading & journal features</li>
-                </ul>
-                <div className="mt-3 text-center">
-                  <span className="inline-flex items-center gap-2 text-sm font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">
+              <div className="mb-6 p-4 bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 rounded-xl">
+                <h3 className="font-semibold text-foreground mb-3 text-center">🎯 Premium Features Included:</h3>
+                <div className="grid grid-cols-2 gap-2 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-2">
+                    <span className="text-primary">•</span>
+                    <span>Live SMC signals</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-primary">•</span>
+                    <span>AI market analysis</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-primary">•</span>
+                    <span>Advanced backtesting</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-primary">•</span>
+                    <span>Paper trading tools</span>
+                  </div>
+                </div>
+                <div className="mt-4 text-center">
+                  <div className="inline-flex items-center gap-2 text-lg font-bold text-primary bg-primary/10 px-4 py-2 rounded-full">
                     💰 $29.99/month + 10% profit share
-                  </span>
+                  </div>
                 </div>
               </div>
             )}
@@ -355,11 +448,11 @@ const Auth: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full px-6 py-3 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 font-medium text-base transition-colors"
+                className="w-full px-6 py-4 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-xl"
               >
                 {loading 
                   ? (mode === 'login' ? 'Signing you in...' : 'Creating your account...') 
-                  : (mode === 'login' ? 'Sign In' : 'Create Account & Continue')
+                  : (mode === 'login' ? 'Sign In to Dashboard' : 'Continue to Subscription →')
                 }
               </button>
             </form>

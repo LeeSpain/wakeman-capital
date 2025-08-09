@@ -40,10 +40,10 @@ const PaymentSuccess = () => {
       verifyPayment();
     }
 
-    // Redirect to dashboard after 3 seconds
+    // Redirect to confirmation page after verification
     const timer = setTimeout(() => {
-      navigate('/dashboard');
-    }, 3000);
+      navigate('/payment-confirmation');
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, [searchParams, navigate, toast]);
