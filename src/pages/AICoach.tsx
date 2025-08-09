@@ -25,6 +25,7 @@ const AICoach = () => {
   const [settings, setSettings] = useState<Settings>({ provider: 'OpenAI', model: 'gpt-4o-mini', systemPrompt: defaultPrompt, temperature: 0.3 });
   const [sources, setSources] = useState<string[]>([]);
   const [newSource, setNewSource] = useState('');
+  const [contextUsed, setContextUsed] = useState<{ tools: string[]; sources: string[] }>({ tools: [], sources: [] });
 
   useEffect(() => {
     try {
@@ -44,11 +45,12 @@ const AICoach = () => {
 
   const canSend = useMemo(() => input.trim().length > 0 && !loading, [input, loading]);
 
-  const send = async () => {
-    if (!canSend) return;
-    const userMsg: Message = { role: 'user', content: input.trim() };
+  const send = async (textOverride?: string) => {
+    const content = (textOverride ?? input).trim();
+    if (!content || loading) return;
+    const userMsg: Message = { role: 'user', content };
     setMessages(prev => [...prev, userMsg]);
-    setInput('');
+    if (!textOverride) setInput('');
     setLoading(true);
 
     try {
@@ -57,6 +59,9 @@ const AICoach = () => {
       });
       if (error) throw error;
       const reply = (data as any)?.reply || 'Sorry, I could not generate a response.';
+      const used_tools = (data as any)?.used_tools ?? [];
+      const used_sources = (data as any)?.used_sources ?? [];
+      setContextUsed({ tools: used_tools, sources: used_sources });
       setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
     } catch (e) {
       console.error(e);
@@ -97,6 +102,12 @@ const AICoach = () => {
             <div className="p-6">
               {active === 'Chat' && (
                 <section className="space-y-4">
+                  <div className="flex flex-wrap gap-2">
+                    <Button variant="secondary" size="sm" onClick={() => send('Show top 5 active signals with confidence ≥ 88. For each: symbol, timeframe, direction, entry, stop, TP1, and include a TradingView link.')}>Top opps</Button>
+                    <Button variant="secondary" size="sm" onClick={() => send('Summarize the latest trend_analysis: strongest confluence symbols by timeframe (brief bullets).')}>Latest trends</Button>
+                    <Button variant="secondary" size="sm" onClick={() => send('Give a market snapshot for XAUUSD on 4h: recent OHLCV changes, any active signal alignment, and a TradingView link.')}>XAUUSD 4h</Button>
+                    <Button variant="secondary" size="sm" onClick={() => send('Summarize key points from my saved sources relevant to FX today. Cite source names.')}>Summarize sources</Button>
+                  </div>
                   <div ref={listRef} className="h-80 rounded-md border border-border bg-background/60 p-4 overflow-y-auto">
                     <ul className="space-y-3">
                       {messages.map((m, i) => (
@@ -109,6 +120,21 @@ const AICoach = () => {
                     </ul>
                   </div>
 
+                  { (contextUsed.tools.length > 0 || contextUsed.sources.length > 0) && (
+                    <div className="text-xs text-muted-foreground flex flex-wrap items-center gap-2">
+                      <span>Context used:</span>
+                      {contextUsed.tools.map((t, i) => (
+                        <span key={i} className="rounded border border-border bg-card/60 px-2 py-0.5">{t.replace('_', ' ')}</span>
+                      ))}
+                      {contextUsed.sources.slice(0, 2).map((s, i) => (
+                        <span key={i} className="rounded border border-border bg-card/60 px-2 py-0.5" title={s}>{s}</span>
+                      ))}
+                      {contextUsed.sources.length > 2 && (
+                        <span className="text-muted-foreground">+{contextUsed.sources.length - 2} more</span>
+                      )}
+                    </div>
+                  )}
+
                   <div className="flex items-end gap-3">
                     <textarea
                       value={input}
@@ -117,7 +143,7 @@ const AICoach = () => {
                       className="flex-1 rounded-md border border-input bg-background p-3 text-sm"
                       rows={3}
                     />
-                    <Button onClick={send} disabled={!canSend}>{loading ? 'Thinking…' : 'Ask'}</Button>
+                    <Button onClick={() => send()} disabled={!canSend}>{loading ? 'Thinking…' : 'Ask'}</Button>
                   </div>
                 </section>
               )}

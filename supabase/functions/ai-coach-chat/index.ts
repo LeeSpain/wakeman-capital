@@ -263,6 +263,8 @@ serve(async (req) => {
     ]
 
     let loopMessages = [...history]
+    const usedTools = new Set<string>()
+    const usedSources: string[] = []
 
     for (let i = 0; i < 3; i++) {
       const resp = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -291,7 +293,7 @@ serve(async (req) => {
 
       if (toolCalls.length === 0) {
         const reply = msg?.content ?? 'Sorry, I could not generate a response.'
-        return new Response(JSON.stringify({ reply }), {
+        return new Response(JSON.stringify({ reply, used_tools: Array.from(usedTools), used_sources: usedSources }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           status: 200,
         })
@@ -314,6 +316,12 @@ serve(async (req) => {
           }
 
           const result = await handleToolCall(name, args)
+          if (name) usedTools.add(name)
+          if (name === 'search_sources' && result?.items) {
+            for (const it of result.items) {
+              if (it?.source && !usedSources.includes(it.source)) usedSources.push(it.source)
+            }
+          }
           loopMessages.push({ role: 'tool', tool_call_id: tc.id, content: JSON.stringify(result) })
         } catch (e) {
           loopMessages.push({ role: 'tool', tool_call_id: tc.id, content: JSON.stringify({ error: String(e) }) })
@@ -322,7 +330,7 @@ serve(async (req) => {
     }
 
     // If we reach here, too many tool hops
-    return new Response(JSON.stringify({ reply: 'I gathered context but reached tool limit. Please ask again with a narrower focus.' }), {
+    return new Response(JSON.stringify({ reply: 'I gathered context but reached tool limit. Please ask again with a narrower focus.', used_tools: Array.from(usedTools), used_sources: usedSources }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
     })
