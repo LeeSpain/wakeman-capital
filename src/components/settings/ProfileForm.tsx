@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useProfile } from '../../hooks/useProfile';
+import { useAuth } from '../../hooks/useAuth';
 import { Button } from '../ui/button';
 
 interface Props {
@@ -10,6 +11,7 @@ const currencies = ['USD', 'EUR', 'GBP', 'AUD', 'JPY', 'CAD'];
 
 export const ProfileForm: React.FC<Props> = ({ userId }) => {
   const { profile, loading, error, updateProfile } = useProfile(userId);
+  const { user } = useAuth();
   const [firstName, setFirstName] = useState<string>(profile?.first_name || '');
   const [lastName, setLastName] = useState<string>(profile?.last_name || '');
   const [mobile, setMobile] = useState<string>(profile?.mobile || '');
@@ -49,6 +51,18 @@ export const ProfileForm: React.FC<Props> = ({ userId }) => {
 
   return (
     <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); onSave(); }}>
+      <div>
+        <label className="block text-sm text-muted-foreground mb-1">Email address</label>
+        <input
+          type="email"
+          value={user?.email ?? ''}
+          readOnly
+          disabled
+          className="w-full rounded-md border border-input bg-muted px-3 py-2 text-muted-foreground"
+          aria-readonly="true"
+        />
+        <p className="mt-1 text-xs text-muted-foreground">Connected to your account registration.</p>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm text-muted-foreground mb-1">First name</label>
