@@ -4,6 +4,8 @@ import { supabase } from '../integrations/supabase/client';
 import { useNavigate, Link } from 'react-router-dom';
 import FirstVisitModal from '../components/i18n/FirstVisitModal';
 import { useTranslation } from 'react-i18next';
+import appMockup from '../assets/app-mockup-hero.png';
+import { Badge } from '../components/ui/badge';
 
 
 const Index = () => {
@@ -29,13 +31,14 @@ const Index = () => {
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
-            "@type": "VideoObject",
-            name: "Wakeman Capital — Overview",
-            description: "Quick overview of Wakeman Capital's AI-powered market intelligence platform.",
-            thumbnailUrl: ["https://i.ytimg.com/vi/QjRlVX1e7JM/hqdefault.jpg"],
-            embedUrl: "https://www.youtube-nocookie.com/embed/QjRlVX1e7JM",
-            contentUrl: "https://www.youtube.com/watch?v=QjRlVX1e7JM",
-            publisher: { "@type": "Organization", name: "Wakeman Capital" }
+            "@type": "SoftwareApplication",
+            name: t('home.hero.title'),
+            description: t('home.seoDescription'),
+            applicationCategory: "FinanceApplication",
+            operatingSystem: "Web",
+            image: [appMockup],
+            offers: { "@type": "Offer", price: "29.99", priceCurrency: "USD" },
+            url: "/"
           })}
         </script>
       </Helmet>
@@ -76,18 +79,33 @@ const Index = () => {
                   </ul>
                 </div>
                 <aside className="md:col-span-5">
-                  <div className="relative aspect-video rounded-lg overflow-hidden border border-border bg-muted/20 shadow-elegant hover-scale">
-                    <iframe
-                      src="https://www.youtube.com/embed/QjRlVX1e7JM?rel=0&modestbranding=1&playsinline=1"
-                      title="Wakeman Capital Overview"
+                  <div className="relative rounded-lg overflow-hidden border border-border bg-muted/20 shadow-elegant hover-scale">
+                    <img
+                      src={appMockup}
+                      alt={t('home.hero.mockupAlt')}
                       loading="lazy"
-                      className="absolute inset-0 h-full w-full"
-                      referrerPolicy="strict-origin-when-cross-origin"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      allowFullScreen
+                      decoding="async"
+                      className="w-full h-auto block"
+                      width={960}
+                      height={600}
                     />
+                    <div className="absolute top-3 left-3">
+                      <Badge variant="secondary" className="bg-secondary/80 backdrop-blur">
+                        {t('home.hero.points.realtime')}
+                      </Badge>
+                    </div>
+                    <div className="absolute top-3 right-3">
+                      <Badge variant="secondary" className="bg-secondary/80 backdrop-blur">
+                        {t('home.hero.points.smc')}
+                      </Badge>
+                    </div>
+                    <div className="absolute bottom-3 left-3">
+                      <Badge variant="secondary" className="bg-secondary/80 backdrop-blur">
+                        {t('home.hero.points.risk')}
+                      </Badge>
+                    </div>
                   </div>
-                  <p className="mt-3 text-sm text-muted-foreground">Watch a quick overview of how Wakeman Capital turns market intelligence into profits.</p>
+                  <p className="mt-3 text-sm text-muted-foreground">{t('home.hero.mockupCaption')}</p>
                 </aside>
               </div>
             </div>

@@ -39,7 +39,14 @@ const resources = {
         seoDescription: 'AI-powered market intelligence, trend analysis, and actionable insights for traders and investors.',
         hero: {
           title: 'Wakeman Capital — AI Market Intelligence',
-          subtitle: 'Transform market noise into clear, SMC-aligned insights. Real-time narrative tracking across social and news, distilled into actionable context.'
+          subtitle: 'Transform market noise into clear, SMC-aligned insights. Real-time narrative tracking across social and news, distilled into actionable context.',
+          mockupAlt: 'Product mockup: trading dashboard overview',
+          mockupCaption: "Preview of the app you'll access",
+          points: {
+            realtime: 'Real-time Signals',
+            smc: 'SMC entries + clear invalidation',
+            risk: 'Risk tools & journaling'
+          }
         },
         stats: {
           realtime: 'Real-time Signals',
@@ -124,7 +131,14 @@ const resources = {
         seoDescription: 'Inteligencia de mercado impulsada por IA, análisis de tendencias y conocimientos accionables para traders e inversores.',
         hero: {
           title: 'Wakeman Capital — Inteligencia de Mercado con IA',
-          subtitle: 'Convierte el ruido del mercado en ideas claras alineadas con SMC. Seguimiento en tiempo real de narrativas en redes y noticias, destiladas en contexto accionable.'
+          subtitle: 'Convierte el ruido del mercado en ideas claras alineadas con SMC. Seguimiento en tiempo real de narrativas en redes y noticias, destiladas en contexto accionable.',
+          mockupAlt: 'Mockup del producto: panel de trading',
+          mockupCaption: 'Vista previa de la aplicación a la que tendrás acceso',
+          points: {
+            realtime: 'Señales en tiempo real',
+            smc: 'Entradas SMC + invalidación clara',
+            risk: 'Herramientas de riesgo y diario'
+          }
         },
         stats: {
           realtime: 'Señales en tiempo real',
