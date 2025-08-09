@@ -763,6 +763,57 @@ export type Database = {
           },
         ]
       }
+      economic_events: {
+        Row: {
+          actual_value: string | null
+          affected_currencies: string[]
+          country: string | null
+          created_at: string
+          description: string | null
+          event_name: string
+          event_time: string
+          event_url: string | null
+          forecast_value: string | null
+          id: string
+          impact_level: string
+          is_active: boolean
+          previous_value: string | null
+          updated_at: string
+        }
+        Insert: {
+          actual_value?: string | null
+          affected_currencies?: string[]
+          country?: string | null
+          created_at?: string
+          description?: string | null
+          event_name: string
+          event_time: string
+          event_url?: string | null
+          forecast_value?: string | null
+          id?: string
+          impact_level: string
+          is_active?: boolean
+          previous_value?: string | null
+          updated_at?: string
+        }
+        Update: {
+          actual_value?: string | null
+          affected_currencies?: string[]
+          country?: string | null
+          created_at?: string
+          description?: string | null
+          event_name?: string
+          event_time?: string
+          event_url?: string | null
+          forecast_value?: string | null
+          id?: string
+          impact_level?: string
+          is_active?: boolean
+          previous_value?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       email_campaigns: {
         Row: {
           clicked_count: number
@@ -2143,6 +2194,17 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
         }
         Returns: boolean
+      }
+      is_within_news_buffer: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          event_id: string
+          event_name: string
+          event_time: string
+          impact_level: string
+          affected_currencies: string[]
+          minutes_until_event: number
+        }[]
       }
       promote_to_admin: {
         Args: { target_email: string }
