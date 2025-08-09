@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { supabase } from '../integrations/supabase/client';
 import { useNavigate, Link } from 'react-router-dom';
-import LiteYouTube from '../components/media/LiteYouTube';
+
 
 const Index = () => {
   const navigate = useNavigate();
@@ -76,8 +76,18 @@ const Index = () => {
                   </ul>
                 </div>
                 <aside className="md:col-span-5">
-                  <LiteYouTube videoId="QjRlVX1e7JM" title="Wakeman Capital Overview" />
-                  <p className="mt-3 text-sm text-muted-foreground">Watch a quick overview of how Wakeman Capital turns market intelligence into profits. <a className="text-primary hover:underline" href="https://www.youtube.com/watch?v=QjRlVX1e7JM" target="_blank" rel="noopener noreferrer">Open on YouTube</a></p>
+                  <div className="relative aspect-video rounded-lg overflow-hidden border border-border bg-muted/20 shadow-elegant hover-scale">
+                    <iframe
+                      src="https://www.youtube-nocookie.com/embed/QjRlVX1e7JM"
+                      title="Wakeman Capital Overview"
+                      loading="lazy"
+                      className="absolute inset-0 h-full w-full"
+                      referrerPolicy="strict-origin-when-cross-origin"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                    />
+                  </div>
+                  <p className="mt-3 text-sm text-muted-foreground">Watch a quick overview of how Wakeman Capital turns market intelligence into profits.</p>
                 </aside>
               </div>
             </div>
