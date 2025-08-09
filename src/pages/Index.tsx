@@ -87,7 +87,7 @@ const Index = () => {
                       allowFullScreen
                     />
                   </div>
-                  <p className="mt-3 text-sm text-muted-foreground">Watch a quick overview of how Wakeman Capital turns market intelligence into profits. <a className="text-primary hover:underline" href="https://www.youtube.com/watch?v=QjRlVX1e7JM" target="_blank" rel="noopener noreferrer">Open on YouTube</a></p>
+                  <p className="mt-3 text-sm text-muted-foreground">Watch a quick overview of how Wakeman Capital turns market intelligence into profits.</p>
                 </aside>
               </div>
             </div>
