@@ -216,9 +216,9 @@ const PaperTrading: React.FC = () => {
       <main className="min-h-screen bg-background">
         <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
           <header>
-            <h1 className="text-3xl font-bold text-foreground">Paper Trading Demo</h1>
+            <h1 className="text-3xl font-bold text-foreground">Paper Trading</h1>
             <p className="text-muted-foreground mt-1">
-              Learn by doing—risk-free. Deposit virtual USD, buy crypto assets, and track your PnL in real time.
+              Practice trading with virtual funds using real-time prices. Perfect for learning and strategy testing.
             </p>
           </header>
 
@@ -277,7 +277,7 @@ const PaperTrading: React.FC = () => {
           )}
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <Section title="Wallet" sub="Demo-only funds. No real money involved.">
+            <Section title="Wallet" sub="Virtual funds for practice trading. No real money involved.">
               <div className="flex items-end gap-6">
                 <div>
                   <div className="text-sm text-muted-foreground">Balance</div>

@@ -7,7 +7,7 @@ import { TradesTable } from '../components/trades/TradesTable';
 
 const TradeJournal = () => {
   const { user } = useAuth();
-  const { trades, loading, error, addTrade, deleteTrade, isDemo } = useUserTrades(user?.id ?? null);
+  const { trades, loading, error, addTrade, deleteTrade } = useUserTrades(user?.id ?? null);
   const [submitting, setSubmitting] = useState(false)
 
   const handleAdd = useCallback(async (input: Parameters<typeof addTrade>[0]) => {
@@ -50,9 +50,9 @@ const TradeJournal = () => {
             <p className="text-muted-foreground">Track your performance and learn from each trade.</p>
           </header>
 
-          {isDemo && (
+          {!user && (
             <div className="mb-6 rounded-md border border-border p-4 bg-card text-sm text-muted-foreground">
-              You are viewing demo data. Sign in to create, sync and manage your personal trade journal.
+              Sign in to create and manage your personal trade journal.
             </div>
           )}
 

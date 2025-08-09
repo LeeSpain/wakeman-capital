@@ -14,7 +14,7 @@ const Stat: React.FC<{ label: string; value: React.ReactNode; helper?: string; e
 
 export const StatsCards: React.FC = () => {
   const { user } = useAuth();
-  const { trades, loading: tradesLoading, isDemo } = useUserTrades(user?.id ?? null);
+  const { trades, loading: tradesLoading } = useUserTrades(user?.id ?? null);
   const { data: opps, loading: oppsLoading } = useTopOpportunities();
   const { data: trends } = useTrends();
 
@@ -31,7 +31,7 @@ export const StatsCards: React.FC = () => {
 
   return (
     <section className="grid md:grid-cols-5 gap-4">
-      <Stat label="Open Trades" value={tradesLoading ? '…' : metrics.openTrades} helper={isDemo ? 'Demo data' : 'Live'} />
+      <Stat label="Open Trades" value={tradesLoading ? '…' : metrics.openTrades} helper={user ? 'Live' : 'Sign in to track'} />
       <Stat label="Win Rate" value={`${metrics.winRate}%`} helper={`${trades.filter(t=>t.status==='closed').length} closed`} />
       <Stat label="Total P&L" value={(metrics.totalPnL>=0?'+':'') + metrics.totalPnL.toFixed(2)} emphasize />
       <Stat label="Active Signals" value={oppsLoading ? '…' : metrics.activeSignals} />
