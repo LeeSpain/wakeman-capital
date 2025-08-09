@@ -98,6 +98,53 @@ const PhoneMockup: React.FC<{ targetHeight?: number }> = ({ targetHeight }) => {
     setScale(s);
   }, [targetHeight, naturalH, isMd]);
 
+  const SignalCardMock: React.FC = () => (
+    <div className="rounded-lg border border-border bg-background/60 p-3">
+      <div className="flex items-center justify-between mb-2">
+        <div className="min-w-0">
+          <div className="text-xs font-medium text-card-foreground truncate">USDJPY · H1</div>
+          <div className="text-[10px] text-muted-foreground">Signal preview</div>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">Buy</span>
+          <ArrowUpRight className="text-primary" size={16} />
+        </div>
+      </div>
+      <div className="h-1.5 rounded bg-muted overflow-hidden mb-2">
+        <div className="bg-gradient-to-r from-primary to-primary/60 h-1.5" style={{ width: '78%' }} />
+      </div>
+      <div className="grid grid-cols-2 gap-2 text-xs">
+        <div className="rounded-md border border-border/50 bg-card/50 p-2">
+          <div className="text-[10px] text-muted-foreground">Entry</div>
+          <div className="font-medium text-card-foreground">150.230</div>
+        </div>
+        <div className="rounded-md border border-border/50 bg-card/50 p-2">
+          <div className="text-[10px] text-muted-foreground">Stop</div>
+          <div className="font-medium text-card-foreground">149.800</div>
+        </div>
+        <div className="rounded-md border border-border/50 bg-card/50 p-2">
+          <div className="text-[10px] text-muted-foreground">TP1</div>
+          <div className="font-medium text-card-foreground">150.900</div>
+        </div>
+        <div className="rounded-md border border-border/50 bg-card/50 p-2">
+          <div className="text-[10px] text-muted-foreground">TP2</div>
+          <div className="font-medium text-card-foreground">151.400</div>
+        </div>
+        <div className="rounded-md border border-border/50 bg-card/50 p-2">
+          <div className="text-[10px] text-muted-foreground">R:R</div>
+          <div className="font-medium text-card-foreground">2.1</div>
+        </div>
+        <div className="rounded-md border border-border/50 bg-card/50 p-2">
+          <div className="text-[10px] text-muted-foreground">Confidence</div>
+          <div className="font-medium text-card-foreground">92%</div>
+        </div>
+      </div>
+      <div className="mt-2 text-[10px] text-muted-foreground">
+        This is a static preview. The full app shows live, auto-updating signals.
+      </div>
+    </div>
+  );
+
   const scaledHeight = isMd && naturalH ? naturalH * scale : undefined;
   return (
 <div className="relative w-full mx-auto animate-fade-in">
@@ -132,27 +179,7 @@ const PhoneMockup: React.FC<{ targetHeight?: number }> = ({ targetHeight }) => {
 
         {/* Content */}
         <div className="p-3 space-y-2">
-          {loading && (
-            <>
-              <div className="h-16 rounded-lg bg-muted/40 animate-pulse" />
-              <div className="h-16 rounded-lg bg-muted/40 animate-pulse" />
-              <div className="h-16 rounded-lg bg-muted/40 animate-pulse" />
-            </>
-          )}
-          {!loading && items.map((it) => (
-            <TrendRow
-              key={it.id}
-              symbol={it.symbol}
-              timeframe={it.timeframe}
-              direction={it.trend_direction}
-              strength={it.trend_strength}
-              aligned={it.higher_tf_alignment}
-              timestamp={it.analysis_timestamp}
-            />
-          ))}
-          {!loading && items.length === 0 && (
-            <div className="text-center text-xs text-muted-foreground py-8">No data yet — check back soon.</div>
-          )}
+          <SignalCardMock />
         </div>
 
         {/* Footer handle */}
