@@ -23,6 +23,18 @@ const Index = () => {
         <meta name="description" content="Wakeman Capital delivers AI-powered market intelligence, trend analysis, and actionable insights for SMC traders and investors." />
         <meta name="keywords" content="AI trading, market sentiment, trend analysis, financial data, trading dashboard" />
         <link rel="canonical" href="/" />
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "VideoObject",
+            name: "Wakeman Capital — Overview",
+            description: "Quick overview of Wakeman Capital's AI-powered market intelligence platform.",
+            thumbnailUrl: ["https://i.ytimg.com/vi/QjRlVX1e7JM/hqdefault.jpg"],
+            embedUrl: "https://www.youtube-nocookie.com/embed/QjRlVX1e7JM",
+            contentUrl: "https://www.youtube.com/watch?v=QjRlVX1e7JM",
+            publisher: { "@type": "Organization", name: "Wakeman Capital" }
+          })}
+        </script>
       </Helmet>
       <main className="min-h-screen bg-background">
         {/* Hero Section */}
@@ -30,36 +42,54 @@ const Index = () => {
           <div className="absolute inset-0 bg-hero-gradient bg-grid-subtle opacity-30 pointer-events-none" aria-hidden="true"></div>
           <div className="relative max-w-7xl mx-auto">
             <div className="rounded-xl bg-card/80 backdrop-blur shadow-elegant p-8 md:p-12">
-              <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-4">
-                <span className="text-primary">Wakeman Capital</span> — AI Market Intelligence
-              </h1>
-              <p className="text-lg md:text-xl text-muted-foreground max-w-3xl">
-                Transform market noise into clear, SMC-aligned insights. Real-time narrative tracking across social and news, distilled into actionable context.
-              </p>
+              <div className="grid md:grid-cols-12 gap-8 items-start">
+                <div className="md:col-span-7">
+                  <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-4">
+                    <span className="text-primary">Wakeman Capital</span> — AI Market Intelligence
+                  </h1>
+                  <p className="text-lg md:text-xl text-muted-foreground max-w-3xl">
+                    Transform market noise into clear, SMC-aligned insights. Real-time narrative tracking across social and news, distilled into actionable context.
+                  </p>
 
-              {/* Stats */}
-              <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="rounded-lg bg-muted/40 p-4">
-                  <div className="text-sm text-muted-foreground">Real-time Signals</div>
-                  <div className="text-2xl font-semibold text-card-foreground">10,000+/day</div>
+                  {/* Stats */}
+                  <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="rounded-lg bg-muted/40 p-4">
+                      <div className="text-sm text-muted-foreground">Real-time Signals</div>
+                      <div className="text-2xl font-semibold text-card-foreground">10,000+/day</div>
+                    </div>
+                    <div className="rounded-lg bg-muted/40 p-4">
+                      <div className="text-sm text-muted-foreground">Asset Coverage</div>
+                      <div className="text-2xl font-semibold text-card-foreground">FX · Crypto · Indices</div>
+                    </div>
+                    <div className="rounded-lg bg-muted/40 p-4">
+                      <div className="text-sm text-muted-foreground">Avg. Latency</div>
+                      <div className="text-2xl font-semibold text-card-foreground">~1.2s</div>
+                    </div>
+                  </div>
+
+                  {/* Benefits */}
+                  <ul className="mt-6 grid sm:grid-cols-2 gap-3 text-sm text-muted-foreground">
+                    <li className="flex items-start gap-2"><span className="text-primary mt-1">•</span><span>SMC-aligned entries with clear invalidation and targets</span></li>
+                    <li className="flex items-start gap-2"><span className="text-primary mt-1">•</span><span>London-session focus with macro- and event-aware context</span></li>
+                    <li className="flex items-start gap-2"><span className="text-primary mt-1">•</span><span>Noise-filtered narratives from social and news feeds</span></li>
+                    <li className="flex items-start gap-2"><span className="text-primary mt-1">•</span><span>Exportable, journal-ready summaries for discipline</span></li>
+                  </ul>
                 </div>
-                <div className="rounded-lg bg-muted/40 p-4">
-                  <div className="text-sm text-muted-foreground">Asset Coverage</div>
-                  <div className="text-2xl font-semibold text-card-foreground">FX · Crypto · Indices</div>
-                </div>
-                <div className="rounded-lg bg-muted/40 p-4">
-                  <div className="text-sm text-muted-foreground">Avg. Latency</div>
-                  <div className="text-2xl font-semibold text-card-foreground">~1.2s</div>
-                </div>
+                <aside className="md:col-span-5">
+                  <div className="relative aspect-video rounded-lg overflow-hidden border border-border bg-muted/20 shadow-elegant hover-scale">
+                    <iframe
+                      src="https://www.youtube-nocookie.com/embed/QjRlVX1e7JM"
+                      title="Wakeman Capital Overview"
+                      loading="lazy"
+                      className="absolute inset-0 h-full w-full"
+                      referrerPolicy="strict-origin-when-cross-origin"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                    />
+                  </div>
+                  <p className="mt-3 text-sm text-muted-foreground">Watch a quick overview of how Wakeman Capital turns market intelligence into profits.</p>
+                </aside>
               </div>
-
-              {/* Benefits */}
-              <ul className="mt-6 grid sm:grid-cols-2 gap-3 text-sm text-muted-foreground">
-                <li className="flex items-start gap-2"><span className="text-primary mt-1">•</span><span>SMC-aligned entries with clear invalidation and targets</span></li>
-                <li className="flex items-start gap-2"><span className="text-primary mt-1">•</span><span>London-session focus with macro- and event-aware context</span></li>
-                <li className="flex items-start gap-2"><span className="text-primary mt-1">•</span><span>Noise-filtered narratives from social and news feeds</span></li>
-                <li className="flex items-start gap-2"><span className="text-primary mt-1">•</span><span>Exportable, journal-ready summaries for discipline</span></li>
-              </ul>
             </div>
           </div>
         </section>
