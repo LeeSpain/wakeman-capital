@@ -479,6 +479,59 @@ export type Database = {
         }
         Relationships: []
       }
+      billing_records: {
+        Row: {
+          billing_period_end: string
+          billing_period_start: string
+          created_at: string
+          id: string
+          invoice_number: string | null
+          payment_date: string | null
+          status: string
+          subscription_id: string
+          total_fees: number
+          total_profits: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          billing_period_end: string
+          billing_period_start: string
+          created_at?: string
+          id?: string
+          invoice_number?: string | null
+          payment_date?: string | null
+          status?: string
+          subscription_id: string
+          total_fees?: number
+          total_profits?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          billing_period_end?: string
+          billing_period_start?: string
+          created_at?: string
+          id?: string
+          invoice_number?: string | null
+          payment_date?: string | null
+          status?: string
+          subscription_id?: string
+          total_fees?: number
+          total_profits?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "billing_records_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "client_subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       chart_annotations: {
         Row: {
           annotation_type: string
@@ -528,6 +581,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      client_subscriptions: {
+        Row: {
+          created_at: string
+          id: string
+          last_billing_date: string | null
+          next_billing_date: string | null
+          profit_share_percentage: number
+          subscription_status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_billing_date?: string | null
+          next_billing_date?: string | null
+          profit_share_percentage?: number
+          subscription_status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_billing_date?: string | null
+          next_billing_date?: string | null
+          profit_share_percentage?: number
+          subscription_status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       crawl_results: {
         Row: {
@@ -1064,6 +1150,83 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      profit_calculations: {
+        Row: {
+          billing_period_end: string
+          billing_period_start: string
+          calculation_date: string
+          created_at: string
+          fee_amount: number
+          fee_percentage: number
+          id: string
+          oanda_trade_id: string | null
+          paper_trade_id: string | null
+          profit_amount: number
+          subscription_id: string
+          trade_id: string | null
+          user_id: string
+        }
+        Insert: {
+          billing_period_end: string
+          billing_period_start: string
+          calculation_date?: string
+          created_at?: string
+          fee_amount: number
+          fee_percentage?: number
+          id?: string
+          oanda_trade_id?: string | null
+          paper_trade_id?: string | null
+          profit_amount: number
+          subscription_id: string
+          trade_id?: string | null
+          user_id: string
+        }
+        Update: {
+          billing_period_end?: string
+          billing_period_start?: string
+          calculation_date?: string
+          created_at?: string
+          fee_amount?: number
+          fee_percentage?: number
+          id?: string
+          oanda_trade_id?: string | null
+          paper_trade_id?: string | null
+          profit_amount?: number
+          subscription_id?: string
+          trade_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profit_calculations_oanda_trade_id_fkey"
+            columns: ["oanda_trade_id"]
+            isOneToOne: false
+            referencedRelation: "oanda_trades"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profit_calculations_paper_trade_id_fkey"
+            columns: ["paper_trade_id"]
+            isOneToOne: false
+            referencedRelation: "paper_trades_history"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profit_calculations_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "client_subscriptions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profit_calculations_trade_id_fkey"
+            columns: ["trade_id"]
+            isOneToOne: false
+            referencedRelation: "trades"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       projects: {
         Row: {

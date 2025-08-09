@@ -13,6 +13,7 @@ import Billing from "./pages/Billing";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
 import PaperTrading from "./pages/PaperTrading";
+import Admin from "./pages/Admin";
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
             <Route path="/billing" element={<Billing />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/paper" element={<PaperTrading />} />
+            <Route path="/admin" element={<Admin />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AppLayout>

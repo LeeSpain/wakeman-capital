@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import MarketingHeader from './MarketingHeader';
 import MarketingFooter from './MarketingFooter';
 import { useAuth } from '../../hooks/useAuth';
+import { useUserRole } from '../../hooks/useUserRole';
 import { supabase } from '../../integrations/supabase/client';
 
 interface AppLayoutProps {
@@ -13,6 +14,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
   const { user } = useAuth();
+  const { isAdmin } = useUserRole();
 
   const menu = [
     { path: '/dashboard', label: 'Dashboard' },
@@ -110,6 +112,18 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                 <span className="truncate inline-block align-middle">{item.label}</span>
               </Link>
             ))}
+            {isAdmin && (
+              <Link
+                to="/admin"
+                className={`block rounded-md px-3 py-2 text-sm transition-colors ${
+                  isActive('/admin')
+                    ? 'bg-muted text-primary font-medium'
+                    : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                }`}
+              >
+                <span className="truncate inline-block align-middle">Admin</span>
+              </Link>
+            )}
           </nav>
         </aside>
 
