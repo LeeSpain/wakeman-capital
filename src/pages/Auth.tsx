@@ -25,18 +25,62 @@ const Auth: React.FC = () => {
   const [paymentStep, setPaymentStep] = useState<'form' | 'payment' | 'processing'>('form');
 
   useEffect(() => {
-    // Check if this is a password recovery session
-    const handleAuthStateChange = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user && window.location.hash.includes('type=recovery')) {
-        setMode('update-password');
-        setEmail(session.user.email || '');
+    // Check for password recovery parameters in URL
+    const checkRecoveryState = async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      
+      // Check for recovery type in either URL params or hash
+      const isRecovery = urlParams.get('type') === 'recovery' || 
+                        hashParams.get('type') === 'recovery' ||
+                        window.location.hash.includes('type=recovery');
+      
+      if (isRecovery) {
+        // Validate if we have a valid recovery session
+        try {
+          const { data: { session }, error } = await supabase.auth.getSession();
+          
+          if (error) {
+            console.error('Recovery session error:', error);
+            setError('Password reset link has expired or is invalid. Please request a new one.');
+            setMode('reset');
+            return;
+          }
+          
+          if (session?.user) {
+            // Valid recovery session - show password update form
+            setMode('update-password');
+            setEmail(session.user.email || '');
+            setMessage('Please enter your new password below.');
+          } else {
+            // No valid session but recovery type detected
+            setError('Password reset link has expired. Please request a new one.');
+            setMode('reset');
+          }
+        } catch (err) {
+          console.error('Recovery validation error:', err);
+          setError('Unable to validate reset link. Please try again.');
+          setMode('reset');
+        }
       } else if (user && mode !== 'update-password') {
+        // Regular user login - redirect to dashboard
         navigate('/dashboard');
       }
     };
     
-    handleAuthStateChange();
+    checkRecoveryState();
+    
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        setMode('update-password');
+        setEmail(session?.user?.email || '');
+        setMessage('Please enter your new password below.');
+        setError(null);
+      }
+    });
+    
+    return () => subscription.unsubscribe();
   }, [user, navigate, mode]);
 
   const handleSubmit = async (e: React.FormEvent) => {
