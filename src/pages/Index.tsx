@@ -6,6 +6,7 @@ import FirstVisitModal from '../components/i18n/FirstVisitModal';
 import { useTranslation } from 'react-i18next';
 import appMockup from '../assets/app-mockup-hero.png';
 import { Badge } from '../components/ui/badge';
+import PhoneMockup from '../components/marketing/PhoneMockup';
 
 
 const Index = () => {
@@ -83,15 +84,7 @@ const Index = () => {
                 </div>
                 <aside className="md:col-span-5">
                   <div className="relative rounded-lg overflow-hidden border border-border bg-muted/20 shadow-elegant hover-scale">
-                    <img
-                      src={appMockup}
-                      alt={t('home.hero.mockupAlt')}
-                      loading="lazy"
-                      decoding="async"
-                      className="w-full h-auto block"
-                      width={960}
-                      height={600}
-                    />
+                    <PhoneMockup />
                     <div className="absolute top-3 left-3">
                       <Badge variant="secondary" className="bg-secondary/80 backdrop-blur">
                         {t('home.hero.points.realtime')}
