@@ -6,6 +6,7 @@ import BillingManagement from './BillingManagement';
 import AdminOverview from './AdminOverview';
 import AdminSettings from './AdminSettings';
 import EmailManagement from './EmailManagement';
+import AdminTasksList from './AdminTasksList';
 import { Users, DollarSign, FileText, BarChart3, Settings, Mail } from 'lucide-react';
 
 const AdminDashboard = () => {
@@ -17,6 +18,8 @@ const AdminDashboard = () => {
           SaaS Subscription Management
         </div>
       </div>
+
+      <AdminTasksList />
 
       <Tabs defaultValue="overview" className="space-y-6">
         <TabsList className="grid w-full grid-cols-6">
