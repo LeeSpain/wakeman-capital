@@ -38,6 +38,7 @@ const Index = () => {
         </script>
       </Helmet>
       <main className="min-h-screen bg-background">
+        <FirstVisitModal />
         {/* Hero Section */}
         <section className="relative py-16 md:py-20 px-4">
           <div className="absolute inset-0 bg-hero-gradient bg-grid-subtle opacity-30 pointer-events-none" aria-hidden="true"></div>
