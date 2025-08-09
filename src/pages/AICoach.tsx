@@ -3,13 +3,13 @@ import { Helmet } from 'react-helmet-async';
 import { Button } from '../components/ui/button';
 import { supabase } from '../integrations/supabase/client';
 import { useAuth } from '../hooks/useAuth';
+import { useUserRole } from '../hooks/useUserRole';
 import { AlertsList } from '../components/signals/AlertsList';
 import * as XLSX from 'xlsx';
 import { useToast } from '../hooks/use-toast';
 
-const tabs = ['Chat', 'Settings', 'Sources', 'Alerts'] as const;
-
-type Tab = typeof tabs[number];
+// Define full tab union, but members will only see a subset
+export type Tab = 'Chat' | 'Settings' | 'Sources' | 'Alerts';
 
 type Message = { role: 'user' | 'assistant'; content: string };
 
@@ -54,6 +54,8 @@ const AICoach = () => {
   const [newSource, setNewSource] = useState('');
   const [contextUsed, setContextUsed] = useState<{ tools: string[]; sources: string[] }>({ tools: [], sources: [] });
   const { user } = useAuth();
+  const { isAdmin } = useUserRole();
+  const tabOptions: Tab[] = isAdmin ? ['Chat', 'Alerts'] : ['Chat'];
   const [settingsRowId, setSettingsRowId] = useState<string | null>(null);
   const [savingSettings, setSavingSettings] = useState(false);
   useEffect(() => {
@@ -265,17 +267,20 @@ const AICoach = () => {
           </header>
 
           <div className="rounded-lg border border-border bg-card">
-            <div className="grid grid-cols-4 gap-0 border-b border-border text-sm">
-              {tabs.map((t) => (
-                <button
-                  key={t}
-                  onClick={() => setActive(t)}
-                  className={`py-3 px-4 text-center ${active === t ? 'text-primary border-b-2 border-primary' : 'text-muted-foreground hover:text-foreground'}`}
-                >
-                  {t}
-                </button>
-              ))}
-            </div>
+            {tabOptions.length > 1 && (
+              <div className="grid grid-cols-4 gap-0 border-b border-border text-sm">
+                {tabOptions.map((t: Tab) => (
+                  <button
+                    key={t}
+                    onClick={() => setActive(t)}
+                    className={`py-3 px-4 text-center ${active === t ? 'text-primary border-b-2 border-primary' : 'text-muted-foreground hover:text-foreground'}`}
+                  >
+                    {t}
+                  </button>
+                ))}
+              </div>
+            )}
+
 
             <div className="p-6">
               {active === 'Chat' && (
