@@ -71,6 +71,9 @@ const menu = [
           <Link to="/analytics" className={location.pathname === '/analytics' ? 'text-primary' : 'hover:text-foreground'}>
             {t('nav.analytics')}
           </Link>
+          <Link to="/videos" className={location.pathname === '/videos' ? 'text-primary' : 'hover:text-foreground'}>
+            Videos
+          </Link>
         </nav>
         <div className="flex items-center gap-3">
           <LanguageSwitcher />
