@@ -3,7 +3,9 @@ import { supabase } from '../../integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
+import { Plus, Mail, Users } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import InviteClientModal from './InviteClientModal';
 
 interface Client {
   id: string;
@@ -19,6 +21,8 @@ interface Client {
 const ClientList = () => {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [totalRevenue, setTotalRevenue] = useState(0);
 
   useEffect(() => {
     fetchClients();
@@ -67,6 +71,10 @@ const ClientList = () => {
       }) || [];
 
       setClients(clientsData);
+      
+      // Calculate total revenue
+      const revenue = clientsData.reduce((sum, client) => sum + client.total_fees, 0);
+      setTotalRevenue(revenue);
     } catch (error) {
       console.error('Error fetching clients:', error);
     } finally {
@@ -100,7 +108,24 @@ const ClientList = () => {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
+      {/* Header with Stats and Actions */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Users className="h-5 w-5 text-muted-foreground" />
+            <span className="text-lg font-medium">{clients.length} Clients</span>
+          </div>
+          <div className="text-sm text-muted-foreground">
+            Total Revenue: <span className="font-medium text-green-600">${totalRevenue.toFixed(2)}</span>
+          </div>
+        </div>
+        <Button onClick={() => setShowInviteModal(true)} className="flex items-center gap-2">
+          <Plus className="h-4 w-4" />
+          Invite Client
+        </Button>
+      </div>
+
       <div className="grid gap-4">
         {clients.map((client) => (
           <Card key={client.id}>
@@ -150,11 +175,23 @@ const ClientList = () => {
         ))}
       </div>
 
-      {clients.length === 0 && (
-        <div className="text-center py-8 text-muted-foreground">
-          No clients found. Subscriptions will appear here automatically.
+      {clients.length === 0 && !loading && (
+        <div className="text-center py-12">
+          <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-foreground mb-2">No clients yet</h3>
+          <p className="text-muted-foreground mb-4">Start by inviting clients to join your platform</p>
+          <Button onClick={() => setShowInviteModal(true)} className="flex items-center gap-2">
+            <Mail className="h-4 w-4" />
+            Send Your First Invite
+          </Button>
         </div>
       )}
+
+      <InviteClientModal 
+        open={showInviteModal} 
+        onClose={() => setShowInviteModal(false)}
+        onInviteSent={fetchClients}
+      />
     </div>
   );
 };

@@ -3,7 +3,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import ClientList from './ClientList';
 import ProfitTracking from './ProfitTracking';
 import BillingManagement from './BillingManagement';
-import { Users, DollarSign, FileText } from 'lucide-react';
+import AdminOverview from './AdminOverview';
+import AdminSettings from './AdminSettings';
+import { Users, DollarSign, FileText, BarChart3, Settings } from 'lucide-react';
 
 const AdminDashboard = () => {
   return (
@@ -15,8 +17,12 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      <Tabs defaultValue="clients" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+      <Tabs defaultValue="overview" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-5">
+          <TabsTrigger value="overview" className="flex items-center gap-2">
+            <BarChart3 className="h-4 w-4" />
+            Overview
+          </TabsTrigger>
           <TabsTrigger value="clients" className="flex items-center gap-2">
             <Users className="h-4 w-4" />
             Clients
@@ -29,7 +35,15 @@ const AdminDashboard = () => {
             <FileText className="h-4 w-4" />
             Billing
           </TabsTrigger>
+          <TabsTrigger value="settings" className="flex items-center gap-2">
+            <Settings className="h-4 w-4" />
+            Settings
+          </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="overview">
+          <AdminOverview />
+        </TabsContent>
 
         <TabsContent value="clients">
           <ClientList />
@@ -39,8 +53,8 @@ const AdminDashboard = () => {
           <ProfitTracking />
         </TabsContent>
 
-        <TabsContent value="billing">
-          <BillingManagement />
+        <TabsContent value="settings">
+          <AdminSettings />
         </TabsContent>
       </Tabs>
     </div>
