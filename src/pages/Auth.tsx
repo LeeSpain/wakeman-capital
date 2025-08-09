@@ -5,9 +5,11 @@ import { supabase } from '../integrations/supabase/client';
 import { useAuth } from '../hooks/useAuth';
 import { useUserRole } from '../hooks/useUserRole';
 import { useToast } from '../hooks/use-toast';
+import { useTranslation } from 'react-i18next';
 
 const Auth: React.FC = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [mode, setMode] = useState<'login' | 'signup' | 'reset' | 'update-password'>('login');
@@ -237,8 +239,8 @@ const Auth: React.FC = () => {
     return (
       <>
         <Helmet>
-          <title>Complete Your Subscription — Wakeman Capital</title>
-          <meta name="description" content="Complete your monthly subscription to access professional trading insights and earn 10% profit share." />
+<title>{t('auth.paymentSeoTitle')}</title>
+          <meta name="description" content={t('auth.paymentSeoDescription')} />
           <link rel="canonical" href="/auth" />
         </Helmet>
         <main className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-primary/5 flex items-center">
@@ -394,8 +396,8 @@ const Auth: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>{mode === 'login' ? 'Welcome Back' : 'Join Wakeman Capital'} — AI Market Intelligence</title>
-        <meta name="description" content="Access your Wakeman Capital account or join thousands of traders using AI-powered market intelligence." />
+<title>{mode === 'login' ? t('auth.seoTitleLogin') : t('auth.seoTitleSignup')}</title>
+        <meta name="description" content={t('auth.seoDescription')} />
         <link rel="canonical" href="/auth" />
       </Helmet>
       <main className="min-h-[calc(100vh-4rem-4rem)] bg-gradient-to-br from-background via-muted/20 to-primary/5 flex items-center">

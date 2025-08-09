@@ -57,7 +57,7 @@ const menu = [
       <header className="h-14 border-b border-border bg-card flex items-center px-4 justify-between">
         <div className="flex items-center gap-3">
           <button
-            aria-label="Toggle sidebar"
+            aria-label={t('layout.toggleSidebar')}
             onClick={() => setCollapsed((c) => !c)}
             className="px-2 py-1 rounded-md border border-border bg-background hover:bg-muted transition-colors"
           >
@@ -94,7 +94,7 @@ const menu = [
 
       <div className="flex">
         <aside className={`${collapsed ? 'w-14' : 'w-64'} transition-all border-r border-border bg-card min-h-[calc(100vh-3.5rem)]`}>
-          <div className="px-3 pt-3 text-xs uppercase tracking-wide text-muted-foreground">Main</div>
+          <div className="px-3 pt-3 text-xs uppercase tracking-wide text-muted-foreground">{t('layout.main')}</div>
           <nav className="p-2 space-y-1">
             {menu.slice(0,6).map((item) => (
               <Link
@@ -110,7 +110,7 @@ const menu = [
               </Link>
             ))}
           </nav>
-          <div className="px-3 pt-3 text-xs uppercase tracking-wide text-muted-foreground">Account</div>
+          <div className="px-3 pt-3 text-xs uppercase tracking-wide text-muted-foreground">{t('layout.account')}</div>
           <nav className="p-2 space-y-1">
             {menu.slice(6).map((item) => (
               <Link
