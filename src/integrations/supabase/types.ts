@@ -1574,6 +1574,8 @@ export type Database = {
           mobile: string | null
           payment_status: string | null
           preferred_currency: string | null
+          preferred_language: string | null
+          region: string | null
           updated_at: string
         }
         Insert: {
@@ -1586,6 +1588,8 @@ export type Database = {
           mobile?: string | null
           payment_status?: string | null
           preferred_currency?: string | null
+          preferred_language?: string | null
+          region?: string | null
           updated_at?: string
         }
         Update: {
@@ -1598,6 +1602,8 @@ export type Database = {
           mobile?: string | null
           payment_status?: string | null
           preferred_currency?: string | null
+          preferred_language?: string | null
+          region?: string | null
           updated_at?: string
         }
         Relationships: []
