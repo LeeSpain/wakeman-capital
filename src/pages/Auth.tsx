@@ -3,13 +3,14 @@ import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../integrations/supabase/client';
 import { useAuth } from '../hooks/useAuth';
+import { useUserRole } from '../hooks/useUserRole';
 import { useToast } from '../hooks/use-toast';
 
 const Auth: React.FC = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [mode, setMode] = useState<'login' | 'signup'>('login');
+  const [mode, setMode] = useState<'login' | 'signup' | 'reset'>('login');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [mobile, setMobile] = useState('');
@@ -31,12 +32,26 @@ const Auth: React.FC = () => {
     setMessage(null);
     setLoading(true);
 
+    if (mode === 'reset') {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth`,
+      });
+      if (error) {
+        setLoading(false);
+        return setError(error.message);
+      }
+      setLoading(false);
+      setMessage('Password reset link sent to your email!');
+      return;
+    }
+
     if (mode === 'login') {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
         setLoading(false);
         return setError(error.message);
       }
+      
       // Ensure profile exists on login using user metadata if available
       const u = data.user;
       if (u) {
@@ -49,11 +64,26 @@ const Auth: React.FC = () => {
           mobile: meta.mobile ?? null,
           display_name: display || null,
           preferred_currency: 'AUD',
+          access_level: 'premium', // Ensure premium access for all users
+          payment_status: 'paid', // Ensure paid status for all users
         });
+
+        // Check if user is admin and grant full access
+        const { data: roleData } = await supabase.rpc('has_role', {
+          _user_id: u.id,
+          _role: 'admin'
+        });
+
+        if (roleData) {
+          toast({
+            title: "Admin Access Granted",
+            description: "Welcome back! You have full platform access.",
+          });
+        }
       }
       setLoading(false);
       navigate('/dashboard');
-    } else {
+    } else if (mode === 'signup') {
       const redirectUrl = `${window.location.origin}/`;
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -294,11 +324,13 @@ const Auth: React.FC = () => {
                 <span className="text-2xl">📈</span>
               </div>
               <h1 className="text-3xl font-bold text-card-foreground mb-2">
-                {mode === 'login' ? 'Welcome Back!' : 'Join Wakeman Capital'}
+                {mode === 'login' ? 'Welcome Back!' : mode === 'reset' ? 'Reset Password' : 'Join Wakeman Capital'}
               </h1>
               <p className="text-muted-foreground">
                 {mode === 'login' 
                   ? 'Sign in to access your trading dashboard and continue your profitable journey.' 
+                  : mode === 'reset'
+                  ? 'Enter your email address and we\'ll send you a link to reset your password.'
                   : 'Join thousands of traders using AI-powered market intelligence to maximize profits.'
                 }
               </p>
@@ -333,10 +365,10 @@ const Auth: React.FC = () => {
               </div>
             )}
             
-            <div className="flex gap-2 mb-6">
+            <div className="flex gap-1 mb-6">
               <button
                 onClick={() => setMode('login')}
-                className={`flex-1 px-4 py-2 rounded-lg border text-sm font-medium transition-colors ${
+                className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${
                   mode === 'login' 
                     ? 'bg-primary text-primary-foreground border-transparent' 
                     : 'border-border hover:bg-muted text-muted-foreground'
@@ -346,13 +378,23 @@ const Auth: React.FC = () => {
               </button>
               <button
                 onClick={() => setMode('signup')}
-                className={`flex-1 px-4 py-2 rounded-lg border text-sm font-medium transition-colors ${
+                className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${
                   mode === 'signup' 
                     ? 'bg-primary text-primary-foreground border-transparent' 
                     : 'border-border hover:bg-muted text-muted-foreground'
                 }`}
               >
                 Join Now
+              </button>
+              <button
+                onClick={() => setMode('reset')}
+                className={`flex-1 px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${
+                  mode === 'reset' 
+                    ? 'bg-primary text-primary-foreground border-transparent' 
+                    : 'border-border hover:bg-muted text-muted-foreground'
+                }`}
+              >
+                Reset
               </button>
             </div>
 
@@ -418,20 +460,22 @@ const Auth: React.FC = () => {
                   placeholder="you@example.com"
                 />
               </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground" htmlFor="password">
-                  Password *
-                </label>
-                <input
-                  id="password"
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring transition-colors"
-                  placeholder={mode === 'login' ? 'Enter your password' : 'Choose a strong password'}
-                />
-              </div>
+{mode !== 'reset' && (
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground" htmlFor="password">
+                    Password *
+                  </label>
+                  <input
+                    id="password"
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring transition-colors"
+                    placeholder={mode === 'login' ? 'Enter your password' : 'Choose a strong password'}
+                  />
+                </div>
+              )}
               
               {error && (
                 <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
@@ -451,8 +495,8 @@ const Auth: React.FC = () => {
                 className="w-full px-6 py-4 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-xl"
               >
                 {loading 
-                  ? (mode === 'login' ? 'Signing you in...' : 'Creating your account...') 
-                  : (mode === 'login' ? 'Sign In to Dashboard' : 'Continue to Subscription →')
+                  ? (mode === 'login' ? 'Signing you in...' : mode === 'reset' ? 'Sending reset link...' : 'Creating your account...') 
+                  : (mode === 'login' ? 'Sign In to Dashboard' : mode === 'reset' ? 'Send Reset Link' : 'Continue to Subscription →')
                 }
               </button>
             </form>

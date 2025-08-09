@@ -2133,6 +2133,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      grant_admin_premium_access: {
+        Args: { target_email: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _user_id: string
