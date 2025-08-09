@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { supabase } from '../integrations/supabase/client';
 import { useNavigate, Link } from 'react-router-dom';
@@ -24,6 +24,23 @@ const Index = () => {
     { title: 'EURUSD', sentiment: -0.30, source: 'NewsAPI', tags: ['ECB', 'policy', 'weakness'] },
     { title: 'ETHUSD', sentiment: 0.20, source: 'X', tags: ['upgrade', 'flows'] },
   ];
+
+  // Measure hero text column height for PhoneMockup scaling
+  const textColRef = useRef<HTMLDivElement>(null);
+  const [targetH, setTargetH] = useState<number | undefined>(undefined);
+  useEffect(() => {
+    const el = textColRef.current;
+    if (!el) return;
+    const measure = () => setTargetH(el.getBoundingClientRect().height);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    window.addEventListener('resize', measure);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', measure);
+    };
+  }, []);
 
   return (
     <>
@@ -54,7 +71,7 @@ const Index = () => {
           <div className="relative max-w-7xl mx-auto">
             <div className="rounded-xl bg-card/80 backdrop-blur shadow-elegant p-8 md:p-12">
               <div className="grid md:grid-cols-12 gap-8 items-start">
-                <div className="md:col-span-7">
+                <div ref={textColRef} className="md:col-span-7">
                   <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-4"><span className="text-primary">{heroBrand?.trim()}</span>{heroRest ? ` — ${heroRest}` : ''}</h1>
                   <p className="text-lg md:text-xl text-muted-foreground max-w-3xl">{t('home.hero.subtitle')}</p>
 
@@ -84,7 +101,7 @@ const Index = () => {
                 </div>
                 <aside className="md:col-span-5">
                   <div className="relative rounded-lg overflow-hidden border border-border bg-muted/20 shadow-elegant hover-scale">
-                    <PhoneMockup />
+                    <PhoneMockup targetHeight={targetH} />
                     <div className="absolute top-3 left-3">
                       <Badge variant="secondary" className="bg-secondary/80 backdrop-blur">
                         {t('home.hero.points.realtime')}
