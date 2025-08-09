@@ -48,6 +48,17 @@ export const useSubscription = () => {
     window.open(data.url, '_blank');
   }, []);
 
+  const openSubscriptionCheckout = useCallback(async (amountCents: number, description: string) => {
+    const { data, error } = await supabase.functions.invoke<{ url?: string }>('create-checkout', {
+      body: { amount: amountCents, description },
+    });
+    if (error || !data?.url) {
+      console.error('create-checkout error', error);
+      throw new Error(error?.message || 'Unable to start subscription checkout');
+    }
+    window.open(data.url, '_blank');
+  }, []);
+
   useEffect(() => {
     if (!user) {
       setData({ subscribed: false });
@@ -60,5 +71,5 @@ export const useSubscription = () => {
 
   const tierLabel = useMemo(() => data.subscription_tier ?? (data.subscribed ? 'Premium' : 'Free'), [data]);
 
-  return { ...data, tierLabel, loading, error, refresh, openCheckout, openPortal };
+  return { ...data, tierLabel, loading, error, refresh, openCheckout, openPortal, openSubscriptionCheckout };
 };

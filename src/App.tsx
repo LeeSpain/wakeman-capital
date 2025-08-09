@@ -19,6 +19,9 @@ import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentConfirmation from "./pages/PaymentConfirmation";
 import Admin from "./pages/Admin";
 import Videos from "./pages/Videos";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
+import RiskDisclaimer from "./pages/RiskDisclaimer";
 
 function App() {
   return (
@@ -43,6 +46,9 @@ function App() {
             <Route path="/paper" element={<PaperTrading />} />
             <Route path="/payment-success" element={<PaymentSuccess />} />
             <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
+            <Route path="/privacy-policy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/risk-disclaimer" element={<RiskDisclaimer />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

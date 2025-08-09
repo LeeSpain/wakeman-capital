@@ -26,6 +26,9 @@ const MarketingFooter: React.FC = () => {
             <ul className="space-y-1 text-muted-foreground">
               <li><Link to="/" className="hover:text-foreground">{t('footer.home')}</Link></li>
               <li><Link to="/dashboard" className="hover:text-foreground">{t('footer.dashboard')}</Link></li>
+              <li><Link to="/privacy-policy" className="hover:text-foreground">Privacy Policy</Link></li>
+              <li><Link to="/terms" className="hover:text-foreground">Terms</Link></li>
+              <li><Link to="/risk-disclaimer" className="hover:text-foreground">Risk Disclaimer</Link></li>
             </ul>
           </div>
         </div>

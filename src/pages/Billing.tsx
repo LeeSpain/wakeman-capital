@@ -23,7 +23,7 @@ const formatPrice = (cents: number) => `$${(cents / 100).toFixed(2)}`;
 
 const Billing = () => {
   const { user } = useAuth();
-  const { subscribed, subscription_tier, subscription_end, loading, refresh, openCheckout, openPortal } = useSubscription();
+  const { subscribed, subscription_tier, subscription_end, loading, refresh, openCheckout, openPortal, openSubscriptionCheckout } = useSubscription();
 
   const offersJsonLd = useMemo(() => ({
     '@context': 'https://schema.org',
@@ -88,7 +88,7 @@ const Billing = () => {
 
                   const onClick = async () => {
                     if (isCurrent) return openPortal();
-                    await openCheckout(plan.priceCents, `${plan.key} Subscription`);
+                    await openSubscriptionCheckout(plan.priceCents, `${plan.key} Subscription`);
                     setTimeout(() => refresh(), 1000);
                   };
 
