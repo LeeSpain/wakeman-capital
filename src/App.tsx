@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import AppLayout from "./components/layout/AppLayout";
+import { Toaster } from "./components/ui/toaster";
 import Index from "./pages/Index";
 import DashboardPage from "./pages/Dashboard";
 import Analytics from "./pages/Analytics";
@@ -38,6 +39,7 @@ function App() {
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AppLayout>
+        <Toaster />
       </Router>
     </HelmetProvider>
   );
