@@ -92,7 +92,45 @@ const resources = {
       },
       dashboard: {
         seoTitle: 'Dashboard | Wakeman Capital',
-        seoDescription: 'Live trading dashboard with trades, signals, and market trends.'
+        seoDescription: 'Live trading dashboard with trades, signals, and market trends.',
+        welcome: 'Welcome back',
+        activeSignals: 'Active signals',
+        openTrades: 'Open trades',
+        trackedPairs: 'Tracked pairs',
+        asOf: 'As of',
+        quickTopUp: 'Quick top-up',
+        title: 'Dashboard',
+        addFunds: 'Add Funds',
+        trendsSnapshot: 'Trends Snapshot'
+      },
+      trend: {
+        marketSentiment: 'Market Sentiment Analysis',
+        loading: 'Loading market sentiment...',
+        noData: 'No trend analysis data available yet.',
+        bullish: 'bullish',
+        bearish: 'bearish',
+        neutral: 'neutral'
+      },
+      footer: {
+        company: 'Wakeman Capital',
+        tagline: 'AI-driven market intelligence for modern traders.',
+        product: 'Product',
+        companySection: 'Company',
+        features: 'Features',
+        pricing: 'Pricing',
+        signalCenter: 'Signal Center',
+        aiCoach: 'AI Coach',
+        home: 'Home',
+        dashboard: 'Dashboard',
+        rights: 'All rights reserved.'
+      },
+      auth: {
+        signInTitle: 'Sign in to manage your settings',
+        signInDesc: "We'll email you a secure link to sign in.",
+        checkInbox: 'Check your inbox for the sign-in link.',
+        emailPlaceholder: 'you@example.com',
+        sending: 'Sending…',
+        sendLink: 'Send link'
       }
     }
   },
@@ -184,7 +222,45 @@ const resources = {
       },
       dashboard: {
         seoTitle: 'Panel | Wakeman Capital',
-        seoDescription: 'Panel de trading en vivo con operaciones, señales y tendencias del mercado.'
+        seoDescription: 'Panel de trading en vivo con operaciones, señales y tendencias del mercado.',
+        welcome: 'Bienvenido de nuevo',
+        activeSignals: 'Señales activas',
+        openTrades: 'Operaciones abiertas',
+        trackedPairs: 'Pares rastreados',
+        asOf: 'A fecha de',
+        quickTopUp: 'Recarga rápida',
+        title: 'Panel',
+        addFunds: 'Agregar fondos',
+        trendsSnapshot: 'Resumen de tendencias'
+      },
+      trend: {
+        marketSentiment: 'Análisis de Sentimiento del Mercado',
+        loading: 'Cargando sentimiento del mercado...',
+        noData: 'No hay datos de análisis de tendencias disponibles aún.',
+        bullish: 'alcista',
+        bearish: 'bajista',
+        neutral: 'neutral'
+      },
+      footer: {
+        company: 'Wakeman Capital',
+        tagline: 'Inteligencia de mercado con IA para traders modernos.',
+        product: 'Producto',
+        companySection: 'Compañía',
+        features: 'Características',
+        pricing: 'Precios',
+        signalCenter: 'Centro de Señales',
+        aiCoach: 'AI Coach',
+        home: 'Inicio',
+        dashboard: 'Panel',
+        rights: 'Todos los derechos reservados.'
+      },
+      auth: {
+        signInTitle: 'Inicia sesión para gestionar tu configuración',
+        signInDesc: 'Te enviaremos un enlace seguro para iniciar sesión.',
+        checkInbox: 'Revisa tu bandeja de entrada para el enlace de acceso.',
+        emailPlaceholder: 'tu@ejemplo.com',
+        sending: 'Enviando…',
+        sendLink: 'Enviar enlace'
       }
     }
   }
@@ -196,7 +272,7 @@ i18n
   .init({
     resources,
     fallbackLng: 'en',
-    supportedLngs: ['en','es','fr','de','it','pt','pt-BR','zh-CN','ja','ko','ar','hi','ru'],
+    supportedLngs: ['en','nl','es','ar','zh-CN'],
     interpolation: { escapeValue: false },
     detection: {
       order: ['localStorage', 'navigator', 'htmlTag'],
@@ -207,10 +283,12 @@ i18n
 
 // Keep the <html lang> in sync with the active language
 if (typeof document !== 'undefined') {
-  document.documentElement.lang = i18n.language || 'en';
-  i18n.on('languageChanged', (lng) => {
+  const apply = (lng: string) => {
     document.documentElement.lang = lng;
-  });
+    document.documentElement.dir = i18n.dir(lng);
+  };
+  apply(i18n.language || 'en');
+  i18n.on('languageChanged', apply);
 }
 
 export default i18n;

@@ -11,8 +11,10 @@ import { useTrends } from '../hooks/useTrends';
 import { useTopOpportunities } from '../hooks/useSignals';
 import { useUserTrades } from '../hooks/useTrades';
 import { useNewsAlerts } from '../hooks/useNewsAlerts';
+import { useTranslation } from 'react-i18next';
 
 const Dashboard = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { profile, loading: profileLoading } = useProfile(user?.id);
   const { data: trends } = useTrends();
@@ -62,20 +64,20 @@ const Dashboard = () => {
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
             <h2 className="text-2xl font-bold text-card-foreground" aria-live="polite">
-              Welcome back{displayName ? `, ${displayName}` : ''}
+              {`${t('dashboard.welcome')}${displayName ? `, ${displayName}` : ''}`}
             </h2>
             <div className="mt-3 flex flex-wrap items-center gap-2">
-              <Chip label="Active signals" value={activeSignals} />
-              <Chip label="Open trades" value={tradesLoading ? '…' : openTrades} />
-              <Chip label="Tracked pairs" value={trackedPairs} />
+              <Chip label={t('dashboard.activeSignals')} value={activeSignals} />
+              <Chip label={t('dashboard.openTrades')} value={tradesLoading ? '…' : openTrades} />
+              <Chip label={t('dashboard.trackedPairs')} value={trackedPairs} />
             </div>
           </div>
           <div className="flex items-center gap-3">
             <div className="text-right">
-              <div className="text-xs text-muted-foreground mb-1">As of</div>
+              <div className="text-xs text-muted-foreground mb-1">{t('dashboard.asOf')}</div>
               <LiveClock />
             </div>
-            <button className="px-3 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">Quick top-up</button>
+            <button className="px-3 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">{t('dashboard.quickTopUp')}</button>
           </div>
         </div>
         <div className="mt-6">
@@ -84,13 +86,13 @@ const Dashboard = () => {
       </section>
 
       <div className="flex items-center justify-between">
-        <h3 className="text-2xl font-bold text-card-foreground">Dashboard</h3>
-        <button className="px-3 py-2 rounded-md bg-primary text-primary-foreground">Add Funds</button>
+        <h3 className="text-2xl font-bold text-card-foreground">{t('dashboard.title')}</h3>
+        <button className="px-3 py-2 rounded-md bg-primary text-primary-foreground">{t('dashboard.addFunds')}</button>
       </div>
 
       {/* Trends Snapshot */}
       <section className="rounded-xl border border-border bg-card p-6">
-        <h4 className="text-xl font-semibold text-card-foreground mb-3">Trends Snapshot</h4>
+        <h4 className="text-xl font-semibold text-card-foreground mb-3">{t('dashboard.trendsSnapshot')}</h4>
         <TrendsSummary data={trends} />
       </section>
 

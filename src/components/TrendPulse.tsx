@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '../integrations/supabase/client';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
@@ -10,6 +11,7 @@ interface TrendData {
 }
 
 const TrendPulse = () => {
+  const { t } = useTranslation();
   const [trends, setTrends] = useState<TrendData[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -45,15 +47,21 @@ const TrendPulse = () => {
     return <Minus className="h-4 w-4 text-muted-foreground" />;
   };
 
+  const trendLabel = (direction: string) => {
+    if (direction === 'bullish') return t('trend.bullish');
+    if (direction === 'bearish') return t('trend.bearish');
+    return t('trend.neutral');
+  };
+
   return (
     <div className="p-6 border border-border rounded-lg bg-card">
       <h3 className="text-lg font-semibold text-card-foreground mb-4">
-        Market Sentiment Analysis
+        {t('trend.marketSentiment')}
       </h3>
       {loading ? (
-        <p className="text-muted-foreground">Loading market sentiment...</p>
+        <p className="text-muted-foreground">{t('trend.loading')}</p>
       ) : trends.length === 0 ? (
-        <p className="text-muted-foreground">No trend analysis data available yet.</p>
+        <p className="text-muted-foreground">{t('trend.noData')}</p>
       ) : (
         <div className="space-y-3">
           {trends.map((trend, index) => (
@@ -64,7 +72,7 @@ const TrendPulse = () => {
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-muted-foreground capitalize">
-                  {trend.trend_direction}
+                  {trendLabel(trend.trend_direction)}
                 </span>
                 <span className="text-xs px-2 py-1 rounded border border-border">
                   {Math.round(trend.confidence)}%
