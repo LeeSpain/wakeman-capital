@@ -53,6 +53,21 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_whitelist: {
+        Row: {
+          created_at: string
+          email: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+        }
+        Relationships: []
+      }
       ai_agent_settings: {
         Row: {
           agent_id: string | null
@@ -1257,6 +1272,8 @@ export type Database = {
       }
       oanda_trades: {
         Row: {
+          breakeven_moved: boolean | null
+          calculated_lot_size: number | null
           closed_at: string | null
           created_at: string
           current_price: number | null
@@ -1266,18 +1283,25 @@ export type Database = {
           oanda_account_id: string
           oanda_trade_id: string
           opened_at: string
+          partial_close_tp1: boolean | null
+          partial_close_tp2: boolean | null
           realized_pnl: number | null
+          risk_percentage: number | null
           signal_id: string | null
           status: string
           stop_loss: number | null
           symbol: string
           take_profit: number | null
+          take_profit_2: number | null
+          take_profit_3: number | null
           units: number
           unrealized_pnl: number | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          breakeven_moved?: boolean | null
+          calculated_lot_size?: number | null
           closed_at?: string | null
           created_at?: string
           current_price?: number | null
@@ -1287,18 +1311,25 @@ export type Database = {
           oanda_account_id: string
           oanda_trade_id: string
           opened_at?: string
+          partial_close_tp1?: boolean | null
+          partial_close_tp2?: boolean | null
           realized_pnl?: number | null
+          risk_percentage?: number | null
           signal_id?: string | null
           status?: string
           stop_loss?: number | null
           symbol: string
           take_profit?: number | null
+          take_profit_2?: number | null
+          take_profit_3?: number | null
           units: number
           unrealized_pnl?: number | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          breakeven_moved?: boolean | null
+          calculated_lot_size?: number | null
           closed_at?: string | null
           created_at?: string
           current_price?: number | null
@@ -1308,12 +1339,17 @@ export type Database = {
           oanda_account_id?: string
           oanda_trade_id?: string
           opened_at?: string
+          partial_close_tp1?: boolean | null
+          partial_close_tp2?: boolean | null
           realized_pnl?: number | null
+          risk_percentage?: number | null
           signal_id?: string | null
           status?: string
           stop_loss?: number | null
           symbol?: string
           take_profit?: number | null
+          take_profit_2?: number | null
+          take_profit_3?: number | null
           units?: number
           unrealized_pnl?: number | null
           updated_at?: string
@@ -1499,6 +1535,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      position_events: {
+        Row: {
+          created_at: string
+          event_data: Json | null
+          event_type: string
+          id: string
+          price_at_event: number
+          trade_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_data?: Json | null
+          event_type: string
+          id?: string
+          price_at_event: number
+          trade_id: string
+        }
+        Update: {
+          created_at?: string
+          event_data?: Json | null
+          event_type?: string
+          id?: string
+          price_at_event?: number
+          trade_id?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
