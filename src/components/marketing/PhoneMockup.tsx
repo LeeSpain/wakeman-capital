@@ -25,29 +25,28 @@ const TrendRow: React.FC<{
   const pct = clampPercent(strength);
 
   return (
-    <div className="rounded-lg border border-border bg-background/60 p-3">
-      <div className="flex items-center justify-between mb-2">
-        <div>
-          <div className="text-sm font-semibold text-card-foreground">{symbol}</div>
-          <div className="text-[11px] text-muted-foreground">{timeframe}</div>
+    <div className="rounded-lg border border-border bg-background/60 p-2">
+      <div className="flex items-center justify-between mb-1.5">
+        <div className="min-w-0">
+          <div className="text-xs font-medium text-card-foreground truncate">{symbol} · {timeframe}</div>
         </div>
         <div className="flex items-center gap-2">
-          {isUp && <ArrowUpRight className="text-primary" size={18} />}
-          {isDown && !isUp && <ArrowDownRight className="text-destructive" size={18} />}
-          {!isUp && !isDown && <span className="text-xs text-muted-foreground">—</span>}
+          {isUp && <ArrowUpRight className="text-primary" size={16} />}
+          {isDown && !isUp && <ArrowDownRight className="text-destructive" size={16} />}
+          {!isUp && !isDown && <span className="text-[10px] text-muted-foreground">—</span>}
           {aligned && (
-            <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">HTF</span>
+            <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">HTF</span>
           )}
         </div>
       </div>
-      <div className="h-2 rounded bg-muted overflow-hidden">
+      <div className="h-1.5 rounded bg-muted overflow-hidden">
         <div
-          className={`${isUp ? 'bg-primary' : isDown ? 'bg-destructive' : 'bg-muted-foreground'} h-2 transition-all`}
+          className={`${isUp ? 'bg-gradient-to-r from-primary to-primary/60' : isDown ? 'bg-gradient-to-r from-destructive to-destructive/60' : 'bg-gradient-to-r from-muted-foreground to-muted-foreground/60'} h-1.5 transition-all`}
           style={{ width: `${pct}%` }}
         />
       </div>
       {timestamp && (
-        <div className="mt-2 text-[10px] text-muted-foreground">
+        <div className="mt-1 text-[10px] text-muted-foreground">
           {new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
         </div>
       )}
@@ -57,7 +56,7 @@ const TrendRow: React.FC<{
 
 const PhoneMockup: React.FC<{ targetHeight?: number }> = ({ targetHeight }) => {
   const { data, loading } = useTrends();
-  const items = useMemo(() => data.slice(0, 3), [data]);
+  const items = useMemo(() => data.slice(0, 2), [data]);
   const { data: topSignals } = useTopOpportunities();
   const { getPrice, lastUpdated } = useMarketPrices();
   const signalsCount = topSignals?.length ?? 0;
@@ -116,7 +115,7 @@ const PhoneMockup: React.FC<{ targetHeight?: number }> = ({ targetHeight }) => {
       {/* Screen */}
       <div className="absolute inset-2 rounded-[1.6rem] bg-card border border-border overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-primary/5">
+        <div className="flex items-center justify-between px-3 py-2 border-b border-border bg-primary/5">
           <div className="flex items-center gap-2">
             <span className="relative inline-flex h-2.5 w-2.5">
               <span className="absolute inline-flex h-full w-full rounded-full bg-primary opacity-75 animate-[ping_1s_linear_infinite]" />
@@ -125,7 +124,6 @@ const PhoneMockup: React.FC<{ targetHeight?: number }> = ({ targetHeight }) => {
             <span className="text-xs font-semibold text-primary uppercase tracking-wide">Live</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-[11px] text-muted-foreground">Wakeman Capital</span>
             {signalsCount > 0 && (
               <span className="text-[10px] px-2 py-0.5 rounded-full border border-border text-muted-foreground">Sigs {signalsCount}</span>
             )}
@@ -133,7 +131,7 @@ const PhoneMockup: React.FC<{ targetHeight?: number }> = ({ targetHeight }) => {
         </div>
 
         {/* Content */}
-        <div className="p-4 space-y-3">
+        <div className="p-3 space-y-2">
           {loading && (
             <>
               <div className="h-16 rounded-lg bg-muted/40 animate-pulse" />
