@@ -1,14 +1,16 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useTranslation } from 'react-i18next';
 import Dashboard from '../components/Dashboard';
 import OpenOandaTrades from '../components/trading/OpenOandaTrades';
 
 const DashboardPage = () => {
+  const { t } = useTranslation();
   return (
     <>
       <Helmet>
-        <title>Dashboard | Wakeman Capital</title>
-        <meta name="description" content="Live trading dashboard with trades, signals, and market trends." />
+        <title>{t('dashboard.seoTitle')}</title>
+        <meta name="description" content={t('dashboard.seoDescription')} />
         <link rel="canonical" href="/dashboard" />
       </Helmet>
       
